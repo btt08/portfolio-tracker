@@ -1,0 +1,87 @@
+[
+  {
+    "name": "iShares Developed",
+    "isin": "IE000ZYRH0Q7",
+    "type": "funds",
+    "link": "ie000zyrh0q7",
+    "currPrice": 27.5,
+    "records": [
+      {
+        "date": "2024-05-15",
+        "type": "buy",
+        "amount": 10,
+        "price_per_share": 25.5
+      },
+      {
+        "date": "2024-06-10",
+        "type": "buy",
+        "shares": 5,
+        "price_per_share": 27.0
+      }
+    ]
+  },
+  {
+    "name": "iShares Emerging",
+    "isin": "IE00BYWYCC39",
+    "type": "funds",
+    "link": "ie00bywycc39",
+    "currPrice": 27.5,
+    "records": []
+  },
+  {
+    "name": "RobecoSAM Smart Energy",
+    "isin": "LU2145461757",
+    "type": "funds",
+    "link": "lu2145461757",
+    "currPrice": 45.0,
+    "records": []
+  },
+  {
+    "name": "MyInvestor Value C",
+    "isin": "ES0165243025",
+    "type": "funds",
+    "link": "es0165243025",
+    "currPrice": 120.0,
+    "records": []
+  },
+  {
+    "name": "R4 Fija 6 Meses",
+    "isin": "ES0128520006",
+    "type": "funds",
+    "link": "renta-4-monetario-fi",
+    "currPrice": 11.0,
+    "records": []
+  },
+  {
+    "name": "X IE Physical Gold",
+    "isin": "DE000A2T0VU5",
+    "type": "etfs",
+    "link": "xgdu?cid=1164630",
+    "currPrice": 55.0,
+    "records": []
+  },
+  {
+    "name": "AMPER SA",
+    "isin": "ES0109260531",
+    "type": "equities",
+    "link": "amper-sa",
+    "currPrice": 1.2,
+    "records": []
+  },
+  {
+    "name": "NEXTIL",
+    "isin": "ES0126962069",
+    "type": "equities",
+    "link": "dogi-international-fabrics-sa",
+    "currPrice": 2.5,
+    "records": []
+  },
+  {
+    "name": "OHL",
+    "isin": "ES0142090317",
+    "type": "equities",
+    "link": "ohl",
+    "currPrice": 3.0,
+    "records": []
+  }
+]
