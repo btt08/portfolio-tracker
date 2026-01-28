@@ -7,7 +7,8 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "dev": "nodemon src/server.ts",
-    "lint": "eslint 'src/**/*.ts'"
+    "lint": "eslint 'src/**/*.ts'",
+    "price-fetcher": "ts-node src/scripts/priceFetcher.ts"
   },
   "keywords": [],
   "author": "",
@@ -24,7 +25,11 @@
   },
   "dependencies": {
     "@types/dotenv": "^6.1.1",
+    "@types/puppeteer": "^5.4.7",
     "dotenv": "^17.2.3",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "puppeteer": "^24.36.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
   }
 }

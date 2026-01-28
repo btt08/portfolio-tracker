@@ -1,8 +1,17 @@
 import { Router } from 'express';
-import { getPortfolio } from '../controllers/portfolioController';
+import {
+  addPortfolioItem,
+  addRecordToItem,
+  getPortfolio,
+  refreshPortfolioPrices,
+} from '../controllers/portfolioController';
 
 const router = Router();
 
 router.get('/', getPortfolio);
+router.get('/refresh', refreshPortfolioPrices);
+
+router.post('/add', addPortfolioItem);
+router.post('/:isin/add', addRecordToItem);
 
 export default router;
