@@ -1,1 +1,37 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@styles/colours.scss' as *;
+
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-size: 16px;
+  font-family: 'Roboto', sans-serif;
+}
+
+a,
+a:active,
+a:hover,
+a:visited {
+  color: inherit;
+  text-decoration: none;
+}
+
+body {
+  height: 100vh;
+  background-color: $dark-light;
+  color: $light-dark;
+}
+
+.accent {
+  color: $accent;
+}
+
+.negative {
+  color: $negative;
+}
+
+.positive {
+  color: $positive;
+}

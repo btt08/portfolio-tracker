@@ -1,0 +1,10 @@
+{
+  "chat.tools.terminal.autoApprove": {
+    "/^npm install --package-lock-only$/": {
+      "approve": true,
+      "matchCommandLine": true
+    },
+    "npx tsc": true,
+    "npm install": true
+  }
+}

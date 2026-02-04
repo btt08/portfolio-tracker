@@ -1,8 +1,10 @@
 export interface IRecord {
-  date: string;
+  orderDate: string;
+  executionDate: string;
   type: string;
-  amount: number;
+  numShares: number;
   pricePerShare: number;
+  commission: number;
 }
 
 export interface IPortfolioItem {
@@ -10,6 +12,7 @@ export interface IPortfolioItem {
   isin: string;
   type: string;
   link: string;
+  prevPrice: number;
   currPrice: number;
   records: IRecord[];
 }

@@ -4,7 +4,7 @@
     "isin": "IE000ZYRH0Q7",
     "type": "funds",
     "link": "ie000zyrh0q7",
-    "currPrice": 10.866,
+    "currPrice": 10.758,
     "records": [
       {
         "orderDate": "2025-12-01",
@@ -31,15 +31,15 @@
         "commission": 0
       }
     ],
-    "prevPrice": 10.744
+    "prevPrice": 10.76
   },
   {
     "name": "iShares Emerging",
     "isin": "IE00BYWYCC39",
     "type": "funds",
     "link": "ie00bywycc39",
-    "currPrice": 16.804,
-    "prevPrice": 17.031,
+    "currPrice": 17.284,
+    "prevPrice": 17.283,
     "records": [
       {
         "orderDate": "2025-07-01",
@@ -112,26 +112,26 @@
     "isin": "ES0165243025",
     "type": "funds",
     "link": "es0165243025",
-    "currPrice": 1.225,
+    "currPrice": 1.203,
     "records": [
       {
         "orderDate": "2026-01-13",
         "executionDate": "2026-01-22",
         "type": "buy",
-        "numShares": 848.3870759,
+        "numShares": 848.3871,
         "pricePerShare": 1.187,
         "commission": 0
       }
     ],
-    "prevPrice": 1.217
+    "prevPrice": 1.212
   },
   {
     "name": "RobecoSAM Smart Energy",
     "isin": "LU2145461757",
     "type": "funds",
     "link": "lu2145461757",
-    "currPrice": 77.37,
-    "prevPrice": 75.64,
+    "currPrice": 76.73,
+    "prevPrice": 77.41,
     "records": [
       {
         "orderDate": "2026-01-21",
@@ -144,12 +144,86 @@
     ]
   },
   {
+    "name": "R4 Fija 6 Meses",
+    "isin": "ES0128520006",
+    "type": "funds",
+    "link": "renta-4-monetario-fi",
+    "currPrice": 12.601,
+    "prevPrice": 12.614,
+    "records": [
+      {
+        "orderDate": "2025-07-04",
+        "executionDate": "2025-07-08",
+        "type": "buy",
+        "numShares": 401.5324,
+        "pricePerShare": 12.452,
+        "commission": 0
+      },
+      {
+        "orderDate": "2025-07-09",
+        "executionDate": "2025-07-11",
+        "type": "buy",
+        "numShares": 200.7293,
+        "pricePerShare": 12.455,
+        "commission": 0
+      },
+      {
+        "orderDate": "2025-08-05",
+        "executionDate": "2025-08-07",
+        "type": "buy",
+        "numShares": 8.0159,
+        "pricePerShare": 12.475,
+        "commission": 0
+      },
+      {
+        "orderDate": "2025-08-29",
+        "executionDate": "2025-08-30",
+        "type": "buy",
+        "numShares": 16.0122,
+        "pricePerShare": 12.49,
+        "commission": 0
+      },
+      {
+        "orderDate": "2025-09-30",
+        "executionDate": "2025-10-02",
+        "type": "buy",
+        "numShares": 15.9813,
+        "pricePerShare": 12.515,
+        "commission": 0
+      },
+      {
+        "orderDate": "2026-01-13",
+        "executionDate": "2026-01-20",
+        "type": "transfer",
+        "numShares": 80,
+        "pricePerShare": 12.592,
+        "commission": 0
+      },
+      {
+        "orderDate": "2026-01-13",
+        "executionDate": "2026-01-20",
+        "type": "transfer",
+        "numShares": 80,
+        "pricePerShare": 12.592,
+        "commission": 0
+      },
+      {
+        "orderDate": "2026-01-13",
+        "executionDate": "2026-01-20",
+        "type": "transfer",
+        "numShares": 80,
+        "pricePerShare": 12.592,
+        "commission": 0
+      }
+    ]
+  },
+  {
     "name": "Evercapital I ACC EUR",
     "isin": "LU1953238794",
     "type": "funds",
     "link": "lu1953238794",
-    "currPrice": 151.73,
-    "prevPrice": 151.69,
+    "currPrice": 151.69,
+    "prevPrice": 152.02,
     "records": [
       {
         "orderDate": "2026-01-21",
@@ -166,8 +240,8 @@
     "isin": "DE000A2T0VU5",
     "type": "etfs",
     "link": "xgdu?cid=1164630",
-    "currPrice": 64.92,
-    "prevPrice": 60.81,
+    "currPrice": 64.35,
+    "prevPrice": 67.77,
     "records": [
       {
         "orderDate": "2025-07-02",
@@ -192,8 +266,8 @@
     "isin": "ES0109260531",
     "type": "equities",
     "link": "amper-sa",
-    "currPrice": 0.1808,
-    "prevPrice": 0.188,
+    "currPrice": 0.1896,
+    "prevPrice": 0.189,
     "records": [
       {
         "orderDate": "2025-08-10",
@@ -218,15 +292,15 @@
     "isin": "ES0126962069",
     "type": "equities",
     "link": "dogi-international-fabrics-sa",
-    "currPrice": 0.956,
-    "prevPrice": 0.966,
+    "currPrice": 0.976,
+    "prevPrice": 0.976,
     "records": [
       {
         "orderDate": "2025-08-01",
         "executionDate": "2025-08-01",
         "type": "buy",
         "numShares": 1070,
-        "pricePerShare": 0.468,
+        "pricePerShare": 0.47,
         "commission": 4.11
       }
     ]
@@ -236,8 +310,8 @@
     "isin": "ES0142090317",
     "type": "equities",
     "link": "ohl",
-    "currPrice": 0.358,
-    "prevPrice": 0.358,
+    "currPrice": 0.359,
+    "prevPrice": 0.354,
     "records": [
       {
         "orderDate": "2025-08-01",

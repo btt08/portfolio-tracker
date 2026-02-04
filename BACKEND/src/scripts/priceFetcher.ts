@@ -1,36 +1,55 @@
+import type { ElementHandle, Page } from 'puppeteer';
+import { setTimeout } from 'node:timers/promises';
+import type { IPortfolioItem } from '../interfaces/portfolio.interface';
 const puppeteer = require('puppeteer');
 const { addExtra } = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const fs = require('fs');
 const path = require('path');
-import type { Page } from 'puppeteer';
-import type { IPortfolioItem } from '../interfaces/portfolio.interface';
 
 const assets: IPortfolioItem[] = JSON.parse(
-  fs.readFileSync(path.join(__dirname, '../data/portfolio.json'), 'utf8'),
+  fs.readFileSync(path.join(__dirname, '../data/portfolio.json'), 'utf8')
 );
 
 const baseURL = 'https://es.investing.com';
 const puppeteerExtra = addExtra(puppeteer);
 puppeteerExtra.use(StealthPlugin());
 
-async function getInvestingPrice(
-  page: Page,
-  link: string,
-): Promise<string | null> {
+function safeSubtract(a: number, b: number, decimals: number = 3): number {
+  const scale = Math.pow(10, decimals);
+  const scaledA = Math.round(a * scale);
+  const scaledB = Math.round(b * scale);
+  const result = scaledA - scaledB;
+  return result / scale;
+}
+
+async function getInvestingPrice(page: Page, link: string): Promise<number[]> {
   await page.goto(link.toLowerCase());
-  let price: string | null = null;
-  const priceElement = await page.$('#last_last');
-  if (priceElement) {
-    price = await page.evaluate((el: any) => el.textContent, priceElement);
+  const price: string[] = [];
+  let attempts = 0;
+
+  while (attempts < 5) {
+    const priceEL = await page.$('#last_last');
+    const changeEL = await page.$('#last_last + span');
+    const altPriceEL = await page.$('[data-test="instrument-price-last"]');
+    const altChangeEL = await page.$('[data-test="instrument-price-change"]');
+
+    if (!priceEL && !changeEL && !altPriceEL && !altChangeEL) {
+      console.log(`Price elements not found, retrying... (${++attempts})`);
+      await setTimeout(250);
+    } else {
+      if (priceEL) {
+        price[0] = await page.evaluate((el: any) => el.textContent, changeEL);
+        price[1] = await page.evaluate((el: any) => el.textContent, priceEL);
+      } else {
+        price[0] = await page.evaluate((el: any) => el.textContent, altChangeEL);
+        price[1] = await page.evaluate((el: any) => el.textContent, altPriceEL);
+      }
+      break;
+    }
   }
 
-  const altPriceElement = await page.$('[data-test="instrument-price-last"]');
-  if (altPriceElement) {
-    price = await page.evaluate((el: any) => el.textContent, altPriceElement);
-  }
-
-  return price;
+  return price.map(p => parseFloat(p.trim().replace(/\./g, '').replace(',', '.')));
 }
 
 puppeteerExtra
@@ -43,24 +62,19 @@ puppeteerExtra
       // console.time('Loop');
       for (const asset of assets) {
         const url = `${baseURL}/${asset.type}/${asset.link}`;
-        let price = await getInvestingPrice(page, url);
-        if (!price) {
-          console.log(`Price not found for ${asset.name}, retrying.`);
-          price = await getInvestingPrice(page, asset.link);
-        }
-        if (price === null) {
+        const price = await getInvestingPrice(page, url);
+        if (!price || price.length < 2 || isNaN(price[0]) || isNaN(price[1])) {
           console.log(`Price not found for ${asset.name}, skipping.`);
           continue;
         }
-        asset.currPrice = parseFloat(
-          price.replace(/\./g, '').replace(',', '.'),
-        );
-        console.log(`${asset.name}: ${price} ----- ${url}`);
+        asset.prevPrice = safeSubtract(price[1], price[0]);
+        asset.currPrice = price[1];
+        console.log(`${asset.name}: ${asset.prevPrice} -> ${price[1]} (${price[0]})  ----- ${url}`);
       }
 
       fs.writeFileSync(
         path.join(__dirname, '../data/portfolio.json'),
-        JSON.stringify(assets, null, 2),
+        JSON.stringify(assets, null, 2)
       );
 
       // console.timeEnd('Loop');
