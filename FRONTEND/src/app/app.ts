@@ -30,8 +30,7 @@ export class App implements OnInit {
 
   ngOnInit() {
     this.portfolioService.getportfolio().subscribe(rawData => {
-      const mappedData = this.portfolioMapper.mapRawToPortfolio(rawData.data || []);
-      this.portfolioData.set(mappedData);
+      this.portfolioData.set(rawData.data || this.portfolioData());
     });
   }
 
@@ -46,8 +45,7 @@ export class App implements OnInit {
 
   refreshData() {
     this.portfolioService.refreshPortfolio().subscribe(rawData => {
-      const mappedData = this.portfolioMapper.mapRawToPortfolio(rawData.data || []);
-      this.portfolioData.set(mappedData);
+      this.portfolioData.set(rawData.data || this.portfolioData());
     });
   }
 }

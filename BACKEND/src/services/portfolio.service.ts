@@ -1,16 +1,21 @@
 import fs from 'fs';
 import path from 'path';
-import { IPortfolioItem } from '../interfaces/portfolio.interface';
+import { IPortfolio, IRawPortfolioItem } from '../interfaces/portfolio.interface';
+import { PortfolioMapperService } from './portfolio-mapper.service';
 import type { Page } from 'puppeteer';
 import { setTimeout } from 'node:timers/promises';
+import { SafeMathService } from './safe-math.service';
 const puppeteer = require('puppeteer');
 const { addExtra } = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 
 class PortfolioService {
-  private portfolio: IPortfolioItem[] = [];
+  private rawPortfolio: IRawPortfolioItem[] = [];
+  private portfolio: IPortfolio | null = null;
   private dataPath: string;
   private browser: any = null;
+  private mapper = new PortfolioMapperService();
+  private math = new SafeMathService();
 
   constructor() {
     this.dataPath = path.resolve(__dirname, '../data/portfolio.json');
@@ -26,43 +31,39 @@ class PortfolioService {
   private loadFromFile(): void {
     try {
       const data = fs.readFileSync(this.dataPath, 'utf-8');
-      this.portfolio = JSON.parse(data) as IPortfolioItem[];
+      this.rawPortfolio = JSON.parse(data) as IRawPortfolioItem[];
+      this.portfolio = this.mapper.mapRawPortfolio(this.rawPortfolio);
     } catch (error) {
       console.error('Error loading portfolio from file:', error);
-      this.portfolio = [];
+      this.rawPortfolio = [];
+      this.portfolio = null;
     }
   }
 
   private saveToFile(): void {
     try {
-      fs.writeFileSync(this.dataPath, JSON.stringify(this.portfolio, null, 2));
+      fs.writeFileSync(this.dataPath, JSON.stringify(this.rawPortfolio, null, 2));
       console.log('Portfolio saved to file');
     } catch (error) {
       console.error('Error saving portfolio to file:', error);
     }
   }
 
-  public getPortfolioItems(): IPortfolioItem[] {
+  public getPortfolio(): IPortfolio | null {
     return this.portfolio;
   }
 
-  public addPortfolioItem(item: IPortfolioItem): void {
-    this.portfolio.push(item);
+  public addPortfolioItem(item: IRawPortfolioItem): void {
+    this.rawPortfolio.push(item);
+    this.portfolio = this.mapper.mapRawPortfolio(this.rawPortfolio);
   }
 
   public addRecordToItem(isin: string, record: any): boolean {
-    const item = this.portfolio.find(item => item.isin === isin);
+    const item = this.rawPortfolio.find(item => item.isin === isin);
     if (!item) return false;
     item.records.push(record);
+    this.portfolio = this.mapper.mapRawPortfolio(this.rawPortfolio);
     return true;
-  }
-
-  private safeSubtract(a: number, b: number, decimals: number = 3): number {
-    const scale = Math.pow(10, decimals);
-    const scaledA = Math.round(a * scale);
-    const scaledB = Math.round(b * scale);
-    const result = scaledA - scaledB;
-    return result / scale;
   }
 
   private async getInvestingPrice(page: Page, link: string): Promise<number[]> {
@@ -105,8 +106,8 @@ class PortfolioService {
       const baseURL = 'https://es.investing.com';
       const concurrency = 10;
 
-      for (let i = 0; i < this.portfolio.length; i += concurrency) {
-        const batch = this.portfolio.slice(i, i + concurrency);
+      for (let i = 0; i < this.rawPortfolio.length; i += concurrency) {
+        const batch = this.rawPortfolio.slice(i, i + concurrency);
         const promises = batch.map(async asset => {
           const page = await this.browser.newPage();
           await page.setViewport({ width: 1280, height: 720 });
@@ -114,7 +115,7 @@ class PortfolioService {
             const url = `${baseURL}/${asset.type}/${asset.link}`;
             const price = await this.getInvestingPrice(page, url);
             if (price && price.length === 2 && !isNaN(price[0]) && !isNaN(price[1])) {
-              asset.prevPrice = this.safeSubtract(price[1], price[0]);
+              asset.prevPrice = this.math.safeSubtract(price[1], price[0]);
               asset.currPrice = price[1];
               console.log(
                 `${asset.name}: ${asset.prevPrice} -> ${price[1]} (${price[0]})  ----- ${url}`
@@ -128,6 +129,7 @@ class PortfolioService {
         });
         await Promise.all(promises);
       }
+      this.portfolio = this.mapper.mapRawPortfolio(this.rawPortfolio);
       console.log('Prices refreshed successfully');
     } catch (error) {
       console.error('Error refreshing prices:', error);

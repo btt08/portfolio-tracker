@@ -69,3 +69,9 @@ export interface IPortfolio {
   items: IPortfolioItem[];
   summary: IPortfolioSummary;
 }
+
+export interface IResponse {
+  success: boolean;
+  data: IPortfolio;
+  message?: string;
+}

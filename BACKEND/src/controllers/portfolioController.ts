@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
 import portfolioService from '../services/portfolio.service';
-import { IPortfolioItem } from '../interfaces/portfolio.interface';
+import { IRawPortfolioItem } from '../interfaces/portfolio.interface';
 
 export const addPortfolioItem = (req: Request, res: Response): void => {
   try {
-    const newItem: IPortfolioItem = req.body;
+    const newItem: IRawPortfolioItem = req.body;
     portfolioService.addPortfolioItem(newItem);
     res.status(201).json({ success: true, data: newItem });
   } catch (error) {
@@ -15,8 +15,8 @@ export const addPortfolioItem = (req: Request, res: Response): void => {
 
 export const getPortfolio = (req: Request, res: Response): void => {
   try {
-    const items = portfolioService.getPortfolioItems();
-    res.status(200).json({ success: true, data: items });
+    const portfolio = portfolioService.getPortfolio();
+    res.status(200).json({ success: true, data: portfolio });
   } catch (error) {
     console.error('Error getting portfolio:', error);
     res.status(500).json({ success: false, message: 'Server Error' });
@@ -32,8 +32,8 @@ export const addRecordToItem = (req: Request, res: Response): void => {
       res.status(404).json({ success: false, message: 'Item not found' });
       return;
     }
-    const item = portfolioService.getPortfolioItems().find(item => item.isin === isin);
-    res.status(200).json({ success: true, data: item });
+    const portfolio = portfolioService.getPortfolio();
+    res.status(200).json({ success: true, data: portfolio });
   } catch (error) {
     console.error('Error adding record to item:', error);
     res.status(500).json({ success: false, message: 'Server Error' });
@@ -44,9 +44,10 @@ export const refreshPortfolioPrices = async (req: Request, res: Response): Promi
   console.log('Refreshing portfolio prices...');
   try {
     await portfolioService.refreshPrices();
+    const portfolio = portfolioService.getPortfolio();
     res.status(200).json({
       success: true,
-      data: portfolioService.getPortfolioItems(),
+      data: portfolio,
       message: 'Prices refreshed successfully',
     });
   } catch (error) {
