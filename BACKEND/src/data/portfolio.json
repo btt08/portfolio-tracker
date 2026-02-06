@@ -4,7 +4,7 @@
     "isin": "IE000ZYRH0Q7",
     "type": "funds",
     "link": "ie000zyrh0q7",
-    "currPrice": 10.866,
+    "currPrice": 10.81,
     "records": [
       {
         "orderDate": "2025-12-01",
@@ -31,15 +31,15 @@
         "commission": 0
       }
     ],
-    "prevPrice": 10.744
+    "prevPrice": 10.866
   },
   {
     "name": "iShares Emerging",
     "isin": "IE00BYWYCC39",
     "type": "funds",
     "link": "ie00bywycc39",
-    "currPrice": 16.804,
-    "prevPrice": 17.031,
+    "currPrice": 17.23,
+    "prevPrice": 16.804,
     "records": [
       {
         "orderDate": "2025-07-01",
@@ -112,7 +112,7 @@
     "isin": "ES0165243025",
     "type": "funds",
     "link": "es0165243025",
-    "currPrice": 1.225,
+    "currPrice": 1.222,
     "records": [
       {
         "orderDate": "2026-01-13",
@@ -123,15 +123,15 @@
         "commission": 0
       }
     ],
-    "prevPrice": 1.217
+    "prevPrice": 1.226
   },
   {
     "name": "RobecoSAM Smart Energy",
     "isin": "LU2145461757",
     "type": "funds",
     "link": "lu2145461757",
-    "currPrice": 77.37,
-    "prevPrice": 75.64,
+    "currPrice": 77.58,
+    "prevPrice": 77.37,
     "records": [
       {
         "orderDate": "2026-01-21",
@@ -148,8 +148,8 @@
     "isin": "LU1953238794",
     "type": "funds",
     "link": "lu1953238794",
-    "currPrice": 151.73,
-    "prevPrice": 151.69,
+    "currPrice": 150.86,
+    "prevPrice": 151.68,
     "records": [
       {
         "orderDate": "2026-01-21",
@@ -166,8 +166,8 @@
     "isin": "DE000A2T0VU5",
     "type": "etfs",
     "link": "xgdu?cid=1164630",
-    "currPrice": 64.92,
-    "prevPrice": 60.81,
+    "currPrice": 63.48,
+    "prevPrice": 64.21,
     "records": [
       {
         "orderDate": "2025-07-02",
@@ -192,8 +192,8 @@
     "isin": "ES0109260531",
     "type": "equities",
     "link": "amper-sa",
-    "currPrice": 0.1808,
-    "prevPrice": 0.188,
+    "currPrice": 0.1752,
+    "prevPrice": 0.179,
     "records": [
       {
         "orderDate": "2025-08-10",
@@ -218,8 +218,8 @@
     "isin": "ES0126962069",
     "type": "equities",
     "link": "dogi-international-fabrics-sa",
-    "currPrice": 0.956,
-    "prevPrice": 0.966,
+    "currPrice": 0.892,
+    "prevPrice": 0.94,
     "records": [
       {
         "orderDate": "2025-08-01",
@@ -236,8 +236,8 @@
     "isin": "ES0142090317",
     "type": "equities",
     "link": "ohl",
-    "currPrice": 0.358,
-    "prevPrice": 0.358,
+    "currPrice": 0.353,
+    "prevPrice": 0.357,
     "records": [
       {
         "orderDate": "2025-08-01",
