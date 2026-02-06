@@ -34,7 +34,12 @@
         ({{ formatNumber(portfolioData().summary.portfolioDailyChangePerc) }} %)
       </span>
     </div>
-    <button class="refresh-button" (click)="refreshData()">Refresh</button>
+    <button class="refresh-button" (click)="refreshData()" [disabled]="isRefreshing()">
+      @if (isRefreshing()) {
+        <span class="spinner"></span>
+      }
+      {{ isRefreshing() ? 'Refreshing...' : 'Refresh' }}
+    </button>
   </div>
   <div class="content">
     <app-shares-table [data]="portfolioData().items" />

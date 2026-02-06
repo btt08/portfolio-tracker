@@ -36,7 +36,8 @@
   td {
     font-size: 0.875rem;
 
-    &:first-child {
+    &:first-child,
+    &:nth-child(2) {
       text-align: left;
     }
 

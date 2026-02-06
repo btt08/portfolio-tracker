@@ -14,7 +14,7 @@ import { SharesTable } from './components/shares-table/shares-table';
 export class App implements OnInit {
   private portfolioService = inject(PortfolioRestService);
 
-  protected readonly title = signal('portfolio-frontend');
+  protected readonly title = signal('Portfolio tracker');
   portfolioData = signal<IPortfolio>({
     items: [],
     summary: {
@@ -25,10 +25,16 @@ export class App implements OnInit {
       portfolioDailyChangePerc: 0,
     } as IPortfolioSummary,
   });
+  isRefreshing = signal(false);
 
   ngOnInit() {
-    this.portfolioService.getportfolio().subscribe(rawData => {
-      this.portfolioData.set(rawData.data || this.portfolioData());
+    this.portfolioService.getportfolio().subscribe({
+      next: rawData => {
+        this.portfolioData.set(rawData.data || this.portfolioData());
+      },
+      error: error => {
+        console.error('Error loading portfolio:', error);
+      },
     });
   }
 
@@ -42,8 +48,17 @@ export class App implements OnInit {
   }
 
   refreshData() {
-    this.portfolioService.refreshPortfolio().subscribe(rawData => {
-      this.portfolioData.set(rawData.data || this.portfolioData());
+    this.isRefreshing.set(true);
+    this.portfolioService.refreshPortfolio().subscribe({
+      next: rawData => {
+        this.portfolioData.set(rawData.data || this.portfolioData());
+      },
+      error: error => {
+        console.error('Error refreshing data:', error);
+      },
+      complete: () => {
+        this.isRefreshing.set(false);
+      },
     });
   }
 }

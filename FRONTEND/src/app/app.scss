@@ -1,4 +1,5 @@
 @use '@styles/colours.scss' as *;
+@use 'sass:color';
 
 .main {
   padding: 1.5rem;
@@ -14,6 +15,7 @@
     width: 100%;
     padding: 1rem 1.5rem;
     display: flex;
+    align-items: center;
     gap: 0.5rem;
     border: 1px solid $border-color;
     border-radius: 0.25rem;
@@ -26,5 +28,46 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
+  }
+}
+
+.refresh-button {
+  padding: 0.5rem 1rem;
+  background-color: $accent;
+  color: $black;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  &:hover:not(:disabled) {
+    background-color: color.adjust($accent, $lightness: -10%);
+  }
+
+  &:disabled {
+    background-color: $border-color;
+    color: $light-dark;
+    cursor: default;
+  }
+}
+
+.spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid $light-dark;
+  border-top: 2px solid $black;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }
