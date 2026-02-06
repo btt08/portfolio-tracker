@@ -23,7 +23,13 @@ describe('LotService', () => {
         prevPrice: 90,
         currPrice: 100,
         records: [
-          { date: '2023-01-01', type: 'buy', numShares: 10, pricePerShare: 100, commission: 5 },
+          {
+            date: '2023-01-01',
+            type: 'buy',
+            numShares: 10,
+            pricePerShare: 100,
+            commission: 5,
+          },
         ],
       },
     ];
@@ -46,8 +52,20 @@ describe('LotService', () => {
         prevPrice: 90,
         currPrice: 110,
         records: [
-          { date: '2023-01-01', type: 'buy', numShares: 10, pricePerShare: 100, commission: 5 },
-          { date: '2023-02-01', type: 'sell', numShares: 5, pricePerShare: 110, commission: 2 },
+          {
+            date: '2023-01-01',
+            type: 'buy',
+            numShares: 10,
+            pricePerShare: 100,
+            commission: 5,
+          },
+          {
+            date: '2023-02-01',
+            type: 'sell',
+            numShares: 5,
+            pricePerShare: 110,
+            commission: 2,
+          },
         ],
       },
     ];
@@ -70,8 +88,21 @@ describe('LotService', () => {
         prevPrice: 90,
         currPrice: 100,
         records: [
-          { date: '2023-01-01', type: 'buy', numShares: 10, pricePerShare: 100, commission: 5 },
-          { date: '2023-02-01', type: 'transfer', numShares: 5, transferTo: 'TARGET', commission: 1, pricePerShare: 0 },
+          {
+            date: '2023-01-01',
+            type: 'buy',
+            numShares: 10,
+            pricePerShare: 100,
+            commission: 5,
+          },
+          {
+            date: '2023-02-01',
+            type: 'transfer',
+            numShares: 5,
+            transferTo: 'TARGET',
+            commission: 1,
+            pricePerShare: 0,
+          },
         ],
       },
     ];

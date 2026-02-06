@@ -27,6 +27,7 @@ export class App implements OnInit {
       portfolioDailyChangePerc: 0,
     } as IPortfolioSummary,
   });
+
   ngOnInit() {
     this.portfolioService.getportfolio().subscribe(rawData => {
       const mappedData = this.portfolioMapper.mapRawToPortfolio(rawData.data || []);
@@ -39,10 +40,7 @@ export class App implements OnInit {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
-    console.log(
-      `Formatted number: ${formatted} ----> `,
-      value >= 0 ? `+${formatted}` : formatted
-    );
+
     return value >= 0 ? `+${formatted}` : formatted;
   }
 

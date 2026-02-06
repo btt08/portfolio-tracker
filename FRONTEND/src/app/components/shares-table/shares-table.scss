@@ -26,7 +26,7 @@
   td {
     padding-inline: 0.5rem;
     line-height: 1.5rem;
-    text-align: right;
+    text-align: center;
   }
 
   th {
@@ -35,6 +35,7 @@
 
   td {
     font-size: 0.875rem;
+    // text-align: right;
 
     &:first-child {
       text-align: left;

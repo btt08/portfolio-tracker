@@ -8,6 +8,7 @@
         <th>Invested</th>
         <th>Market Value</th>
         <th title="Avg cost/Share">AC/Share</th>
+        <th>Prev price</th>
         <th>Last price</th>
         <th>Daily (€)</th>
         <th>Daily (%)</th>
@@ -33,6 +34,9 @@
           </td>
           <td>
             {{ item.avgPrice | number: '1.2-2' : 'de-DE' }}
+          </td>
+          <td>
+            {{ item.prevPrice | number: '1.2-3' : 'de-DE' }}
           </td>
           <td>
             {{ item.currPrice | number: '1.2-3' : 'de-DE' }}

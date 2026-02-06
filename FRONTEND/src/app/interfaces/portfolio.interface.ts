@@ -18,6 +18,12 @@ export interface IRawPortfolioItem {
   records: IRawRecord[];
 }
 
+export interface IItemMap {
+  raw: IRawPortfolioItem;
+  lots: ILot[];
+  realizedPnl: number;
+}
+
 export interface IRecord extends IRawRecord {
   totalCost: number;
 }

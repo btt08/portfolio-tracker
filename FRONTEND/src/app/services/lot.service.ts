@@ -3,6 +3,7 @@ import {
   IRawPortfolioItem,
   IPortfolioItem,
   ILot,
+  IItemMap,
 } from '../interfaces/portfolio.interface';
 import { SafeMathService } from './safe-math.service';
 import { RecordMapperService } from './record-mapper.service';
@@ -13,11 +14,6 @@ export class LotService {
   private recordMapper = inject(RecordMapperService);
 
   processRawData(rawData: IRawPortfolioItem[]): IPortfolioItem[] {
-    // kept public API for compatibility; delegate to refactored implementation
-    return this.processRawDataWithTransfers(rawData);
-  }
-
-  processRawDataWithTransfers(rawData: IRawPortfolioItem[]): IPortfolioItem[] {
     const itemMap = this.buildItemMap(rawData);
 
     this.createLotsFromBuys(rawData, itemMap);
@@ -27,25 +23,33 @@ export class LotService {
   }
 
   private buildItemMap(rawData: IRawPortfolioItem[]) {
-    const itemMap = new Map<
-      string,
-      { raw: IRawPortfolioItem; lots: ILot[]; realizedPnl: number }
-    >();
+    const itemMap = new Map<string, IItemMap>();
     rawData.forEach(r => itemMap.set(r.isin, { raw: r, lots: [], realizedPnl: 0 }));
     return itemMap;
   }
 
   private createLotsFromBuys(
     rawData: IRawPortfolioItem[],
-    itemMap: Map<string, { raw: IRawPortfolioItem; lots: ILot[]; realizedPnl: number }>
+    itemMap: Map<string, IItemMap>
   ) {
     rawData.forEach(rawItem => {
       const entry = itemMap.get(rawItem.isin)!;
-      const buyRecords = this.recordMapper.normalizeRecords(rawItem.records || []).filter(rec => rec.type === 'buy');
+      const buyRecords = this.recordMapper
+        .normalizeRecords(rawItem.records || [])
+        .filter(rec => rec.type === 'buy');
       buyRecords.forEach((rec, idx) => {
         const totalCost = rec.totalCost;
         const costPerUnit = this.math.safeDivide(totalCost, rec.numShares || 1);
-        entry.lots.push(this.createLot(rawItem.isin, rec.date, idx, rec.numShares, costPerUnit, totalCost));
+        entry.lots.push(
+          this.createLot(
+            rawItem.isin,
+            rec.date,
+            idx,
+            rec.numShares,
+            costPerUnit,
+            totalCost
+          )
+        );
       });
     });
   }
@@ -67,10 +71,7 @@ export class LotService {
     };
   }
 
-  private processRecords(
-    rawData: IRawPortfolioItem[],
-    itemMap: Map<string, { raw: IRawPortfolioItem; lots: ILot[]; realizedPnl: number }>
-  ) {
+  private processRecords(rawData: IRawPortfolioItem[], itemMap: Map<string, IItemMap>) {
     rawData.forEach(rawItem => {
       const entry = itemMap.get(rawItem.isin)!;
       const normalized = this.recordMapper.normalizeRecords(rawItem.records || []);
@@ -91,7 +92,10 @@ export class LotService {
       const proratedFee = this.prorateFee(totalSellCommission, matched, rec.numShares);
       const proceeds = this.math.safeMultiply(matched, rec.pricePerShare);
       const cost = this.math.safeMultiply(matched, lot.costPerUnit);
-      const pnl = this.math.safeSubtract(this.math.safeSubtract(proceeds, cost), proratedFee);
+      const pnl = this.math.safeSubtract(
+        this.math.safeSubtract(proceeds, cost),
+        proratedFee
+      );
       entry.realizedPnl = this.math.safeAdd(entry.realizedPnl, pnl);
       lot.qtyRemaining = this.math.safeSubtract(lot.qtyRemaining, matched);
     });
@@ -106,16 +110,32 @@ export class LotService {
     const targetIsin = rec.transferTo as string;
     if (!itemMap.has(targetIsin)) {
       itemMap.set(targetIsin, {
-        raw: { isin: targetIsin, name: targetIsin, type: '', link: '', prevPrice: 0, currPrice: 0, records: [] },
+        raw: {
+          isin: targetIsin,
+          name: targetIsin,
+          type: '',
+          link: '',
+          prevPrice: 0,
+          currPrice: 0,
+          records: [],
+        },
         lots: [],
         realizedPnl: 0,
       });
     }
     const targetEntry = itemMap.get(targetIsin)!;
     this.matchLots(entry.lots, rec.numShares, (matched, lot) => {
-      const proratedFee = this.prorateFee(totalTransferCommission, matched, rec.numShares);
-      const addedTotalCost = this.math.safeAdd(this.math.safeMultiply(matched, lot.costPerUnit), proratedFee);
-      const addedCostPerUnit = matched !== 0 ? this.math.safeDivide(addedTotalCost, matched) : lot.costPerUnit;
+      const proratedFee = this.prorateFee(
+        totalTransferCommission,
+        matched,
+        rec.numShares
+      );
+      const addedTotalCost = this.math.safeAdd(
+        this.math.safeMultiply(matched, lot.costPerUnit),
+        proratedFee
+      );
+      const addedCostPerUnit =
+        matched !== 0 ? this.math.safeDivide(addedTotalCost, matched) : lot.costPerUnit;
       lot.qtyRemaining = this.math.safeSubtract(lot.qtyRemaining, matched);
       targetEntry.lots.push({
         id: `${targetIsin}-${rec.date}-${targetEntry.lots.length}`,
@@ -127,7 +147,11 @@ export class LotService {
     });
   }
 
-  private matchLots(lots: ILot[], qtyNeeded: number, onMatch: (matched: number, lot: ILot) => void) {
+  private matchLots(
+    lots: ILot[],
+    qtyNeeded: number,
+    onMatch: (matched: number, lot: ILot) => void
+  ) {
     let qtyRemaining = qtyNeeded;
     for (const lot of lots) {
       if (qtyRemaining <= 0) break;
@@ -144,9 +168,7 @@ export class LotService {
     return totalFee * (matched / totalShares);
   }
 
-  private buildPortfolioItems(
-    itemMap: Map<string, { raw: IRawPortfolioItem; lots: ILot[]; realizedPnl: number }>
-  ): IPortfolioItem[] {
+  private buildPortfolioItems(itemMap: Map<string, IItemMap>): IPortfolioItem[] {
     return Array.from(itemMap.entries()).map(([isin, entry]) => {
       const raw = entry.raw;
       const metrics = this.calculateItemMetrics(entry.lots, raw);
@@ -172,7 +194,10 @@ export class LotService {
       (acc, lot) =>
         this.math.safeAdd(
           acc,
-          this.math.safeMultiply(lot.qtyRemaining, this.math.safeSubtract(raw.currPrice || 0, lot.costPerUnit))
+          this.math.safeMultiply(
+            lot.qtyRemaining,
+            this.math.safeSubtract(raw.currPrice || 0, lot.costPerUnit)
+          )
         ),
       0
     );

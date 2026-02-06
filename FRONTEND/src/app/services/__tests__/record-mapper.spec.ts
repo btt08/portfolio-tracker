@@ -16,7 +16,13 @@ describe('RecordMapperService', () => {
 
   it('should normalize records correctly', () => {
     const rawRecords = [
-      { date: '2023-01-01', type: 'buy', numShares: 10, pricePerShare: 100, commission: 5 },
+      {
+        date: '2023-01-01',
+        type: 'buy',
+        numShares: 10,
+        pricePerShare: 100,
+        commission: 5,
+      },
     ];
     const normalized = service.normalizeRecords(rawRecords);
     expect(normalized).toHaveLength(1);
@@ -35,7 +41,13 @@ describe('RecordMapperService', () => {
 
   it('should handle records without commission', () => {
     const rawRecords = [
-      { date: '2023-01-01', type: 'sell', numShares: 5, pricePerShare: 110, commission: 0 },
+      {
+        date: '2023-01-01',
+        type: 'sell',
+        numShares: 5,
+        pricePerShare: 110,
+        commission: 0,
+      },
     ];
     const normalized = service.normalizeRecords(rawRecords);
     expect(normalized[0].commission).toBe(0);
