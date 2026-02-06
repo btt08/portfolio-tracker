@@ -47,6 +47,8 @@
             {{ item.dailyChangeEUR | number: '1.2-2' : 'de-DE' }}
           </td>
           <td
+            [class.small]="item.dailyChangePerc < 3.0 && item.dailyChangePerc > -3.0"
+            [class.large]="item.dailyChangePerc >= 10.0 || item.dailyChangePerc <= -10.0"
             [class.positive]="item.dailyChangePerc >= 0"
             [class.negative]="item.dailyChangePerc < 0">
             {{ item.dailyChangePerc | number: '1.2-2' : 'de-DE' }}%
@@ -57,6 +59,8 @@
             {{ item.totalChangeEUR | number: '1.2-2' : 'de-DE' }}
           </td>
           <td
+            [class.small]="item.totalChangePerc < 3.0 && item.totalChangePerc > -3.0"
+            [class.large]="item.totalChangePerc >= 10.0 || item.totalChangePerc <= -10.0"
             [class.positive]="item.totalChangePerc >= 0"
             [class.negative]="item.totalChangePerc < 0">
             {{ item.totalChangePerc | number: '1.2-2' : 'de-DE' }}%

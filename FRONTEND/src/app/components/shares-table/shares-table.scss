@@ -35,10 +35,17 @@
 
   td {
     font-size: 0.875rem;
-    // text-align: right;
 
     &:first-child {
       text-align: left;
+    }
+
+    &.small {
+      font-size: 0.75rem;
+    }
+
+    &.large {
+      font-size: 1rem;
     }
   }
 }

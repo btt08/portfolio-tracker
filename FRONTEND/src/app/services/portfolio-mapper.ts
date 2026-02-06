@@ -19,12 +19,15 @@ export class PortfolioMapperService {
     const mappedItems = this.lotService.processRawData(rawData);
 
     const totalInvested = this.calcTotalInvested(mappedItems);
+    console.log('Total Invested:', totalInvested);
     const marketValue = this.calcTotalMarketValue(mappedItems);
+    console.log('Market Value:', marketValue);
     const prevMarketValue = this.calcPrevMarketValue(mappedItems);
+    console.log('Previous Market Value:', prevMarketValue);
     const totalChangeEUR = this.calcTotalChangeEUR(totalInvested, marketValue);
-    const totalChangePerc = this.calcTotalPerc(totalInvested, marketValue);
+    const totalChangePerc = this.calcPercChange(totalInvested, marketValue);
     const totalDailyEUR = this.calcTotalDailyEUR(prevMarketValue, marketValue);
-    const totalDailyPerc = this.calcTotalDailyPerc(prevMarketValue, marketValue);
+    const totalDailyPerc = this.calcPercChange(prevMarketValue, marketValue);
 
     const summary: IPortfolioSummary = {
       portfolioInvested: totalInvested,
@@ -69,18 +72,8 @@ export class PortfolioMapperService {
     return this.math.safeSubtract(marketValue, prevMarketValue);
   }
 
-  private calcTotalPerc(totalInvested: number, marketValue: number): number {
-    if (totalInvested === 0) return 0;
-    return (this.math.safeSubtract(marketValue, totalInvested) * 100) / totalInvested;
-  }
-
-  private calcTotalDailyPerc(prevMarketValue: number, marketValue: number): number {
-    if (prevMarketValue === 0) return 0;
-    return (
-      this.math.safeDivide(
-        this.math.safeSubtract(marketValue, prevMarketValue),
-        prevMarketValue
-      ) * 100
-    );
+  private calcPercChange(prevValue: number, currentValue: number): number {
+    if (prevValue === 0) return 0;
+    return (this.math.safeSubtract(currentValue, prevValue) * 100) / prevValue;
   }
 }
