@@ -64,9 +64,13 @@ export class LotService {
       const entry = itemMap.get(rawItem.isin)!;
       const normalized = this.recordMapper.normalizeRecords(rawItem.records || []);
       normalized.forEach(rec => {
-        if (rec.type === 'sell') this.processSell(entry, rec);
-        else if (rec.type === 'transfer' && rec.transferTo)
-          this.processTransfer(entry, itemMap, rec);
+        if (rec.type === 'sell') {
+          this.processSell(entry, rec);
+        } else if (rec.type === 'transfer_out' && rec.transferTo) {
+          this.processTransferOut(entry, rec);
+        } else if (rec.type === 'transfer_in' && rec.transferFrom) {
+          this.processTransferIn(entry, itemMap, rec);
+        }
       });
     });
   }
@@ -83,49 +87,37 @@ export class LotService {
       const pnl = this.math.safeSubtract(this.math.safeSubtract(proceeds, cost), proratedFee);
       entry.realizedPnl = this.math.safeAdd(entry.realizedPnl, pnl);
       lot.qtyRemaining = this.math.safeSubtract(lot.qtyRemaining, matched);
+      lot.totalCost = this.math.safeMultiply(lot.qtyRemaining, lot.costPerUnit);
     });
   }
 
-  private processTransfer(
+  private processTransferOut(
+    entry: { raw: IRawPortfolioItem; lots: ILot[]; realizedPnl: number },
+    rec: any
+  ) {
+    this.matchLots(entry.lots, rec.numShares, (matched, lot) => {
+      lot.qtyRemaining = this.math.safeSubtract(lot.qtyRemaining, matched);
+      lot.totalCost = this.math.safeMultiply(lot.qtyRemaining, lot.costPerUnit);
+    });
+  }
+
+  private processTransferIn(
     entry: { raw: IRawPortfolioItem; lots: ILot[]; realizedPnl: number },
     itemMap: Map<string, { raw: IRawPortfolioItem; lots: ILot[]; realizedPnl: number }>,
     rec: any
   ) {
-    const totalTransferCommission = rec.commission || 0;
-    const targetIsin = rec.transferTo as string;
-    if (!itemMap.has(targetIsin)) {
-      itemMap.set(targetIsin, {
-        raw: {
-          isin: targetIsin,
-          name: targetIsin,
-          type: '',
-          link: '',
-          prevPrice: 0,
-          currPrice: 0,
-          records: [],
-        },
-        lots: [],
-        realizedPnl: 0,
-      });
-    }
-    const targetEntry = itemMap.get(targetIsin)!;
-    this.matchLots(entry.lots, rec.numShares, (matched, lot) => {
-      const proratedFee = this.prorateFee(totalTransferCommission, matched, rec.numShares);
-      const addedTotalCost = this.math.safeAdd(
-        this.math.safeMultiply(matched, lot.costPerUnit),
-        proratedFee
-      );
-      const addedCostPerUnit =
-        matched !== 0 ? this.math.safeDivide(addedTotalCost, matched) : lot.costPerUnit;
-      lot.qtyRemaining = this.math.safeSubtract(lot.qtyRemaining, matched);
-      targetEntry.lots.push({
-        id: `${targetIsin}-${rec.date}-${targetEntry.lots.length}`,
-        createdDate: lot.createdDate,
-        qtyRemaining: matched,
-        costPerUnit: addedCostPerUnit,
-        totalCost: addedTotalCost,
-      });
-    });
+    const totalCost = rec.originalTotalCost ?? rec.totalCost!;
+    const costPerUnit = this.math.safeDivide(totalCost, rec.numShares || 1);
+    entry.lots.push(
+      this.createLot(
+        entry.raw.isin,
+        rec.date!,
+        entry.lots.length,
+        rec.numShares,
+        costPerUnit,
+        totalCost
+      )
+    );
   }
 
   private matchLots(
@@ -156,6 +148,7 @@ export class LotService {
       return {
         isin: raw.isin,
         name: raw.name,
+        type: raw.type,
         link: `https://es.investing.com/${(raw.type || '').toLowerCase()}/${raw.link || ''}`,
         ...metrics,
         records: raw.records ? this.recordMapper.normalizeRecords(raw.records) : [],

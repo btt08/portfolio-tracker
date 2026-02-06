@@ -1,50 +1,5 @@
 [
   {
-    "isin": "ES0128520006",
-    "name": "R4 Fija 6 Meses",
-    "type": "funds",
-    "link": "https://es.investing.com/funds/renta-4-monetario-fi",
-    "prevPrice": 12.606,
-    "currPrice": 12.606,
-    "lots": [
-      {
-        "id": "ES0128520006-2025-07-08T00:00:00.000Z-0",
-        "createdDate": "2025-07-08T00:00:00.000Z",
-        "qtyRemaining": 161.5324,
-        "costPerUnit": 12.452,
-        "totalCost": 2011.4014448
-      },
-      {
-        "id": "ES0128520006-2025-07-11T00:00:00.000Z-1",
-        "createdDate": "2025-07-11T00:00:00.000Z",
-        "qtyRemaining": 200.7293,
-        "costPerUnit": 12.455,
-        "totalCost": 2500.0834315
-      },
-      {
-        "id": "ES0128520006-2025-08-07T00:00:00.000Z-2",
-        "createdDate": "2025-08-07T00:00:00.000Z",
-        "qtyRemaining": 8.0159,
-        "costPerUnit": 12.475,
-        "totalCost": 99.9983525
-      },
-      {
-        "id": "ES0128520006-2025-08-30T00:00:00.000Z-3",
-        "createdDate": "2025-08-30T00:00:00.000Z",
-        "qtyRemaining": 16.0122,
-        "costPerUnit": 12.49,
-        "totalCost": 199.992378
-      },
-      {
-        "id": "ES0128520006-2025-10-02T00:00:00.000Z-4",
-        "createdDate": "2025-10-02T00:00:00.000Z",
-        "qtyRemaining": 15.9813,
-        "costPerUnit": 12.515,
-        "totalCost": 200.0059695
-      }
-    ]
-  },
-  {
     "isin": "IE000ZYRH0Q7",
     "name": "iShares Developed class S",
     "type": "funds",
@@ -57,49 +12,49 @@
         "createdDate": "2025-07-04T00:00:00.000Z",
         "qtyRemaining": 0,
         "costPerUnit": 22.763,
-        "totalCost": 0
+        "totalCost": 2499.83266
       },
       {
         "id": "IE000ZYRH0Q7-2025-07-10T00:00:00.000Z-1",
         "createdDate": "2025-07-10T00:00:00.000Z",
         "qtyRemaining": 0,
         "costPerUnit": 22.803,
-        "totalCost": 0
+        "totalCost": 2499.89289
       },
       {
         "id": "IE000ZYRH0Q7-2025-08-08T00:00:00.000Z-2",
         "createdDate": "2025-08-08T00:00:00.000Z",
         "qtyRemaining": 0,
         "costPerUnit": 23.237,
-        "totalCost": 0
+        "totalCost": 299.98967
       },
       {
         "id": "IE000ZYRH0Q7-2025-09-03T00:00:00.000Z-3",
         "createdDate": "2025-09-03T00:00:00.000Z",
         "qtyRemaining": 0,
         "costPerUnit": 23.438,
-        "totalCost": 0
+        "totalCost": 599.77842
       },
       {
         "id": "IE000ZYRH0Q7-2025-09-06T00:00:00.000Z-4",
         "createdDate": "2025-09-06T00:00:00.000Z",
         "qtyRemaining": 0,
         "costPerUnit": 23.562,
-        "totalCost": 0
+        "totalCost": 494.802
       },
       {
         "id": "IE000ZYRH0Q7-2025-10-03T00:00:00.000Z-5",
         "createdDate": "2025-10-03T00:00:00.000Z",
         "qtyRemaining": 0,
         "costPerUnit": 24.405,
-        "totalCost": 0
+        "totalCost": 499.8144
       },
       {
         "id": "IE000ZYRH0Q7-2025-11-04T00:00:00.000Z-6",
         "createdDate": "2025-11-04T00:00:00.000Z",
         "qtyRemaining": 0,
         "costPerUnit": 25.201,
-        "totalCost": 0
+        "totalCost": 705.628
       },
       {
         "id": "IE000ZYRH0Q7-2025-12-03T00:00:00.000Z-0",
@@ -109,18 +64,18 @@
         "totalCost": 499.91987
       },
       {
+        "id": "IE000ZYRH0Q7-2025-12-12T00:00:00.000Z-9",
+        "createdDate": "2025-12-12T00:00:00.000Z",
+        "qtyRemaining": 769.59,
+        "costPerUnit": 10.662,
+        "totalCost": 7593.49
+      },
+      {
         "id": "IE000ZYRH0Q7-2025-12-31T00:00:00.000Z-1",
         "createdDate": "2025-12-31T00:00:00.000Z",
         "qtyRemaining": 66,
         "costPerUnit": 10.698,
         "totalCost": 706.068
-      },
-      {
-        "id": "IE000ZYRH0Q7-2025-12-12T00:00:00.000Z-9",
-        "createdDate": "2025-12-12T00:00:00.000Z",
-        "qtyRemaining": 769.59,
-        "costPerUnit": 9.86692914,
-        "totalCost": 7593.49
       }
     ]
   },
@@ -202,8 +157,8 @@
         "id": "ES0165243025-2026-01-22T00:00:00.000Z-0",
         "createdDate": "2026-01-22T00:00:00.000Z",
         "qtyRemaining": 848.3870759,
-        "costPerUnit": 1.18738254,
-        "totalCost": 1007.36
+        "costPerUnit": 1.187,
+        "totalCost": 1007.0354590933
       }
     ]
   },
@@ -219,8 +174,53 @@
         "id": "LU2145461757-2026-01-22T00:00:00.000Z-0",
         "createdDate": "2026-01-22T00:00:00.000Z",
         "qtyRemaining": 13.2638,
-        "costPerUnit": 75.94806918,
-        "totalCost": 1007.36
+        "costPerUnit": 75.95,
+        "totalCost": 1007.38561
+      }
+    ]
+  },
+  {
+    "isin": "ES0128520006",
+    "name": "R4 Fija 6 Meses",
+    "type": "funds",
+    "link": "https://es.investing.com/funds/renta-4-monetario-fi",
+    "prevPrice": 12.606,
+    "currPrice": 12.606,
+    "lots": [
+      {
+        "id": "ES0128520006-2025-07-08T00:00:00.000Z-0",
+        "createdDate": "2025-07-08T00:00:00.000Z",
+        "qtyRemaining": 161.5324,
+        "costPerUnit": 12.452,
+        "totalCost": 4999.8814448
+      },
+      {
+        "id": "ES0128520006-2025-07-11T00:00:00.000Z-1",
+        "createdDate": "2025-07-11T00:00:00.000Z",
+        "qtyRemaining": 200.7293,
+        "costPerUnit": 12.455,
+        "totalCost": 2500.0834315
+      },
+      {
+        "id": "ES0128520006-2025-08-07T00:00:00.000Z-2",
+        "createdDate": "2025-08-07T00:00:00.000Z",
+        "qtyRemaining": 8.0159,
+        "costPerUnit": 12.475,
+        "totalCost": 99.9983525
+      },
+      {
+        "id": "ES0128520006-2025-08-30T00:00:00.000Z-3",
+        "createdDate": "2025-08-30T00:00:00.000Z",
+        "qtyRemaining": 16.0122,
+        "costPerUnit": 12.49,
+        "totalCost": 199.992378
+      },
+      {
+        "id": "ES0128520006-2025-10-02T00:00:00.000Z-4",
+        "createdDate": "2025-10-02T00:00:00.000Z",
+        "qtyRemaining": 15.9813,
+        "costPerUnit": 12.515,
+        "totalCost": 200.0059695
       }
     ]
   },
@@ -236,8 +236,8 @@
         "id": "LU1953238794-2024-06-27T00:00:00.000Z-0",
         "createdDate": "2024-06-27T00:00:00.000Z",
         "qtyRemaining": 6.668,
-        "costPerUnit": 151.07378524,
-        "totalCost": 1007.36
+        "costPerUnit": 151.07,
+        "totalCost": 1007.33476
       }
     ]
   },
@@ -246,8 +246,8 @@
     "name": "X IE Physical Gold",
     "type": "etfs",
     "link": "https://es.investing.com/etfs/xgdu?cid=1164630",
-    "prevPrice": 63.27,
-    "currPrice": 64.27,
+    "prevPrice": 63.26,
+    "currPrice": 64.37,
     "lots": [
       {
         "id": "DE000A2T0VU5-2025-07-02T00:00:00.000Z-0",
@@ -271,7 +271,7 @@
     "type": "equities",
     "link": "https://es.investing.com/equities/amper-sa",
     "prevPrice": 0.1736,
-    "currPrice": 0.177,
+    "currPrice": 0.1758,
     "lots": [
       {
         "id": "ES0109260531-2025-08-01T00:00:00.000Z-0",
@@ -295,7 +295,7 @@
     "type": "equities",
     "link": "https://es.investing.com/equities/dogi-international-fabrics-sa",
     "prevPrice": 0.902,
-    "currPrice": 0.928,
+    "currPrice": 0.924,
     "lots": [
       {
         "id": "ES0126962069-2025-08-01T00:00:00.000Z-0",
@@ -312,7 +312,7 @@
     "type": "equities",
     "link": "https://es.investing.com/equities/ohl",
     "prevPrice": 0.349,
-    "currPrice": 0.355,
+    "currPrice": 0.354,
     "lots": [
       {
         "id": "ES0142090317-2025-08-01T00:00:00.000Z-0",

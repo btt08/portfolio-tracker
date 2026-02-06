@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { IPortfolio, IRawPortfolioItem } from '../interfaces/portfolio.interface';
+import { IPortfolio, IStoredPortfolioItem, ILot } from '../interfaces/portfolio.interface';
 import { PortfolioMapperService } from './portfolio-mapper.service';
 import type { Page } from 'puppeteer';
 import { setTimeout } from 'node:timers/promises';
@@ -10,8 +10,8 @@ const { addExtra } = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 
 class PortfolioService {
-  private rawPortfolio: IRawPortfolioItem[] = [];
-  private portfolio: IPortfolio | null = null;
+  private rawPortfolio: IStoredPortfolioItem[] = [];
+  private mappedPortfolio: IPortfolio | null = null;
   private dataPath: string;
   private browser: any = null;
   private mapper = new PortfolioMapperService();
@@ -31,12 +31,12 @@ class PortfolioService {
   private loadFromFile(): void {
     try {
       const data = fs.readFileSync(this.dataPath, 'utf-8');
-      this.rawPortfolio = JSON.parse(data) as IRawPortfolioItem[];
-      this.portfolio = this.mapper.mapRawPortfolio(this.rawPortfolio);
+      this.rawPortfolio = JSON.parse(data) as IStoredPortfolioItem[];
+      this.mappedPortfolio = this.mapper.mapStoredToPortfolio(this.rawPortfolio);
     } catch (error) {
       console.error('Error loading portfolio from file:', error);
       this.rawPortfolio = [];
-      this.portfolio = null;
+      this.mappedPortfolio = null;
     }
   }
 
@@ -50,19 +50,19 @@ class PortfolioService {
   }
 
   public getPortfolio(): IPortfolio | null {
-    return this.portfolio;
+    return this.mappedPortfolio;
   }
 
-  public addPortfolioItem(item: IRawPortfolioItem): void {
+  public addPortfolioItem(item: IStoredPortfolioItem): void {
     this.rawPortfolio.push(item);
-    this.portfolio = this.mapper.mapRawPortfolio(this.rawPortfolio);
+    this.mappedPortfolio = this.mapper.mapStoredToPortfolio(this.rawPortfolio);
   }
 
-  public addRecordToItem(isin: string, record: any): boolean {
+  public addLotToItem(isin: string, lot: ILot): boolean {
     const item = this.rawPortfolio.find(item => item.isin === isin);
     if (!item) return false;
-    item.records.push(record);
-    this.portfolio = this.mapper.mapRawPortfolio(this.rawPortfolio);
+    item.lots.push(lot);
+    this.mappedPortfolio = this.mapper.mapStoredToPortfolio(this.rawPortfolio);
     return true;
   }
 
@@ -103,7 +103,6 @@ class PortfolioService {
     }
 
     try {
-      const baseURL = 'https://es.investing.com';
       const concurrency = 10;
 
       for (let i = 0; i < this.rawPortfolio.length; i += concurrency) {
@@ -112,13 +111,12 @@ class PortfolioService {
           const page = await this.browser.newPage();
           await page.setViewport({ width: 1280, height: 720 });
           try {
-            const url = `${baseURL}/${asset.type}/${asset.link}`;
-            const price = await this.getInvestingPrice(page, url);
+            const price = await this.getInvestingPrice(page, asset.link);
             if (price && price.length === 2 && !isNaN(price[0]) && !isNaN(price[1])) {
               asset.prevPrice = this.math.safeSubtract(price[1], price[0]);
               asset.currPrice = price[1];
               console.log(
-                `${asset.name}: ${asset.prevPrice} -> ${price[1]} (${price[0]})  ----- ${url}`
+                `${asset.name}: ${asset.prevPrice} -> ${price[1]} (${price[0]})  ----- ${asset.link}`
               );
             } else {
               console.log(`Price not found for ${asset.name}, skipping.`);
@@ -129,7 +127,7 @@ class PortfolioService {
         });
         await Promise.all(promises);
       }
-      this.portfolio = this.mapper.mapRawPortfolio(this.rawPortfolio);
+      this.mappedPortfolio = this.mapper.mapStoredToPortfolio(this.rawPortfolio);
       console.log('Prices refreshed successfully');
     } catch (error) {
       console.error('Error refreshing prices:', error);

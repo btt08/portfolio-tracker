@@ -1,22 +1,20 @@
-import { LotService } from './lot.service';
 import { SafeMathService } from './safe-math.service';
 import {
   IPortfolio,
   IPortfolioItem,
   IPortfolioSummary,
-  IRawPortfolioItem,
+  IStoredPortfolioItem,
 } from '../interfaces/portfolio.interface';
 
 export class PortfolioMapperService {
-  private lotService = new LotService();
   private math = new SafeMathService();
 
-  mapRawPortfolio(rawData: IRawPortfolioItem[]): IPortfolio {
-    const items = this.lotService.processRawData(rawData);
+  mapStoredToPortfolio(storedData: IStoredPortfolioItem[]): IPortfolio {
+    const mappedItems = storedData.map(item => this.mapStoredItemToPortfolioItem(item));
 
-    const totalInvested = this.calcTotalInvested(items);
-    const marketValue = this.calcTotalMarketValue(items);
-    const prevMarketValue = this.calcPrevMarketValue(items);
+    const totalInvested = this.calcTotalInvested(mappedItems);
+    const marketValue = this.calcTotalMarketValue(mappedItems);
+    const prevMarketValue = this.calcPrevMarketValue(mappedItems);
     const totalChangeEUR = this.calcTotalChangeEUR(totalInvested, marketValue);
     const totalChangePerc = this.calcPercChange(totalInvested, marketValue);
     const totalDailyEUR = this.calcTotalDailyEUR(prevMarketValue, marketValue);
@@ -31,7 +29,51 @@ export class PortfolioMapperService {
       portfolioDailyChangePerc: totalDailyPerc,
     };
 
-    return { summary, items };
+    return { summary, items: mappedItems };
+  }
+
+  private mapStoredItemToPortfolioItem(stored: IStoredPortfolioItem): IPortfolioItem {
+    const numShares = stored.lots.reduce((s, l) => this.math.safeAdd(s, l.qtyRemaining), 0);
+    const totalInvested = stored.lots.reduce((s, l) => {
+      const value = l.qtyRemaining > 0 ? this.math.safeAdd(s, l.totalCost) : s;
+
+      return value;
+    }, 0);
+
+    const marketValue = this.math.safeMultiply(stored.currPrice || 0, numShares);
+    const avgPrice = numShares === 0 ? 0 : this.math.safeDivide(totalInvested, numShares);
+    const prevMarketValue = this.math.safeMultiply(stored.prevPrice || 0, numShares);
+    const unrealizedPnl = stored.lots.reduce(
+      (acc, lot) =>
+        this.math.safeAdd(
+          acc,
+          this.math.safeMultiply(
+            lot.qtyRemaining,
+            this.math.safeSubtract(stored.currPrice || 0, lot.costPerUnit)
+          )
+        ),
+      0
+    );
+
+    return {
+      isin: stored.isin,
+      name: stored.name,
+      type: stored.type,
+      link: stored.link || '',
+      numShares,
+      totalInvested,
+      marketValue,
+      prevPrice: stored.prevPrice || 0,
+      currPrice: stored.currPrice || 0,
+      avgPrice,
+      dailyChangeEUR: this.calcDailyChangeEUR(prevMarketValue, marketValue),
+      dailyChangePerc: this.calcPercChange(prevMarketValue, marketValue),
+      totalChangeEUR: this.calcTotalChangeEUR(totalInvested, marketValue),
+      totalChangePerc: this.calcPercChange(totalInvested, marketValue),
+      lots: stored.lots,
+      realizedPnl: 0, // TODO: calculate if needed
+      unrealizedPnl,
+    };
   }
 
   private calcTotalChangeEUR(invested: number, currentValue: number): number {

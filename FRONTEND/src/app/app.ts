@@ -2,7 +2,6 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
 import { PortfolioRestService } from './services/portfolio-rest';
-import { PortfolioMapperService } from './services/portfolio-mapper';
 import { IPortfolio, IPortfolioSummary } from './interfaces/portfolio.interface';
 import { SharesTable } from './components/shares-table/shares-table';
 
@@ -14,7 +13,6 @@ import { SharesTable } from './components/shares-table/shares-table';
 })
 export class App implements OnInit {
   private portfolioService = inject(PortfolioRestService);
-  private portfolioMapper = inject(PortfolioMapperService);
 
   protected readonly title = signal('portfolio-frontend');
   portfolioData = signal<IPortfolio>({

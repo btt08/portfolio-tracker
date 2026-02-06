@@ -6,8 +6,10 @@ export interface IRecord {
   pricePerShare: number;
   commission: number;
   transferTo?: string;
+  transferFrom?: string;
   totalCost?: number;
   date?: string;
+  originalTotalCost?: number;
 }
 
 export interface IRawPortfolioItem {
@@ -18,6 +20,12 @@ export interface IRawPortfolioItem {
   prevPrice: number;
   currPrice: number;
   records: IRecord[];
+}
+
+export interface IItemMap {
+  raw: IRawPortfolioItem;
+  lots: ILot[];
+  realizedPnl: number;
 }
 
 export interface ILot {
@@ -31,6 +39,7 @@ export interface ILot {
 export interface IPortfolioItem {
   isin: string;
   name: string;
+  type: string;
   link: string;
   numShares: number;
   totalInvested: number;
@@ -42,7 +51,6 @@ export interface IPortfolioItem {
   dailyChangePerc: number;
   totalChangeEUR: number;
   totalChangePerc: number;
-  records: IRecord[];
   lots: ILot[];
   realizedPnl: number;
   unrealizedPnl: number;
@@ -62,8 +70,12 @@ export interface IPortfolio {
   summary: IPortfolioSummary;
 }
 
-export interface IItemMap {
-  raw: IRawPortfolioItem;
+export interface IStoredPortfolioItem {
+  isin: string;
+  name: string;
+  type: string;
+  link: string;
+  prevPrice: number;
+  currPrice: number;
   lots: ILot[];
-  realizedPnl: number;
 }

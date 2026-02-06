@@ -1,33 +1,3 @@
-export interface IRawRecord {
-  date: string;
-  type: string;
-  numShares: number;
-  pricePerShare: number;
-  commission: number;
-  // Optional target ISIN when the record represents a transfer to another fund
-  transferTo?: string;
-}
-
-export interface IRawPortfolioItem {
-  isin: string;
-  name: string;
-  type: string;
-  link: string;
-  prevPrice: number;
-  currPrice: number;
-  records: IRawRecord[];
-}
-
-export interface IItemMap {
-  raw: IRawPortfolioItem;
-  lots: ILot[];
-  realizedPnl: number;
-}
-
-export interface IRecord extends IRawRecord {
-  totalCost: number;
-}
-
 export interface ILot {
   id: string;
   createdDate: string;
@@ -39,6 +9,7 @@ export interface ILot {
 export interface IPortfolioItem {
   isin: string;
   name: string;
+  type: string;
   link: string;
   numShares: number;
   totalInvested: number;
@@ -50,10 +21,9 @@ export interface IPortfolioItem {
   dailyChangePerc: number;
   totalChangeEUR: number;
   totalChangePerc: number;
-  records: IRecord[];
-  lots?: ILot[];
-  realizedPnl?: number;
-  unrealizedPnl?: number;
+  lots: ILot[];
+  realizedPnl: number;
+  unrealizedPnl: number;
 }
 
 export interface IPortfolioSummary {

@@ -1,6 +1,81 @@
 [
   {
-    "name": "iShares Developed",
+    "name": "iShares Developed class D",
+    "isin": "IE000ZYRH0Q7",
+    "type": "funds",
+    "link": "ie000zyrh0q7",
+    "currPrice": 10.758,
+    "records": [
+      {
+        "orderDate": "2025-07-01",
+        "executionDate": "2025-07-04",
+        "type": "buy",
+        "numShares": 109.82,
+        "pricePerShare": 22.763,
+        "commission": 0
+      },
+      {
+        "orderDate": "2025-07-08",
+        "executionDate": "2025-07-10",
+        "type": "buy",
+        "numShares": 109.63,
+        "pricePerShare": 22.803,
+        "commission": 0
+      },
+      {
+        "orderDate": "2025-08-05",
+        "executionDate": "2025-08-08",
+        "type": "buy",
+        "numShares": 12.91,
+        "pricePerShare": 23.237,
+        "commission": 0
+      },
+      {
+        "orderDate": "2025-08-29",
+        "executionDate": "2025-09-03",
+        "type": "buy",
+        "numShares": 25.59,
+        "pricePerShare": 23.438,
+        "commission": 0
+      },
+      {
+        "orderDate": "2025-09-03",
+        "executionDate": "2025-09-06",
+        "type": "buy",
+        "numShares": 21,
+        "pricePerShare": 23.562,
+        "commission": 0
+      },
+      {
+        "orderDate": "2025-09-30",
+        "executionDate": "2025-10-03",
+        "type": "buy",
+        "numShares": 20.48,
+        "pricePerShare": 24.405,
+        "commission": 0
+      },
+      {
+        "orderDate": "2025-10-31",
+        "executionDate": "2025-11-04",
+        "type": "buy",
+        "numShares": 28,
+        "pricePerShare": 25.201,
+        "commission": 0
+      },
+      {
+        "orderDate": "2025-12-05",
+        "executionDate": "2025-12-09",
+        "type": "transfer_out",
+        "transferTo": "IE000ZYRH0Q7",
+        "numShares": 327.43,
+        "pricePerShare": 25.06,
+        "commission": 0
+      }
+    ],
+    "prevPrice": 10.76
+  },
+  {
+    "name": "iShares Developed class S",
     "isin": "IE000ZYRH0Q7",
     "type": "funds",
     "link": "ie000zyrh0q7",
@@ -17,9 +92,11 @@
       {
         "orderDate": "2025-12-09",
         "executionDate": "2025-12-12",
-        "type": "buy",
+        "type": "transfer_in",
+        "transferFrom": "IE000ZYRH0Q7",
         "numShares": 769.59,
         "pricePerShare": 10.662,
+        "originalTotalCost": 7593.49,
         "commission": 0
       },
       {
@@ -117,9 +194,11 @@
       {
         "orderDate": "2026-01-13",
         "executionDate": "2026-01-22",
-        "type": "buy",
-        "numShares": 848.3871,
+        "type": "transfer_in",
+        "transferFrom": "ES0128520006",
+        "numShares": 848.3870759,
         "pricePerShare": 1.187,
+        "originalTotalCost": 1007.36,
         "commission": 0
       }
     ],
@@ -136,9 +215,11 @@
       {
         "orderDate": "2026-01-21",
         "executionDate": "2026-01-22",
-        "type": "buy",
+        "type": "transfer_in",
+        "transferFrom": "ES0128520006",
         "numShares": 13.2638,
         "pricePerShare": 75.95,
+        "originalTotalCost": 1007.36,
         "commission": 0
       }
     ]
@@ -194,26 +275,29 @@
       {
         "orderDate": "2026-01-13",
         "executionDate": "2026-01-20",
-        "type": "transfer",
+        "type": "transfer_out",
         "numShares": 80,
         "pricePerShare": 12.592,
-        "commission": 0
+        "commission": 0,
+        "transferTo": "ES0165243025"
       },
       {
         "orderDate": "2026-01-13",
         "executionDate": "2026-01-20",
-        "type": "transfer",
+        "type": "transfer_out",
         "numShares": 80,
         "pricePerShare": 12.592,
-        "commission": 0
+        "commission": 0,
+        "transferTo": "LU2145461757"
       },
       {
         "orderDate": "2026-01-13",
         "executionDate": "2026-01-20",
-        "type": "transfer",
+        "type": "transfer_out",
         "numShares": 80,
         "pricePerShare": 12.592,
-        "commission": 0
+        "commission": 0,
+        "transferTo": "LU1953238794"
       }
     ]
   },
@@ -228,9 +312,11 @@
       {
         "orderDate": "2026-01-21",
         "executionDate": "2024-06-27",
-        "type": "buy",
+        "type": "transfer_in",
+        "transferFrom": "ES0128520006",
         "numShares": 6.668,
         "pricePerShare": 151.07,
+        "originalTotalCost": 1007.36,
         "commission": 0
       }
     ]

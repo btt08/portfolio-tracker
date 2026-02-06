@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
 import portfolioService from '../services/portfolio.service';
-import { IRawPortfolioItem } from '../interfaces/portfolio.interface';
+import { IStoredPortfolioItem, ILot } from '../interfaces/portfolio.interface';
 
 export const addPortfolioItem = (req: Request, res: Response): void => {
   try {
-    const newItem: IRawPortfolioItem = req.body;
+    const newItem: IStoredPortfolioItem = req.body;
     portfolioService.addPortfolioItem(newItem);
     res.status(201).json({ success: true, data: newItem });
   } catch (error) {
@@ -23,11 +23,11 @@ export const getPortfolio = (req: Request, res: Response): void => {
   }
 };
 
-export const addRecordToItem = (req: Request, res: Response): void => {
+export const addLotToItem = (req: Request, res: Response): void => {
   try {
     const { isin } = req.params;
-    const newRecord = req.body;
-    const success = portfolioService.addRecordToItem(isin as string, newRecord);
+    const newLot: ILot = req.body;
+    const success = portfolioService.addLotToItem(isin as string, newLot);
     if (!success) {
       res.status(404).json({ success: false, message: 'Item not found' });
       return;
@@ -35,7 +35,7 @@ export const addRecordToItem = (req: Request, res: Response): void => {
     const portfolio = portfolioService.getPortfolio();
     res.status(200).json({ success: true, data: portfolio });
   } catch (error) {
-    console.error('Error adding record to item:', error);
+    console.error('Error adding lot to item:', error);
     res.status(500).json({ success: false, message: 'Server Error' });
   }
 };
