@@ -2,6 +2,7 @@
   <table>
     <thead>
       <tr>
+        <th class="toggle-col"></th>
         <th>ISIN</th>
         <th>Name</th>
         <th>Weight (%)</th>
@@ -19,7 +20,10 @@
     </thead>
     <tbody>
       @for (item of data(); track item.isin) {
-        <tr>
+        <tr class="item-row" [class.expanded]="isExpanded(item.isin)">
+          <td class="toggle-cell" (click)="toggleExpand(item.isin)">
+            <span class="toggle-icon" [class.expanded]="isExpanded(item.isin)">▶</span>
+          </td>
           <td class="accent">
             <a href="{{ item.link }}" rel="noopener noreferrer" target="_blank">
               {{ item.isin }}
@@ -72,8 +76,93 @@
             {{ item.totalChangePerc | number: '1.2-2' : 'de-DE' }}%
           </td>
         </tr>
+        @if (isExpanded(item.isin)) {
+          <tr class="lot-detail-row">
+            <td colspan="14">
+              <div class="lot-container">
+                <table class="lot-table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Qty</th>
+                      <th>Cost/Unit</th>
+                      <th>Total Cost</th>
+                      <th>Current Value</th>
+                      <th>P/L (€)</th>
+                      <th>P/L (%)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (lot of activeLots(item.lots); track lot.id) {
+                      <tr>
+                        <td>{{ lot.createdDate | date: 'yyyy-MM-dd' }}</td>
+                        <td>{{ lot.qtyRemaining | number: '1.2-4' : 'de-DE' }}</td>
+                        <td>{{ lot.costPerUnit | number: '1.2-4' : 'de-DE' }}</td>
+                        <td>{{ lot.totalCost | number: '1.2-2' : 'de-DE' }}</td>
+                        <td>
+                          {{
+                            lotCurrentValue(lot, item.currPrice)
+                              | number: '1.2-2' : 'de-DE'
+                          }}
+                        </td>
+                        <td
+                          [class.positive]="lotPnl(lot, item.currPrice) >= 0"
+                          [class.negative]="lotPnl(lot, item.currPrice) < 0">
+                          {{ lotPnl(lot, item.currPrice) | number: '1.2-2' : 'de-DE' }}
+                        </td>
+                        <td
+                          [class.positive]="lotPnlPerc(lot, item.currPrice) >= 0"
+                          [class.negative]="lotPnlPerc(lot, item.currPrice) < 0">
+                          {{
+                            lotPnlPerc(lot, item.currPrice) | number: '1.2-2' : 'de-DE'
+                          }}%
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+                <div class="add-lot-form">
+                  <div class="add-lot-fields">
+                    <label>
+                      Date
+                      <input type="date" [(ngModel)]="lotForms[item.isin].createdDate" />
+                    </label>
+                    <label>
+                      Qty
+                      <input
+                        type="number"
+                        [(ngModel)]="lotForms[item.isin].qtyRemaining"
+                        step="any"
+                        min="0" />
+                    </label>
+                    <label>
+                      Cost/Unit
+                      <input
+                        type="number"
+                        [(ngModel)]="lotForms[item.isin].costPerUnit"
+                        step="any"
+                        min="0" />
+                    </label>
+                    <label>
+                      Total Cost
+                      <input
+                        type="text"
+                        [value]="computedTotalCost(item.isin) | number: '1.2-2' : 'de-DE'"
+                        disabled />
+                    </label>
+                    <button
+                      class="add-lot-btn"
+                      (click)="addLot(item)"
+                      [disabled]="!isFormValid(item.isin) || submitting[item.isin]">
+                      {{ submitting[item.isin] ? 'Adding...' : 'Add' }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+        }
       }
     </tbody>
-    <tbody class="holding-list"></tbody>
   </table>
 </div>

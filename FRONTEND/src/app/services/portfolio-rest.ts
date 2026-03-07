@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { IResponse } from '../interfaces/portfolio.interface';
+import { ILot, IResponse } from '../interfaces/portfolio.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -18,6 +18,12 @@ export class PortfolioRestService {
   refreshPortfolio(): Observable<IResponse> {
     const refreshUrl = `${this.baseUrl}/refresh`;
     return this.http.get<IResponse>(refreshUrl).pipe(catchError(this.handleError));
+  }
+
+  addLot(isin: string, lot: ILot): Observable<IResponse> {
+    return this.http
+      .post<IResponse>(`${this.baseUrl}/${isin}/add`, lot)
+      .pipe(catchError(this.handleError));
   }
 
   private handleError(error: HttpErrorResponse) {

@@ -46,7 +46,7 @@
   },
   {
     "isin": "IE000ZYRH0Q7",
-    "name": "iShares Developed class S",
+    "name": "iShares Developed S",
     "type": "funds",
     "link": "https://es.investing.com/funds/ie000zyrh0q7",
     "prevPrice": 10.895,
@@ -105,8 +105,8 @@
         "id": "IE000ZYRH0Q7-2025-12-03T00:00:00.000Z-0",
         "createdDate": "2025-12-03T00:00:00.000Z",
         "qtyRemaining": 46.91,
-        "costPerUnit": 10.657,
-        "totalCost": 499.91987
+        "costPerUnit": 10.6587,
+        "totalCost": 500
       },
       {
         "id": "IE000ZYRH0Q7-2025-12-31T00:00:00.000Z-1",
@@ -230,8 +230,8 @@
         "totalCost": 1007.36
       },
       {
-        "id": "LU2145461757-2026-03-01T12:29:34.000Z-1",
-        "createdDate": "2026-03-01T12:29:34.000Z",
+        "id": "LU2145461757-2026-03-03T00:00:00.000Z-1",
+        "createdDate": "2026-03-03T00:00:00.000Z",
         "qtyRemaining": 5,
         "costPerUnit": 86.04,
         "totalCost": 430.2
@@ -298,15 +298,15 @@
         "id": "ES0109260531-2025-08-01T00:00:00.000Z-0",
         "createdDate": "2025-08-01T00:00:00.000Z",
         "qtyRemaining": 3500,
-        "costPerUnit": 0.14117429,
-        "totalCost": 494.11
+        "costPerUnit": 0.1436,
+        "totalCost": 506.71
       },
       {
         "id": "ES0109260531-2025-08-06T00:00:00.000Z-1",
         "createdDate": "2025-08-06T00:00:00.000Z",
         "qtyRemaining": 3500,
-        "costPerUnit": 0.14117429,
-        "totalCost": 494.11
+        "costPerUnit": 0.1368,
+        "totalCost": 482.91
       }
     ]
   },
@@ -322,8 +322,8 @@
         "id": "ES0126962069-2025-08-01T00:00:00.000Z-0",
         "createdDate": "2025-08-01T00:00:00.000Z",
         "qtyRemaining": 1070,
-        "costPerUnit": 0.47384112,
-        "totalCost": 507.01
+        "costPerUnit": 0.468,
+        "totalCost": 504.87
       }
     ]
   },
@@ -339,7 +339,7 @@
         "id": "ES0142090317-2025-08-01T00:00:00.000Z-0",
         "createdDate": "2025-08-01T00:00:00.000Z",
         "qtyRemaining": 1500,
-        "costPerUnit": 0.33274,
+        "costPerUnit": 0.33,
         "totalCost": 499.11
       }
     ]

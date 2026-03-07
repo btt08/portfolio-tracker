@@ -5,6 +5,7 @@ import { PortfolioRestService } from './services/portfolio-rest';
 import { IPortfolio, IPortfolioSummary } from './interfaces/portfolio.interface';
 import { SharesTable } from './components/shares-table/shares-table';
 
+
 @Component({
   selector: 'app-root',
   imports: [DecimalPipe, RouterOutlet, SharesTable],
@@ -60,5 +61,9 @@ export class App implements OnInit {
         this.isRefreshing.set(false);
       },
     });
+  }
+
+  onPortfolioUpdated(portfolio: IPortfolio): void {
+    this.portfolioData.set(portfolio);
   }
 }

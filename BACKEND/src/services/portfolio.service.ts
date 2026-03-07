@@ -63,6 +63,7 @@ class PortfolioService {
     if (!item) return false;
     item.lots.push(lot);
     this.mappedPortfolio = this.mapper.mapStoredToPortfolio(this.rawPortfolio);
+    this.saveToFile();
     return true;
   }
 
