@@ -16,6 +16,7 @@ export class PortfolioMapperService {
     const totalInvested = this.calcTotalInvested(mappedItems);
     const marketValue = this.calcTotalMarketValue(mappedItems);
     const marketValueForWeights = this.calcTotalMarketValue(mappedItems, excludedIsins);
+    const totalInvestedForReturns = this.calcTotalInvested(mappedItems, excludedIsins);
 
     mappedItems.forEach(item => {
       if (excludedIsins.includes(item.isin)) {
@@ -26,11 +27,12 @@ export class PortfolioMapperService {
       }
     });
 
-    const prevMarketValue = this.calcPrevMarketValue(mappedItems);
-    const totalChangeEUR = this.calcTotalChangeEUR(totalInvested, marketValue);
-    const totalChangePerc = this.calcPercChange(totalInvested, marketValue);
-    const totalDailyEUR = this.calcTotalDailyEUR(prevMarketValue, marketValue);
-    const totalDailyPerc = this.calcPercChange(prevMarketValue, marketValue);
+    const prevMarketValueForReturns = this.calcPrevMarketValue(mappedItems, excludedIsins);
+
+    const totalChangeEUR = this.calcTotalChangeEUR(totalInvestedForReturns, marketValueForWeights);
+    const totalChangePerc = this.calcPercChange(totalInvestedForReturns, marketValueForWeights);
+    const totalDailyEUR = this.calcTotalDailyEUR(prevMarketValueForReturns, marketValueForWeights);
+    const totalDailyPerc = this.calcPercChange(prevMarketValueForReturns, marketValueForWeights);
 
     const summary: IPortfolioSummary = {
       portfolioInvested: totalInvested,
@@ -97,8 +99,11 @@ export class PortfolioMapperService {
     return this.math.safeSubtract(currentMarketValue, prevMarketValue);
   }
 
-  private calcTotalInvested(items: IPortfolioItem[]): number {
-    return items.reduce((total, item) => this.math.safeAdd(total, item.totalInvested), 0);
+  private calcTotalInvested(items: IPortfolioItem[], excludedIsins: string[] = []): number {
+    return items.reduce((total, item) => {
+      if (excludedIsins.includes(item.isin)) return total;
+      return this.math.safeAdd(total, item.totalInvested);
+    }, 0);
   }
 
   private calcTotalMarketValue(items: IPortfolioItem[], excludedIsins: string[] = []): number {
@@ -109,12 +114,11 @@ export class PortfolioMapperService {
     );
   }
 
-  private calcPrevMarketValue(items: IPortfolioItem[]): number {
-    return items.reduce(
-      (total, item) =>
-        this.math.safeAdd(total, this.math.safeMultiply(item.prevPrice, item.numShares)),
-      0
-    );
+  private calcPrevMarketValue(items: IPortfolioItem[], excludedIsins: string[] = []): number {
+    return items.reduce((total, item) => {
+      if (excludedIsins.includes(item.isin)) return total;
+      return this.math.safeAdd(total, this.math.safeMultiply(item.prevPrice, item.numShares));
+    }, 0);
   }
 
   private calcTotalDailyEUR(prevMarketValue: number, marketValue: number): number {
