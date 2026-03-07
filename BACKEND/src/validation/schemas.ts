@@ -5,6 +5,7 @@ export const LotSchema = z.object({
   createdDate: z.string(),
   qtyRemaining: z.number().positive(),
   costPerUnit: z.number().positive(),
+  commission: z.number().min(0),
   totalCost: z.number().positive(),
 });
 

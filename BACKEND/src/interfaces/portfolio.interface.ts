@@ -33,6 +33,7 @@ export interface ILot {
   createdDate: string;
   qtyRemaining: number;
   costPerUnit: number;
+  commission: number;
   totalCost: number;
 }
 

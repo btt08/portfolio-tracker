@@ -12,35 +12,40 @@
         "createdDate": "2025-07-08T00:00:00.000Z",
         "qtyRemaining": 161.5324,
         "costPerUnit": 12.452,
-        "totalCost": 2011.4014448
+        "totalCost": 2011.4014448,
+        "commission": 0
       },
       {
         "id": "ES0128520006-2025-07-11T00:00:00.000Z-1",
         "createdDate": "2025-07-11T00:00:00.000Z",
         "qtyRemaining": 200.7293,
         "costPerUnit": 12.455,
-        "totalCost": 2500.0834315
+        "totalCost": 2500.0834315,
+        "commission": 0
       },
       {
         "id": "ES0128520006-2025-08-07T00:00:00.000Z-2",
         "createdDate": "2025-08-07T00:00:00.000Z",
         "qtyRemaining": 8.0159,
         "costPerUnit": 12.475,
-        "totalCost": 99.9983525
+        "totalCost": 99.9983525,
+        "commission": 0
       },
       {
         "id": "ES0128520006-2025-08-30T00:00:00.000Z-3",
         "createdDate": "2025-08-30T00:00:00.000Z",
         "qtyRemaining": 16.0122,
         "costPerUnit": 12.49,
-        "totalCost": 199.992378
+        "totalCost": 199.992378,
+        "commission": 0
       },
       {
         "id": "ES0128520006-2025-10-02T00:00:00.000Z-4",
         "createdDate": "2025-10-02T00:00:00.000Z",
         "qtyRemaining": 15.9813,
         "costPerUnit": 12.515,
-        "totalCost": 200.0059695
+        "totalCost": 200.0059695,
+        "commission": 0
       }
     ]
   },
@@ -57,70 +62,80 @@
         "createdDate": "2025-07-04T00:00:00.000Z",
         "qtyRemaining": 0,
         "costPerUnit": 22.763,
-        "totalCost": 0
+        "totalCost": 0,
+        "commission": 0
       },
       {
         "id": "IE000ZYRH0Q7-2025-07-10T00:00:00.000Z-1",
         "createdDate": "2025-07-10T00:00:00.000Z",
         "qtyRemaining": 0,
         "costPerUnit": 22.803,
-        "totalCost": 0
+        "totalCost": 0,
+        "commission": 0
       },
       {
         "id": "IE000ZYRH0Q7-2025-08-08T00:00:00.000Z-2",
         "createdDate": "2025-08-08T00:00:00.000Z",
         "qtyRemaining": 0,
         "costPerUnit": 23.237,
-        "totalCost": 0
+        "totalCost": 0,
+        "commission": 0
       },
       {
         "id": "IE000ZYRH0Q7-2025-09-03T00:00:00.000Z-3",
         "createdDate": "2025-09-03T00:00:00.000Z",
         "qtyRemaining": 0,
         "costPerUnit": 23.438,
-        "totalCost": 0
+        "totalCost": 0,
+        "commission": 0
       },
       {
         "id": "IE000ZYRH0Q7-2025-09-06T00:00:00.000Z-4",
         "createdDate": "2025-09-06T00:00:00.000Z",
         "qtyRemaining": 0,
         "costPerUnit": 23.562,
-        "totalCost": 0
+        "totalCost": 0,
+        "commission": 0
       },
       {
         "id": "IE000ZYRH0Q7-2025-10-03T00:00:00.000Z-5",
         "createdDate": "2025-10-03T00:00:00.000Z",
         "qtyRemaining": 0,
         "costPerUnit": 24.405,
-        "totalCost": 0
+        "totalCost": 0,
+        "commission": 0
       },
       {
         "id": "IE000ZYRH0Q7-2025-11-04T00:00:00.000Z-6",
         "createdDate": "2025-11-04T00:00:00.000Z",
         "qtyRemaining": 0,
         "costPerUnit": 25.201,
-        "totalCost": 0
+        "totalCost": 0,
+        "commission": 0
       },
       {
         "id": "IE000ZYRH0Q7-2025-12-03T00:00:00.000Z-0",
         "createdDate": "2025-12-03T00:00:00.000Z",
         "qtyRemaining": 46.91,
         "costPerUnit": 10.6587,
-        "totalCost": 500
+        "totalCost": 500,
+        "commission": 0
       },
       {
         "id": "IE000ZYRH0Q7-2025-12-31T00:00:00.000Z-1",
         "createdDate": "2025-12-31T00:00:00.000Z",
         "qtyRemaining": 66,
         "costPerUnit": 10.698,
-        "totalCost": 706.068
+        "totalCost": 706.068,
+        "commission": 0
       },
       {
         "id": "IE000ZYRH0Q7-2025-12-12T00:00:00.000Z-9",
         "createdDate": "2025-12-12T00:00:00.000Z",
         "qtyRemaining": 769.59,
         "costPerUnit": 9.86692914,
-        "totalCost": 7593.49
+        "totalCost": 7593.49,
+        "commission": 0
       }
     ]
   },
@@ -137,56 +152,64 @@
         "createdDate": "2025-07-04T00:00:00.000Z",
         "qtyRemaining": 72.3,
         "costPerUnit": 13.831,
-        "totalCost": 999.9813
+        "totalCost": 999.9813,
+        "commission": 0
       },
       {
         "id": "IE00BYWYCC39-2025-08-08T00:00:00.000Z-1",
         "createdDate": "2025-08-08T00:00:00.000Z",
         "qtyRemaining": 6.99,
         "costPerUnit": 14.295,
-        "totalCost": 99.92205
+        "totalCost": 99.92205,
+        "commission": 0
       },
       {
         "id": "IE00BYWYCC39-2025-09-02T00:00:00.000Z-2",
         "createdDate": "2025-09-02T00:00:00.000Z",
         "qtyRemaining": 14.03,
         "costPerUnit": 14.249,
-        "totalCost": 199.91347
+        "totalCost": 199.91347,
+        "commission": 0
       },
       {
         "id": "IE00BYWYCC39-2025-09-06T00:00:00.000Z-3",
         "createdDate": "2025-09-06T00:00:00.000Z",
         "qtyRemaining": 15,
         "costPerUnit": 14.329,
-        "totalCost": 214.935
+        "totalCost": 214.935,
+        "commission": 0
       },
       {
         "id": "IE00BYWYCC39-2025-10-03T00:00:00.000Z-4",
         "createdDate": "2025-10-03T00:00:00.000Z",
         "qtyRemaining": 12.96,
         "costPerUnit": 15.422,
-        "totalCost": 199.86912
+        "totalCost": 199.86912,
+        "commission": 0
       },
       {
         "id": "IE00BYWYCC39-2025-11-04T00:00:00.000Z-5",
         "createdDate": "2025-11-04T00:00:00.000Z",
         "qtyRemaining": 20,
         "costPerUnit": 16.161,
-        "totalCost": 323.22
+        "totalCost": 323.22,
+        "commission": 0
       },
       {
         "id": "IE00BYWYCC39-2025-12-03T00:00:00.000Z-6",
         "createdDate": "2025-12-03T00:00:00.000Z",
         "qtyRemaining": 25.57,
         "costPerUnit": 15.638,
-        "totalCost": 399.86366
+        "totalCost": 399.86366,
+        "commission": 0
       },
       {
         "id": "IE00BYWYCC39-2025-12-31T00:00:00.000Z-7",
         "createdDate": "2025-12-31T00:00:00.000Z",
         "qtyRemaining": 26,
         "costPerUnit": 15.803,
-        "totalCost": 410.878
+        "totalCost": 410.878,
+        "commission": 0
       }
     ]
   },
@@ -203,14 +226,16 @@
         "createdDate": "2026-01-22T00:00:00.000Z",
         "qtyRemaining": 848.3870759,
         "costPerUnit": 1.18738254,
-        "totalCost": 1007.36
+        "totalCost": 1007.36,
+        "commission": 0
       },
       {
         "id": "ES0165243025-2026-03-01T12:31:19.000Z-1",
         "createdDate": "2026-03-01T12:31:19.000Z",
         "qtyRemaining": 410.3838,
         "costPerUnit": 1.196,
-        "totalCost": 491
+        "totalCost": 491,
+        "commission": 0
       }
     ]
   },
@@ -227,14 +252,16 @@
         "createdDate": "2026-01-22T00:00:00.000Z",
         "qtyRemaining": 13.2638,
         "costPerUnit": 75.94806918,
-        "totalCost": 1007.36
+        "totalCost": 1007.36,
+        "commission": 0
       },
       {
         "id": "LU2145461757-2026-03-03T00:00:00.000Z-1",
         "createdDate": "2026-03-03T00:00:00.000Z",
         "qtyRemaining": 5,
         "costPerUnit": 86.04,
-        "totalCost": 430.2
+        "totalCost": 430.2,
+        "commission": 0
       }
     ]
   },
@@ -251,14 +278,16 @@
         "createdDate": "2024-06-27T00:00:00.000Z",
         "qtyRemaining": 6.668,
         "costPerUnit": 151.07378524,
-        "totalCost": 1007.36
+        "totalCost": 1007.36,
+        "commission": 0
       },
       {
         "id": "LU1953238794-2026-03-01T12:32:36.000Z-1",
         "createdDate": "2026-03-01T12:32:36.000Z",
         "qtyRemaining": 2.75,
         "costPerUnit": 150.96,
-        "totalCost": 415.14
+        "totalCost": 415.14,
+        "commission": 0
       }
     ]
   },
@@ -274,14 +303,16 @@
         "id": "DE000A2T0VU5-2025-07-02T00:00:00.000Z-0",
         "createdDate": "2025-07-02T00:00:00.000Z",
         "qtyRemaining": 25,
-        "costPerUnit": 43.7824,
-        "totalCost": 1094.56
+        "costPerUnit": 43.732,
+        "commission": 1.31,
+        "totalCost": 1094.61
       },
       {
         "id": "DE000A2T0VU5-2025-08-04T00:00:00.000Z-1",
         "createdDate": "2025-08-04T00:00:00.000Z",
         "qtyRemaining": 10,
-        "costPerUnit": 44.754,
+        "costPerUnit": 44.7,
+        "commission": 0.54,
         "totalCost": 447.54
       }
     ]
@@ -299,6 +330,7 @@
         "createdDate": "2025-08-01T00:00:00.000Z",
         "qtyRemaining": 3500,
         "costPerUnit": 0.1436,
+        "commission": 4.11,
         "totalCost": 506.71
       },
       {
@@ -306,6 +338,7 @@
         "createdDate": "2025-08-06T00:00:00.000Z",
         "qtyRemaining": 3500,
         "costPerUnit": 0.1368,
+        "commission": 4.11,
         "totalCost": 482.91
       }
     ]
@@ -323,6 +356,7 @@
         "createdDate": "2025-08-01T00:00:00.000Z",
         "qtyRemaining": 1070,
         "costPerUnit": 0.468,
+        "commission": 4.11,
         "totalCost": 504.87
       }
     ]
@@ -340,6 +374,7 @@
         "createdDate": "2025-08-01T00:00:00.000Z",
         "qtyRemaining": 1500,
         "costPerUnit": 0.33,
+        "commission": 4.11,
         "totalCost": 499.11
       }
     ]

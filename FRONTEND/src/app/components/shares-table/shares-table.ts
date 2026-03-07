@@ -8,6 +8,7 @@ interface NewLotForm {
   createdDate: string;
   qtyRemaining: number | null;
   costPerUnit: number | null;
+  commission: number | null;
 }
 
 @Component({
@@ -33,7 +34,12 @@ export class SharesTable {
     } else {
       current.add(isin);
       if (!this.lotForms[isin]) {
-        this.lotForms[isin] = { createdDate: '', qtyRemaining: null, costPerUnit: null };
+        this.lotForms[isin] = {
+          createdDate: '',
+          qtyRemaining: null,
+          costPerUnit: null,
+          commission: null,
+        };
       }
     }
     this.expandedItems.set(current);
@@ -63,7 +69,9 @@ export class SharesTable {
   computedTotalCost(isin: string): number {
     const form = this.lotForms[isin];
     if (!form?.qtyRemaining || !form?.costPerUnit) return 0;
-    return Math.round(form.qtyRemaining * form.costPerUnit * 100) / 100;
+    const value = form.qtyRemaining * form.costPerUnit;
+    const commission = form.commission ?? 0;
+    return Math.round((value + commission) * 100) / 100;
   }
 
   isFormValid(isin: string): boolean {
@@ -91,6 +99,7 @@ export class SharesTable {
       createdDate,
       qtyRemaining: form.qtyRemaining!,
       costPerUnit: form.costPerUnit!,
+      commission: form.commission ?? 0,
       totalCost,
     };
 
@@ -101,6 +110,7 @@ export class SharesTable {
           createdDate: '',
           qtyRemaining: null,
           costPerUnit: null,
+          commission: null,
         };
         this.submitting[item.isin] = false;
       },

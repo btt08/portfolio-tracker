@@ -57,6 +57,7 @@ class MigrationService {
       createdDate: date,
       qtyRemaining: qty,
       costPerUnit,
+      commission: 0,
       totalCost,
     };
   }
@@ -129,6 +130,7 @@ class MigrationService {
         createdDate: lot.createdDate,
         qtyRemaining: matched,
         costPerUnit: addedCostPerUnit,
+        commission: 0,
         totalCost: addedTotalCost,
       });
     });

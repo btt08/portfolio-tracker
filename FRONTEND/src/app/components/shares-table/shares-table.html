@@ -78,7 +78,7 @@
         </tr>
         @if (isExpanded(item.isin)) {
           <tr class="lot-detail-row">
-            <td colspan="14">
+            <td colspan="15">
               <div class="lot-container">
                 <table class="lot-table">
                   <thead>
@@ -86,8 +86,9 @@
                       <th>Date</th>
                       <th>Qty</th>
                       <th>Cost/Unit</th>
-                      <th>Total Cost</th>
-                      <th>Current Value</th>
+                      <th title="Commissions">Comm</th>
+                      <th title="Total cost">Cost</th>
+                      <th title="Current value">Value</th>
                       <th>P/L (€)</th>
                       <th>P/L (%)</th>
                     </tr>
@@ -98,6 +99,7 @@
                         <td>{{ lot.createdDate | date: 'yyyy-MM-dd' }}</td>
                         <td>{{ lot.qtyRemaining | number: '1.2-4' : 'de-DE' }}</td>
                         <td>{{ lot.costPerUnit | number: '1.2-4' : 'de-DE' }}</td>
+                        <td>{{ lot.commission | number: '1.2-2' : 'de-DE' }}</td>
                         <td>{{ lot.totalCost | number: '1.2-2' : 'de-DE' }}</td>
                         <td>
                           {{
@@ -140,6 +142,14 @@
                       <input
                         type="number"
                         [(ngModel)]="lotForms[item.isin].costPerUnit"
+                        step="any"
+                        min="0" />
+                    </label>
+                    <label>
+                      Commission
+                      <input
+                        type="number"
+                        [(ngModel)]="lotForms[item.isin].commission"
                         step="any"
                         min="0" />
                     </label>
