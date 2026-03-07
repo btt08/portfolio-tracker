@@ -1,0 +1,54 @@
+import path from 'path';
+
+export interface AppConfig {
+  dataPath: string;
+  saveInterval: number;
+  puppeteer: {
+    headless: boolean;
+    args: string[];
+  };
+  server: {
+    port: number;
+  };
+}
+
+export class ConfigService {
+  private config: AppConfig;
+
+  constructor() {
+    this.config = {
+      dataPath: path.resolve(__dirname, '../data/portfolio.json'),
+      saveInterval: 60 * 60 * 1000, // 1 hour
+      puppeteer: {
+        headless: true,
+        args: ['--start-maximized'],
+      },
+      server: {
+        port: parseInt(process.env.PORT || '3000', 10),
+      },
+    };
+  }
+
+  getConfig(): AppConfig {
+    return this.config;
+  }
+
+  get dataPath(): string {
+    return this.config.dataPath;
+  }
+
+  get saveInterval(): number {
+    return this.config.saveInterval;
+  }
+
+  get puppeteerConfig() {
+    return this.config.puppeteer;
+  }
+
+  get serverConfig() {
+    return this.config.server;
+  }
+}
+
+const configService = new ConfigService();
+export default configService;

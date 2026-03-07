@@ -1,14 +1,28 @@
 import { Request, Response } from 'express';
 import portfolioService from '../services/portfolio.service';
 import { IStoredPortfolioItem, ILot } from '../interfaces/portfolio.interface';
+import loggerService from '../services/logger.service';
+import { PortfolioItemInputSchema, LotSchema } from '../validation/schemas';
 
 export const addPortfolioItem = (req: Request, res: Response): void => {
   try {
-    const newItem: IStoredPortfolioItem = req.body;
+    const validation = PortfolioItemInputSchema.safeParse(req.body);
+    if (!validation.success) {
+      res
+        .status(400)
+        .json({ success: false, message: 'Invalid input', errors: validation.error.issues });
+      return;
+    }
+    const newItem: IStoredPortfolioItem = {
+      ...validation.data,
+      lots: [],
+      prevPrice: 0,
+      currPrice: 0,
+    };
     portfolioService.addPortfolioItem(newItem);
     res.status(201).json({ success: true, data: newItem });
   } catch (error) {
-    console.error('Error adding portfolio item:', error);
+    loggerService.error('Error adding portfolio item', error as Error);
     res.status(500).json({ success: false, message: 'Server Error' });
   }
 };
@@ -18,7 +32,7 @@ export const getPortfolio = (req: Request, res: Response): void => {
     const portfolio = portfolioService.getPortfolio();
     res.status(200).json({ success: true, data: portfolio });
   } catch (error) {
-    console.error('Error getting portfolio:', error);
+    loggerService.error('Error getting portfolio', error as Error);
     res.status(500).json({ success: false, message: 'Server Error' });
   }
 };
@@ -26,7 +40,14 @@ export const getPortfolio = (req: Request, res: Response): void => {
 export const addLotToItem = (req: Request, res: Response): void => {
   try {
     const { isin } = req.params;
-    const newLot: ILot = req.body;
+    const validation = LotSchema.safeParse(req.body);
+    if (!validation.success) {
+      res
+        .status(400)
+        .json({ success: false, message: 'Invalid lot data', errors: validation.error.issues });
+      return;
+    }
+    const newLot: ILot = validation.data;
     const success = portfolioService.addLotToItem(isin as string, newLot);
     if (!success) {
       res.status(404).json({ success: false, message: 'Item not found' });
@@ -35,13 +56,13 @@ export const addLotToItem = (req: Request, res: Response): void => {
     const portfolio = portfolioService.getPortfolio();
     res.status(200).json({ success: true, data: portfolio });
   } catch (error) {
-    console.error('Error adding lot to item:', error);
+    loggerService.error('Error adding lot to item', error as Error);
     res.status(500).json({ success: false, message: 'Server Error' });
   }
 };
 
 export const refreshPortfolioPrices = async (req: Request, res: Response): Promise<void> => {
-  console.log('Refreshing portfolio prices...');
+  loggerService.info('Refreshing portfolio prices');
   try {
     await portfolioService.refreshPrices();
     const portfolio = portfolioService.getPortfolio();
@@ -51,7 +72,7 @@ export const refreshPortfolioPrices = async (req: Request, res: Response): Promi
       message: 'Prices refreshed successfully',
     });
   } catch (error) {
-    console.error('Error refreshing portfolio prices:', error);
+    loggerService.error('Error refreshing portfolio prices', error as Error);
     res.status(500).json({ success: false, message: 'Server Error' });
   }
 };

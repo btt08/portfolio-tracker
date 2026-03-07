@@ -11,9 +11,21 @@ export class PortfolioMapperService {
 
   mapStoredToPortfolio(storedData: IStoredPortfolioItem[]): IPortfolio {
     const mappedItems = storedData.map(item => this.mapStoredItemToPortfolioItem(item));
+    const excludedIsins = ['ES0128520006'];
 
     const totalInvested = this.calcTotalInvested(mappedItems);
     const marketValue = this.calcTotalMarketValue(mappedItems);
+    const marketValueForWeights = this.calcTotalMarketValue(mappedItems, excludedIsins);
+
+    mappedItems.forEach(item => {
+      if (excludedIsins.includes(item.isin)) {
+        item.portfolioPerc = 0;
+      } else {
+        item.portfolioPerc =
+          marketValueForWeights === 0 ? 0 : (item.marketValue * 100) / marketValueForWeights;
+      }
+    });
+
     const prevMarketValue = this.calcPrevMarketValue(mappedItems);
     const totalChangeEUR = this.calcTotalChangeEUR(totalInvested, marketValue);
     const totalChangePerc = this.calcPercChange(totalInvested, marketValue);
@@ -73,6 +85,7 @@ export class PortfolioMapperService {
       lots: stored.lots,
       realizedPnl: 0, // TODO: calculate if needed
       unrealizedPnl,
+      portfolioPerc: 0, // calculated after all items are mapped
     };
   }
 
@@ -88,8 +101,12 @@ export class PortfolioMapperService {
     return items.reduce((total, item) => this.math.safeAdd(total, item.totalInvested), 0);
   }
 
-  private calcTotalMarketValue(items: IPortfolioItem[]): number {
-    return items.reduce((total, item) => this.math.safeAdd(total, item.marketValue), 0);
+  private calcTotalMarketValue(items: IPortfolioItem[], excludedIsins: string[] = []): number {
+    return items.reduce(
+      (total, item) =>
+        excludedIsins.includes(item.isin) ? total : this.math.safeAdd(total, item.marketValue),
+      0
+    );
   }
 
   private calcPrevMarketValue(items: IPortfolioItem[]): number {

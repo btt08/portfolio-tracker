@@ -113,7 +113,8 @@ class PortfolioService {
           try {
             const price = await this.getInvestingPrice(page, asset.link);
             if (price && price.length === 2 && !isNaN(price[0]) && !isNaN(price[1])) {
-              asset.prevPrice = this.math.safeSubtract(price[1], price[0]);
+              const difference = this.math.safeSubtract(price[1], price[0]);
+              asset.prevPrice = difference === 0 ? price[1] : difference;
               asset.currPrice = price[1];
               console.log(
                 `${asset.name}: ${asset.prevPrice} -> ${price[1]} (${price[0]})  ----- ${asset.link}`

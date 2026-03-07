@@ -4,6 +4,7 @@
       <tr>
         <th>ISIN</th>
         <th>Name</th>
+        <th>Weight (%)</th>
         <th>Shares</th>
         <th>Invested</th>
         <th>Market Value</th>
@@ -25,6 +26,11 @@
             </a>
           </td>
           <td>{{ item.name }}</td>
+          @if (item.isin === 'ES0128520006') {
+            <td>N/A</td>
+          } @else {
+            <td>{{ item.portfolioPerc | number: '1.2-2' : 'de-DE' }}%</td>
+          }
           <td>{{ item.numShares | number: '1.2-2' : 'de-DE' }}</td>
           <td>
             {{ item.totalInvested | number: '1.2-2' : 'de-DE' }}

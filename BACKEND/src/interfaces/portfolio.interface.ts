@@ -54,6 +54,7 @@ export interface IPortfolioItem {
   lots: ILot[];
   realizedPnl: number;
   unrealizedPnl: number;
+  portfolioPerc: number;
 }
 
 export interface IPortfolioSummary {
