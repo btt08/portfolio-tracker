@@ -18,6 +18,7 @@ export const addPortfolioItem = (req: Request, res: Response): void => {
       lots: [],
       prevPrice: 0,
       currPrice: 0,
+      priceUnit: 1,
     };
     portfolioService.addPortfolioItem(newItem);
     res.status(201).json({ success: true, data: newItem });
@@ -62,7 +63,6 @@ export const addLotToItem = (req: Request, res: Response): void => {
 };
 
 export const refreshPortfolioPrices = async (req: Request, res: Response): Promise<void> => {
-  loggerService.info('Refreshing portfolio prices');
   try {
     await portfolioService.refreshPrices();
     const portfolio = portfolioService.getPortfolio();

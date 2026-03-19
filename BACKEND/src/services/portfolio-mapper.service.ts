@@ -47,27 +47,43 @@ export class PortfolioMapperService {
   }
 
   private mapStoredItemToPortfolioItem(stored: IStoredPortfolioItem): IPortfolioItem {
-    const numShares = stored.lots.reduce((s, l) => this.math.safeAdd(s, l.qtyRemaining), 0);
-    const totalInvested = stored.lots.reduce((s, l) => {
-      const value = l.qtyRemaining > 0 ? this.math.safeAdd(s, l.totalCost) : s;
+    const priceUnit = stored.priceUnit || 1;
+    const normalizedCurrPrice = this.math.safeDivide(stored.currPrice || 0, priceUnit);
+    const normalizedPrevPrice = this.math.safeDivide(stored.prevPrice || 0, priceUnit);
 
-      return value;
+    const numShares = stored.lots.reduce((s, l) => this.math.safeAdd(s, l.qtyRemaining), 0);
+
+    const totalInvested = stored.lots.reduce((s, l) => {
+      if (l.qtyRemaining <= 0) return s;
+      const lotCostEUR = this.math.safeMultiply(l.totalCost, l.exchangeRate || 1);
+      return this.math.safeAdd(s, lotCostEUR);
     }, 0);
 
-    const marketValue = this.math.safeMultiply(stored.currPrice || 0, numShares);
+    const marketValue = stored.lots.reduce((s, l) => {
+      if (l.qtyRemaining <= 0) return s;
+      const lotMarketLocal = this.math.safeMultiply(normalizedCurrPrice, l.qtyRemaining);
+      const lotMarketEUR = this.math.safeMultiply(lotMarketLocal, l.exchangeRate || 1);
+      return this.math.safeAdd(s, lotMarketEUR);
+    }, 0);
+
+    const prevMarketValue = stored.lots.reduce((s, l) => {
+      if (l.qtyRemaining <= 0) return s;
+      const lotPrevLocal = this.math.safeMultiply(normalizedPrevPrice, l.qtyRemaining);
+      const lotPrevEUR = this.math.safeMultiply(lotPrevLocal, l.exchangeRate || 1);
+      return this.math.safeAdd(s, lotPrevEUR);
+    }, 0);
+
     const avgPrice = numShares === 0 ? 0 : this.math.safeDivide(totalInvested, numShares);
-    const prevMarketValue = this.math.safeMultiply(stored.prevPrice || 0, numShares);
-    const unrealizedPnl = stored.lots.reduce(
-      (acc, lot) =>
-        this.math.safeAdd(
-          acc,
-          this.math.safeMultiply(
-            lot.qtyRemaining,
-            this.math.safeSubtract(stored.currPrice || 0, lot.costPerUnit)
-          )
-        ),
-      0
-    );
+
+    const unrealizedPnl = stored.lots.reduce((acc, lot) => {
+      if (lot.qtyRemaining <= 0) return acc;
+      const pnlLocal = this.math.safeMultiply(
+        lot.qtyRemaining,
+        this.math.safeSubtract(normalizedCurrPrice, lot.costPerUnit)
+      );
+      const pnlEUR = this.math.safeMultiply(pnlLocal, lot.exchangeRate || 1);
+      return this.math.safeAdd(acc, pnlEUR);
+    }, 0);
 
     return {
       isin: stored.isin,
@@ -77,8 +93,8 @@ export class PortfolioMapperService {
       numShares,
       totalInvested,
       marketValue,
-      prevPrice: stored.prevPrice || 0,
-      currPrice: stored.currPrice || 0,
+      prevPrice: normalizedPrevPrice,
+      currPrice: normalizedCurrPrice,
       avgPrice,
       dailyChangeEUR: this.calcDailyChangeEUR(prevMarketValue, marketValue),
       dailyChangePerc: this.calcPercChange(prevMarketValue, marketValue),
@@ -117,7 +133,10 @@ export class PortfolioMapperService {
   private calcPrevMarketValue(items: IPortfolioItem[], excludedIsins: string[] = []): number {
     return items.reduce((total, item) => {
       if (excludedIsins.includes(item.isin)) return total;
-      return this.math.safeAdd(total, this.math.safeMultiply(item.prevPrice, item.numShares));
+      return this.math.safeAdd(
+        total,
+        this.math.safeSubtract(item.marketValue, item.dailyChangeEUR)
+      );
     }, 0);
   }
 

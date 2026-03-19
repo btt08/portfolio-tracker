@@ -35,6 +35,8 @@ export interface ILot {
   costPerUnit: number;
   commission: number;
   totalCost: number;
+  currency: string;
+  exchangeRate: number;
 }
 
 export interface IPortfolioItem {
@@ -80,4 +82,5 @@ export interface IStoredPortfolioItem {
   prevPrice: number;
   currPrice: number;
   lots: ILot[];
+  priceUnit: number;
 }

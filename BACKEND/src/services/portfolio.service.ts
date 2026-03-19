@@ -5,6 +5,7 @@ import { PortfolioMapperService } from './portfolio-mapper.service';
 import type { Page } from 'puppeteer';
 import { setTimeout } from 'node:timers/promises';
 import { SafeMathService } from './safe-math.service';
+import loggerService from './logger.service';
 const puppeteer = require('puppeteer');
 const { addExtra } = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
@@ -26,6 +27,17 @@ class PortfolioService {
       },
       60 * 60 * 1000
     );
+    // Watch the portfolio file and reload into memory when it changes on disk
+    try {
+      fs.watchFile(this.dataPath, { interval: 10000 }, (curr, prev) => {
+        if (curr.mtimeMs !== prev.mtimeMs) {
+          loggerService.info('Detected change in portfolio file, reloading from disk');
+          this.loadFromFile();
+        }
+      });
+    } catch (err) {
+      loggerService.error('Failed to set up file watcher for portfolio data', err as Error);
+    }
   }
 
   private loadFromFile(): void {
@@ -34,7 +46,7 @@ class PortfolioService {
       this.rawPortfolio = JSON.parse(data) as IStoredPortfolioItem[];
       this.mappedPortfolio = this.mapper.mapStoredToPortfolio(this.rawPortfolio);
     } catch (error) {
-      console.error('Error loading portfolio from file:', error);
+      loggerService.error('Error loading portfolio from file:', error as Error);
       this.rawPortfolio = [];
       this.mappedPortfolio = null;
     }
@@ -43,9 +55,9 @@ class PortfolioService {
   private saveToFile(): void {
     try {
       fs.writeFileSync(this.dataPath, JSON.stringify(this.rawPortfolio, null, 2));
-      console.log('Portfolio saved to file');
+      loggerService.info('Portfolio saved to file');
     } catch (error) {
-      console.error('Error saving portfolio to file:', error);
+      loggerService.error('Error saving portfolio to file:', error as Error);
     }
   }
 
@@ -79,7 +91,7 @@ class PortfolioService {
       const altChangeEL = await page.$('[data-test="instrument-price-change"]');
 
       if (!priceEL && !changeEL && !altPriceEL && !altChangeEL) {
-        console.log(`Price elements not found, retrying... (${++attempts})`);
+        loggerService.warn(`Price elements not found, retrying... (${++attempts})`);
         await setTimeout(250);
       } else {
         if (priceEL) {
@@ -92,8 +104,7 @@ class PortfolioService {
         break;
       }
     }
-
-    return price.map(p => parseFloat(p.trim().replace(/\./g, '').replace(',', '.')));
+    return price.map(p => parseFloat(p.trim().replace(',', '.')));
   }
 
   public async refreshPrices(): Promise<void> {
@@ -117,11 +128,9 @@ class PortfolioService {
               const difference = this.math.safeSubtract(price[1], price[0]);
               asset.prevPrice = difference === 0 ? price[1] : difference;
               asset.currPrice = price[1];
-              console.log(
-                `${asset.name}: ${asset.prevPrice} -> ${price[1]} (${price[0]})  ----- ${asset.link}`
-              );
+              loggerService.info(`${asset.name}: ${asset.prevPrice} -> ${price[1]} (${price[0]})`);
             } else {
-              console.log(`Price not found for ${asset.name}, skipping.`);
+              loggerService.warn(`Price not found for ${asset.name}, skipping.`);
             }
           } finally {
             await page.close();
@@ -130,9 +139,9 @@ class PortfolioService {
         await Promise.all(promises);
       }
       this.mappedPortfolio = this.mapper.mapStoredToPortfolio(this.rawPortfolio);
-      console.log('Prices refreshed successfully');
+      loggerService.info('Prices refreshed successfully');
     } catch (error) {
-      console.error('Error refreshing prices:', error);
+      loggerService.error('Error refreshing prices:', error as Error);
     }
   }
 

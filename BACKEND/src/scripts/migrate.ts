@@ -59,6 +59,8 @@ class MigrationService {
       costPerUnit,
       commission: 0,
       totalCost,
+      currency: 'EUR',
+      exchangeRate: 1,
     };
   }
 
@@ -132,6 +134,8 @@ class MigrationService {
         costPerUnit: addedCostPerUnit,
         commission: 0,
         totalCost: addedTotalCost,
+        currency: 'EUR',
+        exchangeRate: 1,
       });
     });
   }
@@ -188,6 +192,7 @@ class MigrationService {
         records: raw.records ? this.recordMapper.normalizeRecords(raw.records) : [],
         lots: entry.lots,
         realizedPnl: entry.realizedPnl,
+        portfolioPerc: 0,
       };
     });
   }
@@ -272,6 +277,7 @@ class MigrationScript {
         prevPrice: item.prevPrice,
         currPrice: item.currPrice,
         lots: item.lots,
+        priceUnit: 1,
       }));
 
       // Save the new format file

@@ -20,12 +20,15 @@
     </thead>
     <tbody>
       @for (item of data(); track item.isin) {
-        <tr class="item-row" [class.expanded]="isExpanded(item.isin)">
+        <tr
+          class="item-row"
+          [class.expanded]="isExpanded(item.isin)"
+          (dblclick)="toggleExpand(item.isin)">
           <td class="toggle-cell" (click)="toggleExpand(item.isin)">
             <span class="toggle-icon" [class.expanded]="isExpanded(item.isin)">▶</span>
           </td>
           <td class="accent">
-            <a href="{{ item.link }}" rel="noopener noreferrer" target="_blank">
+            <a [href]="item.link" rel="noopener noreferrer" target="_blank">
               {{ item.isin }}
             </a>
           </td>
@@ -98,9 +101,9 @@
                       <tr>
                         <td>{{ lot.createdDate | date: 'yyyy-MM-dd' }}</td>
                         <td>{{ lot.qtyRemaining | number: '1.2-4' : 'de-DE' }}</td>
-                        <td>{{ lot.costPerUnit | number: '1.2-4' : 'de-DE' }}</td>
+                        <td>{{ lotCostPerUnit(lot) | number: '1.2-4' : 'de-DE' }}</td>
                         <td>{{ lot.commission | number: '1.2-2' : 'de-DE' }}</td>
-                        <td>{{ lot.totalCost | number: '1.2-2' : 'de-DE' }}</td>
+                        <td>{{ lotTotalCost(lot) | number: '1.2-2' : 'de-DE' }}</td>
                         <td>
                           {{
                             lotCurrentValue(lot, item.currPrice)
@@ -127,13 +130,17 @@
                   <div class="add-lot-fields">
                     <label>
                       Date
-                      <input type="date" [(ngModel)]="lotForms[item.isin].createdDate" />
+                      <input
+                        type="date"
+                        [value]="lotForms[item.isin].createdDate"
+                        (input)="updateFormText(item.isin, 'createdDate', $event)" />
                     </label>
                     <label>
                       Qty
                       <input
                         type="number"
-                        [(ngModel)]="lotForms[item.isin].qtyRemaining"
+                        [value]="lotForms[item.isin].qtyRemaining"
+                        (input)="updateFormNumber(item.isin, 'qtyRemaining', $event)"
                         step="any"
                         min="0" />
                     </label>
@@ -141,7 +148,8 @@
                       Cost/Unit
                       <input
                         type="number"
-                        [(ngModel)]="lotForms[item.isin].costPerUnit"
+                        [value]="lotForms[item.isin].costPerUnit"
+                        (input)="updateFormNumber(item.isin, 'costPerUnit', $event)"
                         step="any"
                         min="0" />
                     </label>
@@ -149,10 +157,33 @@
                       Commission
                       <input
                         type="number"
-                        [(ngModel)]="lotForms[item.isin].commission"
+                        [value]="lotForms[item.isin].commission"
+                        (input)="updateFormNumber(item.isin, 'commission', $event)"
                         step="any"
                         min="0" />
                     </label>
+                    <label>
+                      Currency
+                      <select
+                        [value]="lotForms[item.isin].currency"
+                        (change)="updateFormText(item.isin, 'currency', $event)">
+                        <option value="EUR">EUR</option>
+                        <option value="GBP">GBP</option>
+                        <option value="USD">USD</option>
+                        <option value="CHF">CHF</option>
+                      </select>
+                    </label>
+                    @if (lotForms[item.isin].currency !== 'EUR') {
+                      <label>
+                        Exchange Rate
+                        <input
+                          type="number"
+                          [value]="lotForms[item.isin].exchangeRate"
+                          (input)="updateFormNumber(item.isin, 'exchangeRate', $event)"
+                          step="any"
+                          min="0" />
+                      </label>
+                    }
                     <label>
                       Total Cost
                       <input

@@ -7,6 +7,8 @@ export const LotSchema = z.object({
   costPerUnit: z.number().positive(),
   commission: z.number().min(0),
   totalCost: z.number().positive(),
+  currency: z.string().default('EUR'),
+  exchangeRate: z.number().positive().default(1),
 });
 
 export const StoredPortfolioItemSchema = z.object({
@@ -17,6 +19,7 @@ export const StoredPortfolioItemSchema = z.object({
   prevPrice: z.number().optional(),
   currPrice: z.number().optional(),
   lots: z.array(LotSchema),
+  priceUnit: z.number().positive().default(1),
 });
 
 export const PortfolioItemInputSchema = z.object({

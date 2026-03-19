@@ -1,6 +1,5 @@
 import { Component, inject, input, output, signal } from '@angular/core';
 import { DecimalPipe, DatePipe } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { IPortfolioItem, IPortfolio, ILot } from '../../interfaces/portfolio.interface';
 import { PortfolioRestService } from '../../services/portfolio-rest';
 
@@ -9,11 +8,13 @@ interface NewLotForm {
   qtyRemaining: number | null;
   costPerUnit: number | null;
   commission: number | null;
+  currency: string;
+  exchangeRate: number | null;
 }
 
 @Component({
   selector: 'app-shares-table',
-  imports: [DecimalPipe, DatePipe, FormsModule],
+  imports: [DatePipe, DecimalPipe],
   templateUrl: './shares-table.html',
   styleUrl: './shares-table.scss',
 })
@@ -39,6 +40,8 @@ export class SharesTable {
           qtyRemaining: null,
           costPerUnit: null,
           commission: null,
+          currency: 'EUR',
+          exchangeRate: 1,
         };
       }
     }
@@ -53,17 +56,30 @@ export class SharesTable {
     return lots.filter(l => l.qtyRemaining > 0);
   }
 
+  lotExchangeRate(lot: ILot): number {
+    return lot.exchangeRate ?? 1;
+  }
+
+  lotCostPerUnit(lot: ILot): number {
+    return lot.costPerUnit * this.lotExchangeRate(lot);
+  }
+
+  lotTotalCost(lot: ILot): number {
+    return lot.totalCost * this.lotExchangeRate(lot);
+  }
+
   lotCurrentValue(lot: ILot, currPrice: number): number {
-    return lot.qtyRemaining * currPrice;
+    return lot.qtyRemaining * currPrice * this.lotExchangeRate(lot);
   }
 
   lotPnl(lot: ILot, currPrice: number): number {
-    return this.lotCurrentValue(lot, currPrice) - lot.totalCost;
+    return this.lotCurrentValue(lot, currPrice) - this.lotTotalCost(lot);
   }
 
   lotPnlPerc(lot: ILot, currPrice: number): number {
-    if (lot.totalCost === 0) return 0;
-    return (this.lotPnl(lot, currPrice) / lot.totalCost) * 100;
+    const totalCost = this.lotTotalCost(lot);
+    if (totalCost === 0) return 0;
+    return (this.lotPnl(lot, currPrice) / totalCost) * 100;
   }
 
   computedTotalCost(isin: string): number {
@@ -74,15 +90,34 @@ export class SharesTable {
     return Math.round((value + commission) * 100) / 100;
   }
 
+  updateFormText(isin: string, field: 'createdDate' | 'currency', event: Event): void {
+    this.lotForms[isin][field] = (event.target as HTMLInputElement).value;
+  }
+
+  updateFormNumber(
+    isin: string,
+    field: 'qtyRemaining' | 'costPerUnit' | 'commission' | 'exchangeRate',
+    event: Event
+  ): void {
+    const raw = (event.target as HTMLInputElement).value;
+    this.lotForms[isin][field] = raw ? +raw : null;
+  }
+
   isFormValid(isin: string): boolean {
     const form = this.lotForms[isin];
-    return !!(
-      form?.createdDate &&
-      form?.qtyRemaining &&
-      form.qtyRemaining > 0 &&
-      form?.costPerUnit &&
-      form.costPerUnit > 0
-    );
+    if (
+      !(
+        form?.createdDate &&
+        form?.qtyRemaining &&
+        form.qtyRemaining > 0 &&
+        form?.costPerUnit &&
+        form.costPerUnit > 0
+      )
+    )
+      return false;
+    if (form.currency !== 'EUR' && (!form.exchangeRate || form.exchangeRate <= 0))
+      return false;
+    return true;
   }
 
   addLot(item: IPortfolioItem): void {
@@ -101,6 +136,8 @@ export class SharesTable {
       costPerUnit: form.costPerUnit!,
       commission: form.commission ?? 0,
       totalCost,
+      currency: form.currency,
+      exchangeRate: form.currency === 'EUR' ? 1 : form.exchangeRate!,
     };
 
     this.portfolioService.addLot(item.isin, newLot).subscribe({
@@ -111,6 +148,8 @@ export class SharesTable {
           qtyRemaining: null,
           costPerUnit: null,
           commission: null,
+          currency: 'EUR',
+          exchangeRate: 1,
         };
         this.submitting[item.isin] = false;
       },
