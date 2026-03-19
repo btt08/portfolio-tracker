@@ -26,6 +26,15 @@ export class PortfolioRestService {
       .pipe(catchError(this.handleError));
   }
 
+  sellShares(
+    isin: string,
+    sell: { qtyToSell: number; sellPrice: number; commission: number }
+  ): Observable<IResponse> {
+    return this.http
+      .post<IResponse>(`${this.baseUrl}/${isin}/sell`, sell)
+      .pipe(catchError(this.handleError));
+  }
+
   private handleError(error: HttpErrorResponse) {
     console.error('API Error:', error);
     return throwError(

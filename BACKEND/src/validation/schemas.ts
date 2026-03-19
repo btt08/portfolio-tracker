@@ -29,6 +29,13 @@ export const PortfolioItemInputSchema = z.object({
   link: z.string(),
 });
 
+export const SellSchema = z.object({
+  qtyToSell: z.number().positive(),
+  sellPrice: z.number().positive(),
+  commission: z.number().min(0).default(0),
+});
+
 export type Lot = z.infer<typeof LotSchema>;
 export type StoredPortfolioItem = z.infer<typeof StoredPortfolioItemSchema>;
 export type PortfolioItemInput = z.infer<typeof PortfolioItemInputSchema>;
+export type Sell = z.infer<typeof SellSchema>;

@@ -127,6 +127,7 @@
                   </tbody>
                 </table>
                 <div class="add-lot-form">
+                  <span class="form-label">Buy</span>
                   <div class="add-lot-fields">
                     <label>
                       Date
@@ -198,6 +199,50 @@
                       {{ submitting[item.isin] ? 'Adding...' : 'Add' }}
                     </button>
                   </div>
+                </div>
+                <div class="sell-form">
+                  <span class="form-label sell">Sell</span>
+                  <div class="add-lot-fields">
+                    <label>
+                      Qty to sell
+                      <input
+                        type="number"
+                        [value]="sellForms[item.isin].qtyToSell"
+                        (input)="updateSellFormNumber(item.isin, 'qtyToSell', $event)"
+                        step="any"
+                        min="0"
+                        [max]="item.numShares" />
+                    </label>
+                    <label>
+                      Sell price
+                      <input
+                        type="number"
+                        [value]="sellForms[item.isin].sellPrice"
+                        (input)="updateSellFormNumber(item.isin, 'sellPrice', $event)"
+                        step="any"
+                        min="0" />
+                    </label>
+                    <label>
+                      Commission
+                      <input
+                        type="number"
+                        [value]="sellForms[item.isin].commission"
+                        (input)="updateSellFormNumber(item.isin, 'commission', $event)"
+                        step="any"
+                        min="0" />
+                    </label>
+                    <button
+                      class="add-lot-btn sell-btn"
+                      (click)="sellShares(item)"
+                      [disabled]="
+                        !isSellFormValid(item.isin) || sellSubmitting[item.isin]
+                      ">
+                      {{ sellSubmitting[item.isin] ? 'Selling...' : 'Sell' }}
+                    </button>
+                  </div>
+                  @if (sellError[item.isin]) {
+                    <span class="sell-error">{{ sellError[item.isin] }}</span>
+                  }
                 </div>
               </div>
             </td>

@@ -79,6 +79,40 @@ class PortfolioService {
     return true;
   }
 
+  public sellFromItem(
+    isin: string,
+    qtyToSell: number,
+    sellPrice: number,
+    commission: number
+  ): { success: boolean; message?: string } {
+    const item = this.rawPortfolio.find(i => i.isin === isin);
+    if (!item) return { success: false, message: 'Item not found' };
+
+    const activeLots = item.lots.filter(l => l.qtyRemaining > 0);
+    const totalAvailable = activeLots.reduce((sum, l) => this.math.safeAdd(sum, l.qtyRemaining), 0);
+
+    if (totalAvailable < qtyToSell) {
+      return {
+        success: false,
+        message: `Not enough shares. Available: ${totalAvailable}, requested: ${qtyToSell}`,
+      };
+    }
+
+    // FIFO: deduct from oldest lots first
+    let remaining = qtyToSell;
+    for (const lot of activeLots) {
+      if (remaining <= 0) break;
+      const deducted = Math.min(remaining, lot.qtyRemaining);
+      lot.qtyRemaining = this.math.safeSubtract(lot.qtyRemaining, deducted);
+      lot.totalCost = this.math.safeMultiply(lot.qtyRemaining, lot.costPerUnit);
+      remaining = this.math.safeSubtract(remaining, deducted);
+    }
+
+    this.mappedPortfolio = this.mapper.mapStoredToPortfolio(this.rawPortfolio);
+    this.saveToFile();
+    return { success: true };
+  }
+
   private async getInvestingPrice(page: Page, link: string): Promise<number[]> {
     await page.goto(link.toLowerCase());
     const price: string[] = [];

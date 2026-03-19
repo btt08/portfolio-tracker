@@ -12,6 +12,12 @@ interface NewLotForm {
   exchangeRate: number | null;
 }
 
+interface SellForm {
+  qtyToSell: number | null;
+  sellPrice: number | null;
+  commission: number | null;
+}
+
 @Component({
   selector: 'app-shares-table',
   imports: [DatePipe, DecimalPipe],
@@ -26,7 +32,10 @@ export class SharesTable {
 
   expandedItems = signal<Set<string>>(new Set());
   lotForms: Record<string, NewLotForm> = {};
+  sellForms: Record<string, SellForm> = {};
   submitting: Record<string, boolean> = {};
+  sellSubmitting: Record<string, boolean> = {};
+  sellError: Record<string, string> = {};
 
   toggleExpand(isin: string): void {
     const current = new Set(this.expandedItems());
@@ -42,6 +51,13 @@ export class SharesTable {
           commission: null,
           currency: 'EUR',
           exchangeRate: 1,
+        };
+      }
+      if (!this.sellForms[isin]) {
+        this.sellForms[isin] = {
+          qtyToSell: null,
+          sellPrice: null,
+          commission: null,
         };
       }
     }
@@ -158,5 +174,56 @@ export class SharesTable {
         this.submitting[item.isin] = false;
       },
     });
+  }
+
+  updateSellFormNumber(
+    isin: string,
+    field: 'qtyToSell' | 'sellPrice' | 'commission',
+    event: Event
+  ): void {
+    const raw = (event.target as HTMLInputElement).value;
+    this.sellForms[isin][field] = raw ? +raw : null;
+    this.sellError[isin] = '';
+  }
+
+  isSellFormValid(isin: string): boolean {
+    const form = this.sellForms[isin];
+    return !!(
+      form?.qtyToSell &&
+      form.qtyToSell > 0 &&
+      form?.sellPrice &&
+      form.sellPrice > 0
+    );
+  }
+
+  sellShares(item: IPortfolioItem): void {
+    const form = this.sellForms[item.isin];
+    if (!this.isSellFormValid(item.isin)) return;
+
+    this.sellSubmitting[item.isin] = true;
+    this.sellError[item.isin] = '';
+
+    this.portfolioService
+      .sellShares(item.isin, {
+        qtyToSell: form.qtyToSell!,
+        sellPrice: form.sellPrice!,
+        commission: form.commission ?? 0,
+      })
+      .subscribe({
+        next: response => {
+          this.portfolioUpdated.emit(response.data);
+          this.sellForms[item.isin] = {
+            qtyToSell: null,
+            sellPrice: null,
+            commission: null,
+          };
+          this.sellSubmitting[item.isin] = false;
+        },
+        error: error => {
+          console.error('Error selling shares:', error);
+          this.sellError[item.isin] = error.message || 'Error selling shares';
+          this.sellSubmitting[item.isin] = false;
+        },
+      });
   }
 }
