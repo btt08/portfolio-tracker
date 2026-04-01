@@ -1,10 +1,12 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
+import { Subscription, interval } from 'rxjs';
 import { PortfolioRestService } from './services/portfolio-rest';
 import { IPortfolio, IPortfolioSummary } from './interfaces/portfolio.interface';
 import { SharesTable } from './components/shares-table/shares-table';
 
+const AUTO_REFRESH_INTERVAL_MS = 5 * 60 * 1000;
 
 @Component({
   selector: 'app-root',
@@ -12,8 +14,9 @@ import { SharesTable } from './components/shares-table/shares-table';
   templateUrl: './app.html',
   styleUrls: ['./app.scss'],
 })
-export class App implements OnInit {
+export class App implements OnInit, OnDestroy {
   private portfolioService = inject(PortfolioRestService);
+  private autoRefreshSub?: Subscription;
 
   protected readonly title = signal('Portfolio tracker');
   portfolioData = signal<IPortfolio>({
@@ -26,7 +29,7 @@ export class App implements OnInit {
       portfolioDailyChangePerc: 0,
     } as IPortfolioSummary,
   });
-  isRefreshing = signal(false);
+  isRefreshing = signal<boolean>(false);
 
   ngOnInit() {
     this.portfolioService.getportfolio().subscribe({
@@ -37,6 +40,16 @@ export class App implements OnInit {
         console.error('Error loading portfolio:', error);
       },
     });
+
+    this.autoRefreshSub = interval(AUTO_REFRESH_INTERVAL_MS).subscribe(() => {
+      if (!this.isRefreshing()) {
+        this.refreshData();
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    this.autoRefreshSub?.unsubscribe();
   }
 
   formatNumber(value: number): string {
