@@ -1,6 +1,10 @@
 import { Page } from 'puppeteer';
 import { setTimeout } from 'node:timers/promises';
 import loggerService from './logger.service';
+import configService from './config.service';
+const puppeteer = require('puppeteer');
+const { addExtra } = require('puppeteer-extra');
+const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 
 export interface PriceData {
   priceDiff: number;
@@ -8,6 +12,17 @@ export interface PriceData {
 }
 
 export class PriceScrapingService {
+  private browser: any = null;
+
+  private async ensureBrowser(): Promise<any> {
+    if (!this.browser) {
+      const puppeteerExtra = addExtra(puppeteer);
+      puppeteerExtra.use(StealthPlugin());
+      this.browser = await puppeteerExtra.launch(configService.puppeteerConfig);
+    }
+    return this.browser;
+  }
+
   async getInvestingPrice(page: Page, link: string): Promise<PriceData | null> {
     await page.goto(link.toLowerCase());
     const price: string[] = [];
@@ -49,6 +64,20 @@ export class PriceScrapingService {
       priceDiff: parsedPrices[1] - parsedPrices[0],
       currPrice: parsedPrices[1],
     };
+  }
+
+  async createPage(): Promise<Page> {
+    const browser = await this.ensureBrowser();
+    const page = await browser.newPage();
+    await page.setViewport({ width: 1280, height: 720 });
+    return page;
+  }
+
+  async closeBrowser(): Promise<void> {
+    if (this.browser) {
+      await this.browser.close();
+      this.browser = null;
+    }
   }
 }
 

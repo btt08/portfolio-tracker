@@ -4,58 +4,60 @@
     "name": "R4 Fija 6 Meses",
     "type": "funds",
     "link": "https://es.investing.com/funds/renta-4-monetario-fi",
-    "prevPrice": 12.625,
-    "currPrice": 12.626,
+    "prevPrice": 12.629000000000001,
+    "currPrice": 12.63,
     "lots": [
       {
         "id": "ES0128520006-2025-07-08T00:00:00.000Z-0",
         "createdDate": "2025-07-08T00:00:00.000Z",
-        "qtyRemaining": 161.5324,
-        "costPerUnit": 12.452,
-        "totalCost": 2011.4014448,
+        "qtyRemaining": 16.5616,
+        "costPerUnit": 12.4523,
+        "totalCost": 206.23,
         "commission": 0
       },
       {
         "id": "ES0128520006-2025-07-11T00:00:00.000Z-1",
         "createdDate": "2025-07-11T00:00:00.000Z",
         "qtyRemaining": 200.7293,
-        "costPerUnit": 12.455,
-        "totalCost": 2500.0834315,
+        "costPerUnit": 12.4546,
+        "totalCost": 2500,
         "commission": 0
       },
       {
         "id": "ES0128520006-2025-08-07T00:00:00.000Z-2",
         "createdDate": "2025-08-07T00:00:00.000Z",
         "qtyRemaining": 8.0159,
-        "costPerUnit": 12.475,
-        "totalCost": 99.9983525,
+        "costPerUnit": 12.4753,
+        "totalCost": 100,
         "commission": 0
       },
       {
         "id": "ES0128520006-2025-08-30T00:00:00.000Z-3",
         "createdDate": "2025-08-30T00:00:00.000Z",
         "qtyRemaining": 16.0122,
-        "costPerUnit": 12.49,
-        "totalCost": 199.992378,
+        "costPerUnit": 12.4904,
+        "totalCost": 200,
         "commission": 0
       },
       {
         "id": "ES0128520006-2025-10-02T00:00:00.000Z-4",
         "createdDate": "2025-10-02T00:00:00.000Z",
         "qtyRemaining": 15.9813,
-        "costPerUnit": 12.515,
-        "totalCost": 200.0059695,
+        "costPerUnit": 12.5146,
+        "totalCost": 200,
         "commission": 0
       }
-    ]
+    ],
+    "realizedPnl": 0,
+    "transactions": []
   },
   {
     "isin": "IE000ZYRH0Q7",
     "name": "iShares Developed S",
     "type": "funds",
     "link": "https://es.investing.com/funds/ie000zyrh0q7",
-    "prevPrice": 10.76,
-    "currPrice": 10.768,
+    "prevPrice": 10.281,
+    "currPrice": 10.464,
     "lots": [
       {
         "id": "IE000ZYRH0Q7-2025-07-04T00:00:00.000Z-0",
@@ -137,15 +139,17 @@
         "totalCost": 7593.49,
         "commission": 0
       }
-    ]
+    ],
+    "realizedPnl": 0,
+    "transactions": []
   },
   {
     "isin": "IE00BYWYCC39",
     "name": "iShares Emerging",
     "type": "funds",
     "link": "https://es.investing.com/funds/ie00bywycc39",
-    "prevPrice": 17.124,
-    "currPrice": 17.256,
+    "prevPrice": 16.403,
+    "currPrice": 16.153,
     "lots": [
       {
         "id": "IE00BYWYCC39-2025-07-04T00:00:00.000Z-0",
@@ -210,16 +214,28 @@
         "costPerUnit": 15.803,
         "totalCost": 410.878,
         "commission": 0
+      },
+      {
+        "id": "IE00BYWYCC39-2026-03-28T00:00:00.000Z-8",
+        "createdDate": "2026-03-28T00:00:00.000Z",
+        "qtyRemaining": 15,
+        "costPerUnit": 16.621,
+        "commission": 0,
+        "totalCost": 249.31,
+        "currency": "EUR",
+        "exchangeRate": 1
       }
-    ]
+    ],
+    "realizedPnl": 0,
+    "transactions": []
   },
   {
     "isin": "ES0165243025",
     "name": "MyInvestor Value C",
     "type": "funds",
     "link": "https://es.investing.com/funds/es0165243025",
-    "prevPrice": 1.132,
-    "currPrice": 1.133,
+    "prevPrice": 1.1190000000000002,
+    "currPrice": 1.124,
     "lots": [
       {
         "id": "ES0165243025-2026-01-22T00:00:00.000Z-0",
@@ -236,16 +252,28 @@
         "costPerUnit": 1.196,
         "totalCost": 491,
         "commission": 0
+      },
+      {
+        "id": "ES0165243025-2026-03-25T00:00:00.000Z-2",
+        "createdDate": "2026-03-25T00:00:00.000Z",
+        "qtyRemaining": 901.5753,
+        "costPerUnit": 1.10917,
+        "commission": 0,
+        "totalCost": 1000,
+        "currency": "EUR",
+        "exchangeRate": 1
       }
-    ]
+    ],
+    "realizedPnl": 0,
+    "transactions": []
   },
   {
     "isin": "LU2145461757",
     "name": "Robeco Smart Energy",
     "type": "funds",
     "link": "https://es.investing.com/funds/lu2145461757",
-    "prevPrice": 83.61,
-    "currPrice": 84.38,
+    "prevPrice": 80.09,
+    "currPrice": 83.64,
     "lots": [
       {
         "id": "LU2145461757-2026-01-22T00:00:00.000Z-0",
@@ -262,16 +290,28 @@
         "costPerUnit": 86.04,
         "totalCost": 430.2,
         "commission": 0
+      },
+      {
+        "id": "LU2145461757-2026-03-31T00:00:00.000Z-2",
+        "createdDate": "2026-03-31T00:00:00.000Z",
+        "qtyRemaining": 6,
+        "costPerUnit": 80.09,
+        "commission": 0,
+        "totalCost": 480.54,
+        "currency": "EUR",
+        "exchangeRate": 1
       }
-    ]
+    ],
+    "realizedPnl": 0,
+    "transactions": []
   },
   {
     "isin": "LU1953238794",
     "name": "Evercapital I ACC EUR",
     "type": "funds",
     "link": "https://es.investing.com/funds/lu1953238794",
-    "prevPrice": 149.09,
-    "currPrice": 149.69,
+    "prevPrice": 145.32000000000002,
+    "currPrice": 146.8,
     "lots": [
       {
         "id": "LU1953238794-2024-06-27T00:00:00.000Z-0",
@@ -289,15 +329,17 @@
         "totalCost": 415.14,
         "commission": 0
       }
-    ]
+    ],
+    "realizedPnl": 0,
+    "transactions": []
   },
   {
     "isin": "DE000A2T0VU5",
     "name": "X IE Physical Gold",
     "type": "etfs",
     "link": "https://es.investing.com/etfs/xgdu?cid=1164630",
-    "prevPrice": 65.17,
-    "currPrice": 61.75,
+    "prevPrice": 63.35,
+    "currPrice": 61.81,
     "lots": [
       {
         "id": "DE000A2T0VU5-2025-07-02T00:00:00.000Z-0",
@@ -315,15 +357,17 @@
         "commission": 0.54,
         "totalCost": 447.54
       }
-    ]
+    ],
+    "realizedPnl": 0,
+    "transactions": []
   },
   {
     "isin": "ES0109260531",
     "name": "AMPER SA",
     "type": "equities",
     "link": "https://es.investing.com/equities/amper-sa",
-    "prevPrice": 0.1574,
-    "currPrice": 0.1544,
+    "prevPrice": 0.1588,
+    "currPrice": 0.1566,
     "lots": [
       {
         "id": "ES0109260531-2025-08-01T00:00:00.000Z-0",
@@ -341,15 +385,17 @@
         "commission": 4.11,
         "totalCost": 482.91
       }
-    ]
+    ],
+    "realizedPnl": 0,
+    "transactions": []
   },
   {
     "isin": "ES0126962069",
     "name": "NEXTIL",
     "type": "equities",
     "link": "https://es.investing.com/equities/dogi-international-fabrics-sa",
-    "prevPrice": 0.83,
-    "currPrice": 0.822,
+    "prevPrice": 0.8280000000000001,
+    "currPrice": 0.802,
     "lots": [
       {
         "id": "ES0126962069-2025-08-01T00:00:00.000Z-0",
@@ -358,16 +404,28 @@
         "costPerUnit": 0.468,
         "commission": 4.11,
         "totalCost": 504.87
+      },
+      {
+        "id": "ES0126962069-2026-03-27T00:00:00.000Z-1",
+        "createdDate": "2026-03-27T00:00:00.000Z",
+        "qtyRemaining": 630,
+        "costPerUnit": 0.78,
+        "commission": 4.11,
+        "totalCost": 495.51,
+        "currency": "EUR",
+        "exchangeRate": 1
       }
-    ]
+    ],
+    "realizedPnl": 0,
+    "transactions": []
   },
   {
     "isin": "ES0142090317",
     "name": "OHL",
     "type": "equities",
     "link": "https://es.investing.com/equities/ohl",
-    "prevPrice": 0.423,
-    "currPrice": 0.415,
+    "prevPrice": 0.43,
+    "currPrice": 0.423,
     "lots": [
       {
         "id": "ES0142090317-2025-08-01T00:00:00.000Z-0",
@@ -385,15 +443,17 @@
         "commission": 4.11,
         "totalCost": 390.61
       }
-    ]
+    ],
+    "realizedPnl": 0,
+    "transactions": []
   },
   {
     "isin": "DE000UNSE026",
     "name": "Uniper SE",
     "type": "equities",
     "link": "https://es.investing.com/equities/uniper-se",
-    "prevPrice": 42.45,
-    "currPrice": 39.93,
+    "prevPrice": 41.05,
+    "currPrice": 40.5,
     "lots": [
       {
         "id": "DE000UNSE026-2026-03-18T12:37:50.000Z-0",
@@ -403,15 +463,17 @@
         "commission": 3,
         "totalCost": 501.85
       }
-    ]
+    ],
+    "realizedPnl": 0,
+    "transactions": []
   },
   {
     "isin": "JE00BN574F90",
     "name": "Wizz Air",
     "type": "equities",
     "link": "https://es.investing.com/equities/wizz-air-holdings-plc",
-    "prevPrice": 926.1,
-    "currPrice": 881.8,
+    "prevPrice": 902.5,
+    "currPrice": 865,
     "priceUnit": 100,
     "lots": [
       {
@@ -423,7 +485,19 @@
         "currency": "GBP",
         "exchangeRate": 1.160677618,
         "totalCost": 378.58
+      },
+      {
+        "id": "JE00BN574F90-2026-03-25T00:00:00.000Z-1",
+        "createdDate": "2026-03-25T00:00:00.000Z",
+        "qtyRemaining": 60,
+        "costPerUnit": 8.96,
+        "commission": 2.59,
+        "totalCost": 540.19,
+        "currency": "GBP",
+        "exchangeRate": 1.159329586
       }
-    ]
+    ],
+    "realizedPnl": 0,
+    "transactions": []
   }
 ]

@@ -1,0 +1,72 @@
+<div class="add-lot-form">
+  <span class="form-label">Buy</span>
+  <div class="add-lot-fields">
+    <label>
+      Date
+      <input
+        type="date"
+        [value]="form.createdDate"
+        (input)="updateText('createdDate', $event)" />
+    </label>
+    <label>
+      Qty
+      <input
+        type="number"
+        [value]="form.qtyRemaining"
+        (input)="updateNumber('qtyRemaining', $event)"
+        step="any"
+        min="0" />
+    </label>
+    <label>
+      Cost/Unit
+      <input
+        type="number"
+        [value]="form.costPerUnit"
+        (input)="updateNumber('costPerUnit', $event)"
+        step="any"
+        min="0" />
+    </label>
+    <label>
+      Commission
+      <input
+        type="number"
+        [value]="form.commission"
+        (input)="updateNumber('commission', $event)"
+        step="any"
+        min="0" />
+    </label>
+    <label>
+      Currency
+      <select [value]="form.currency" (change)="updateText('currency', $event)">
+        <option value="EUR">EUR</option>
+        <option value="GBP">GBP</option>
+        <option value="USD">USD</option>
+        <option value="CHF">CHF</option>
+      </select>
+    </label>
+    @if (form.currency !== 'EUR') {
+      <label>
+        Exchange Rate
+        <input
+          type="number"
+          [value]="form.exchangeRate"
+          (input)="updateNumber('exchangeRate', $event)"
+          step="any"
+          min="0" />
+      </label>
+    }
+    <label>
+      Total Cost
+      <input
+        type="text"
+        [value]="computedTotalCost() | number: '1.2-2' : 'de-DE'"
+        disabled />
+    </label>
+    <button
+      class="add-lot-btn"
+      (click)="submit()"
+      [disabled]="!isValid() || submitting()">
+      {{ submitting() ? 'Adding...' : 'Add' }}
+    </button>
+  </div>
+</div>

@@ -35,7 +35,15 @@ export const SellSchema = z.object({
   commission: z.number().min(0).default(0),
 });
 
+export const TransferSchema = z.object({
+  targetIsin: z.string(),
+  sourceQtySold: z.number().positive(),
+  targetQtyReceived: z.number().positive(),
+  commission: z.number().min(0).default(0),
+});
+
 export type Lot = z.infer<typeof LotSchema>;
 export type StoredPortfolioItem = z.infer<typeof StoredPortfolioItemSchema>;
 export type PortfolioItemInput = z.infer<typeof PortfolioItemInputSchema>;
 export type Sell = z.infer<typeof SellSchema>;
+export type Transfer = z.infer<typeof TransferSchema>;

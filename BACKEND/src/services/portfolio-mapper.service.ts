@@ -1,4 +1,5 @@
-import { SafeMathService } from './safe-math.service';
+import { SafeMath } from './safe-math.service';
+import configService from './config.service';
 import {
   IPortfolio,
   IPortfolioItem,
@@ -7,83 +8,96 @@ import {
 } from '../interfaces/portfolio.interface';
 
 export class PortfolioMapperService {
-  private math = new SafeMathService();
-
   mapStoredToPortfolio(storedData: IStoredPortfolioItem[]): IPortfolio {
+    const excludedIsins = configService.excludedIsins;
     const mappedItems = storedData.map(item => this.mapStoredItemToPortfolioItem(item));
-    const excludedIsins = ['ES0128520006'];
 
-    const totalInvested = this.calcTotalInvested(mappedItems);
-    const marketValue = this.calcTotalMarketValue(mappedItems);
-    const marketValueForWeights = this.calcTotalMarketValue(mappedItems, excludedIsins);
-    const totalInvestedForReturns = this.calcTotalInvested(mappedItems, excludedIsins);
+    const { totalInvested, marketValue, prevMarketValue, realizedPnl, unrealizedPnl } =
+      this.aggregatePortfolioTotals(mappedItems, excludedIsins);
 
     mappedItems.forEach(item => {
-      if (excludedIsins.includes(item.isin)) {
-        item.portfolioPerc = 0;
-      } else {
-        item.portfolioPerc =
-          marketValueForWeights === 0 ? 0 : (item.marketValue * 100) / marketValueForWeights;
-      }
+      item.isExcluded = excludedIsins.includes(item.isin);
+      item.portfolioPerc =
+        item.isExcluded || marketValue === 0 ? 0 : (item.marketValue * 100) / marketValue;
     });
-
-    const prevMarketValueForReturns = this.calcPrevMarketValue(mappedItems, excludedIsins);
-
-    const totalChangeEUR = this.calcTotalChangeEUR(totalInvestedForReturns, marketValueForWeights);
-    const totalChangePerc = this.calcPercChange(totalInvestedForReturns, marketValueForWeights);
-    const totalDailyEUR = this.calcTotalDailyEUR(prevMarketValueForReturns, marketValueForWeights);
-    const totalDailyPerc = this.calcPercChange(prevMarketValueForReturns, marketValueForWeights);
 
     const summary: IPortfolioSummary = {
       portfolioInvested: totalInvested,
       portfolioMarketValue: marketValue,
-      portfolioChangeEUR: totalChangeEUR,
-      portfolioChangePerc: totalChangePerc,
-      portfolioDailyChangeEUR: totalDailyEUR,
-      portfolioDailyChangePerc: totalDailyPerc,
+      portfolioChangeEUR: SafeMath.subtract(marketValue, totalInvested),
+      portfolioChangePerc: this.calcPercChange(totalInvested, marketValue),
+      portfolioDailyChangeEUR: SafeMath.subtract(marketValue, prevMarketValue),
+      portfolioDailyChangePerc: this.calcPercChange(prevMarketValue, marketValue),
+      portfolioRealizedPnl: realizedPnl,
+      portfolioTotalPnl: SafeMath.add(realizedPnl, unrealizedPnl),
     };
 
     return { summary, items: mappedItems };
   }
 
+  private aggregatePortfolioTotals(items: IPortfolioItem[], excludedIsins: string[]) {
+    let totalInvested = 0;
+    let marketValue = 0;
+    let prevMarketValue = 0;
+    let realizedPnl = 0;
+    let unrealizedPnl = 0;
+
+    for (const item of items) {
+      if (excludedIsins.includes(item.isin)) continue;
+      totalInvested = SafeMath.add(totalInvested, item.totalInvested);
+      marketValue = SafeMath.add(marketValue, item.marketValue);
+      prevMarketValue = SafeMath.add(
+        prevMarketValue,
+        SafeMath.subtract(item.marketValue, item.dailyChangeEUR)
+      );
+      realizedPnl = SafeMath.add(realizedPnl, item.realizedPnl);
+      unrealizedPnl = SafeMath.add(unrealizedPnl, item.unrealizedPnl);
+    }
+
+    return { totalInvested, marketValue, prevMarketValue, realizedPnl, unrealizedPnl };
+  }
+
   private mapStoredItemToPortfolioItem(stored: IStoredPortfolioItem): IPortfolioItem {
     const priceUnit = stored.priceUnit || 1;
-    const normalizedCurrPrice = this.math.safeDivide(stored.currPrice || 0, priceUnit);
-    const normalizedPrevPrice = this.math.safeDivide(stored.prevPrice || 0, priceUnit);
+    const normalizedCurrPrice = SafeMath.divide(stored.currPrice || 0, priceUnit);
+    const normalizedPrevPrice = SafeMath.divide(stored.prevPrice || 0, priceUnit);
 
-    const numShares = stored.lots.reduce((s, l) => this.math.safeAdd(s, l.qtyRemaining), 0);
+    // Single pass over lots
+    let numShares = 0;
+    let totalInvested = 0;
+    let marketValue = 0;
+    let prevMarketValue = 0;
+    let unrealizedPnl = 0;
 
-    const totalInvested = stored.lots.reduce((s, l) => {
-      if (l.qtyRemaining <= 0) return s;
-      const lotCostEUR = this.math.safeMultiply(l.totalCost, l.exchangeRate || 1);
-      return this.math.safeAdd(s, lotCostEUR);
-    }, 0);
+    for (const lot of stored.lots) {
+      if (lot.qtyRemaining <= 0) continue;
+      const exchangeRate = lot.exchangeRate || 1;
+      const costPerUnit = lot.costPerUnit || 0;
 
-    const marketValue = stored.lots.reduce((s, l) => {
-      if (l.qtyRemaining <= 0) return s;
-      const lotMarketLocal = this.math.safeMultiply(normalizedCurrPrice, l.qtyRemaining);
-      const lotMarketEUR = this.math.safeMultiply(lotMarketLocal, l.exchangeRate || 1);
-      return this.math.safeAdd(s, lotMarketEUR);
-    }, 0);
-
-    const prevMarketValue = stored.lots.reduce((s, l) => {
-      if (l.qtyRemaining <= 0) return s;
-      const lotPrevLocal = this.math.safeMultiply(normalizedPrevPrice, l.qtyRemaining);
-      const lotPrevEUR = this.math.safeMultiply(lotPrevLocal, l.exchangeRate || 1);
-      return this.math.safeAdd(s, lotPrevEUR);
-    }, 0);
-
-    const avgPrice = numShares === 0 ? 0 : this.math.safeDivide(totalInvested, numShares);
-
-    const unrealizedPnl = stored.lots.reduce((acc, lot) => {
-      if (lot.qtyRemaining <= 0) return acc;
-      const pnlLocal = this.math.safeMultiply(
-        lot.qtyRemaining,
-        this.math.safeSubtract(normalizedCurrPrice, lot.costPerUnit)
+      numShares = SafeMath.add(numShares, lot.qtyRemaining);
+      totalInvested = SafeMath.add(
+        totalInvested,
+        SafeMath.multiply(SafeMath.multiply(lot.qtyRemaining, costPerUnit), exchangeRate)
       );
-      const pnlEUR = this.math.safeMultiply(pnlLocal, lot.exchangeRate || 1);
-      return this.math.safeAdd(acc, pnlEUR);
-    }, 0);
+      marketValue = SafeMath.add(
+        marketValue,
+        SafeMath.multiply(SafeMath.multiply(normalizedCurrPrice, lot.qtyRemaining), exchangeRate)
+      );
+      prevMarketValue = SafeMath.add(
+        prevMarketValue,
+        SafeMath.multiply(SafeMath.multiply(normalizedPrevPrice, lot.qtyRemaining), exchangeRate)
+      );
+      unrealizedPnl = SafeMath.add(
+        unrealizedPnl,
+        SafeMath.multiply(
+          SafeMath.multiply(lot.qtyRemaining, SafeMath.subtract(normalizedCurrPrice, costPerUnit)),
+          exchangeRate
+        )
+      );
+    }
+
+    const avgPrice = numShares === 0 ? 0 : SafeMath.divide(totalInvested, numShares);
+    const realizedPnl = stored.realizedPnl || 0;
 
     return {
       isin: stored.isin,
@@ -96,56 +110,22 @@ export class PortfolioMapperService {
       prevPrice: normalizedPrevPrice,
       currPrice: normalizedCurrPrice,
       avgPrice,
-      dailyChangeEUR: this.calcDailyChangeEUR(prevMarketValue, marketValue),
+      dailyChangeEUR: SafeMath.subtract(marketValue, prevMarketValue),
       dailyChangePerc: this.calcPercChange(prevMarketValue, marketValue),
-      totalChangeEUR: this.calcTotalChangeEUR(totalInvested, marketValue),
+      totalChangeEUR: SafeMath.subtract(marketValue, totalInvested),
       totalChangePerc: this.calcPercChange(totalInvested, marketValue),
       lots: stored.lots,
-      realizedPnl: 0, // TODO: calculate if needed
+      realizedPnl,
       unrealizedPnl,
-      portfolioPerc: 0, // calculated after all items are mapped
+      totalPnl: SafeMath.add(realizedPnl, unrealizedPnl),
+      transactions: stored.transactions || [],
+      portfolioPerc: 0,
+      isExcluded: false,
     };
-  }
-
-  private calcTotalChangeEUR(invested: number, currentValue: number): number {
-    return this.math.safeSubtract(currentValue, invested);
-  }
-
-  private calcDailyChangeEUR(prevMarketValue: number, currentMarketValue: number): number {
-    return this.math.safeSubtract(currentMarketValue, prevMarketValue);
-  }
-
-  private calcTotalInvested(items: IPortfolioItem[], excludedIsins: string[] = []): number {
-    return items.reduce((total, item) => {
-      if (excludedIsins.includes(item.isin)) return total;
-      return this.math.safeAdd(total, item.totalInvested);
-    }, 0);
-  }
-
-  private calcTotalMarketValue(items: IPortfolioItem[], excludedIsins: string[] = []): number {
-    return items.reduce(
-      (total, item) =>
-        excludedIsins.includes(item.isin) ? total : this.math.safeAdd(total, item.marketValue),
-      0
-    );
-  }
-
-  private calcPrevMarketValue(items: IPortfolioItem[], excludedIsins: string[] = []): number {
-    return items.reduce((total, item) => {
-      if (excludedIsins.includes(item.isin)) return total;
-      return this.math.safeAdd(
-        total,
-        this.math.safeSubtract(item.marketValue, item.dailyChangeEUR)
-      );
-    }, 0);
-  }
-
-  private calcTotalDailyEUR(prevMarketValue: number, marketValue: number): number {
-    return this.math.safeSubtract(marketValue, prevMarketValue);
   }
 
   private calcPercChange(prevValue: number, currentValue: number): number {
     if (prevValue === 0) return 0;
-    return (this.math.safeSubtract(currentValue, prevValue) * 100) / prevValue;
+    return (SafeMath.subtract(currentValue, prevValue) * 100) / prevValue;
   }
 }

@@ -1,0 +1,42 @@
+<div class="sell-form">
+  <span class="form-label sell">Sell</span>
+  <div class="add-lot-fields">
+    <label>
+      Qty to sell
+      <input
+        type="number"
+        [value]="form.qtyToSell"
+        (input)="updateNumber('qtyToSell', $event)"
+        step="any"
+        min="0"
+        [max]="maxShares()" />
+    </label>
+    <label>
+      Sell price
+      <input
+        type="number"
+        [value]="form.sellPrice"
+        (input)="updateNumber('sellPrice', $event)"
+        step="any"
+        min="0" />
+    </label>
+    <label>
+      Commission
+      <input
+        type="number"
+        [value]="form.commission"
+        (input)="updateNumber('commission', $event)"
+        step="any"
+        min="0" />
+    </label>
+    <button
+      class="add-lot-btn sell-btn"
+      (click)="submit()"
+      [disabled]="!isValid() || submitting()">
+      {{ submitting() ? 'Selling...' : 'Sell' }}
+    </button>
+  </div>
+  @if (error()) {
+    <span class="sell-error">{{ error() }}</span>
+  }
+</div>

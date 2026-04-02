@@ -1,64 +1,45 @@
-import fs from 'fs';
-import path from 'path';
-import { IPortfolio, IStoredPortfolioItem, ILot } from '../interfaces/portfolio.interface';
+import {
+  IPortfolio,
+  IStoredPortfolioItem,
+  ILot,
+  ITransaction,
+  ILotConsumed,
+} from '../interfaces/portfolio.interface';
 import { PortfolioMapperService } from './portfolio-mapper.service';
-import type { Page } from 'puppeteer';
-import { setTimeout } from 'node:timers/promises';
-import { SafeMathService } from './safe-math.service';
+import { PortfolioRepository } from './portfolio-repository.service';
+import { LotService } from './lot.service';
+import { SafeMath } from './safe-math.service';
+import priceScrapingService from './price-scraping.service';
+import configService from './config.service';
 import loggerService from './logger.service';
-const puppeteer = require('puppeteer');
-const { addExtra } = require('puppeteer-extra');
-const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 
 class PortfolioService {
   private rawPortfolio: IStoredPortfolioItem[] = [];
   private mappedPortfolio: IPortfolio | null = null;
-  private dataPath: string;
-  private browser: any = null;
+  private repo = new PortfolioRepository();
   private mapper = new PortfolioMapperService();
-  private math = new SafeMathService();
+  private lotService = new LotService();
 
   constructor() {
-    this.dataPath = path.resolve(__dirname, '../data/portfolio.json');
-    this.loadFromFile();
-    setInterval(
-      () => {
-        this.saveToFile();
-      },
-      60 * 60 * 1000
-    );
-    // Watch the portfolio file and reload into memory when it changes on disk
-    try {
-      fs.watchFile(this.dataPath, { interval: 10000 }, (curr, prev) => {
-        if (curr.mtimeMs !== prev.mtimeMs) {
-          loggerService.info('Detected change in portfolio file, reloading from disk');
-          this.loadFromFile();
-        }
-      });
-    } catch (err) {
-      loggerService.error('Failed to set up file watcher for portfolio data', err as Error);
-    }
+    this.reload();
+    setInterval(() => this.repo.save(this.rawPortfolio), configService.saveInterval);
+    this.repo.watch(() => this.reload());
   }
 
-  private loadFromFile(): void {
-    try {
-      const data = fs.readFileSync(this.dataPath, 'utf-8');
-      this.rawPortfolio = JSON.parse(data) as IStoredPortfolioItem[];
-      this.mappedPortfolio = this.mapper.mapStoredToPortfolio(this.rawPortfolio);
-    } catch (error) {
-      loggerService.error('Error loading portfolio from file:', error as Error);
-      this.rawPortfolio = [];
-      this.mappedPortfolio = null;
-    }
+  private reload(): void {
+    this.rawPortfolio = this.repo.load();
+    this.mappedPortfolio = this.rawPortfolio.length
+      ? this.mapper.mapStoredToPortfolio(this.rawPortfolio)
+      : null;
   }
 
-  private saveToFile(): void {
-    try {
-      fs.writeFileSync(this.dataPath, JSON.stringify(this.rawPortfolio, null, 2));
-      loggerService.info('Portfolio saved to file');
-    } catch (error) {
-      loggerService.error('Error saving portfolio to file:', error as Error);
-    }
+  private remap(): void {
+    this.mappedPortfolio = this.mapper.mapStoredToPortfolio(this.rawPortfolio);
+  }
+
+  private remapAndSave(): void {
+    this.remap();
+    this.repo.save(this.rawPortfolio);
   }
 
   public getPortfolio(): IPortfolio | null {
@@ -66,17 +47,33 @@ class PortfolioService {
   }
 
   public addPortfolioItem(item: IStoredPortfolioItem): void {
+    if (!item.realizedPnl) item.realizedPnl = 0;
+    if (!item.transactions) item.transactions = [];
     this.rawPortfolio.push(item);
-    this.mappedPortfolio = this.mapper.mapStoredToPortfolio(this.rawPortfolio);
+    this.remap();
   }
 
   public addLotToItem(isin: string, lot: ILot): boolean {
-    const item = this.rawPortfolio.find(item => item.isin === isin);
+    const item = this.rawPortfolio.find(i => i.isin === isin);
     if (!item) return false;
     item.lots.push(lot);
-    this.mappedPortfolio = this.mapper.mapStoredToPortfolio(this.rawPortfolio);
-    this.saveToFile();
+    this.remapAndSave();
     return true;
+  }
+
+  private findItemOrFail(isin: string): { item: IStoredPortfolioItem } | { error: string } {
+    const item = this.rawPortfolio.find(i => i.isin === isin);
+    if (!item) return { error: 'Item not found' };
+    return { item };
+  }
+
+  private getAvailableQty(item: IStoredPortfolioItem): {
+    activeLots: ILot[];
+    totalAvailable: number;
+  } {
+    const activeLots = item.lots.filter(l => l.qtyRemaining > 0);
+    const totalAvailable = activeLots.reduce((sum, l) => SafeMath.add(sum, l.qtyRemaining), 0);
+    return { activeLots, totalAvailable };
   }
 
   public sellFromItem(
@@ -85,12 +82,11 @@ class PortfolioService {
     sellPrice: number,
     commission: number
   ): { success: boolean; message?: string } {
-    const item = this.rawPortfolio.find(i => i.isin === isin);
-    if (!item) return { success: false, message: 'Item not found' };
+    const lookup = this.findItemOrFail(isin);
+    if ('error' in lookup) return { success: false, message: lookup.error };
+    const item = lookup.item;
 
-    const activeLots = item.lots.filter(l => l.qtyRemaining > 0);
-    const totalAvailable = activeLots.reduce((sum, l) => this.math.safeAdd(sum, l.qtyRemaining), 0);
-
+    const { activeLots, totalAvailable } = this.getAvailableQty(item);
     if (totalAvailable < qtyToSell) {
       return {
         success: false,
@@ -98,71 +94,151 @@ class PortfolioService {
       };
     }
 
-    // FIFO: deduct from oldest lots first
-    let remaining = qtyToSell;
-    for (const lot of activeLots) {
-      if (remaining <= 0) break;
-      const deducted = Math.min(remaining, lot.qtyRemaining);
-      lot.qtyRemaining = this.math.safeSubtract(lot.qtyRemaining, deducted);
-      lot.totalCost = this.math.safeMultiply(lot.qtyRemaining, lot.costPerUnit);
-      remaining = this.math.safeSubtract(remaining, deducted);
-    }
+    let totalCostBasis = 0;
+    let totalRealizedPnl = 0;
+    const lotsConsumed: ILotConsumed[] = [];
 
-    this.mappedPortfolio = this.mapper.mapStoredToPortfolio(this.rawPortfolio);
-    this.saveToFile();
+    this.lotService.matchLots(activeLots, qtyToSell, (deducted, lot) => {
+      const proratedCommission = this.lotService.prorateFee(commission, deducted, qtyToSell);
+      const proceeds = SafeMath.multiply(deducted, sellPrice);
+      const cost = SafeMath.multiply(deducted, lot.costPerUnit);
+      const pnl = SafeMath.subtract(SafeMath.subtract(proceeds, cost), proratedCommission);
+
+      totalCostBasis = SafeMath.add(totalCostBasis, cost);
+      totalRealizedPnl = SafeMath.add(totalRealizedPnl, pnl);
+      lotsConsumed.push({ lotId: lot.id, qty: deducted, costPerUnit: lot.costPerUnit });
+
+      lot.qtyRemaining = SafeMath.subtract(lot.qtyRemaining, deducted);
+      lot.totalCost = SafeMath.multiply(lot.qtyRemaining, lot.costPerUnit);
+    });
+
+    if (!item.transactions) item.transactions = [];
+    if (!item.realizedPnl) item.realizedPnl = 0;
+
+    const transaction: ITransaction = {
+      id: `${isin}-sell-${Date.now()}`,
+      date: new Date().toISOString(),
+      type: 'sell',
+      qty: qtyToSell,
+      pricePerUnit: sellPrice,
+      costBasis: totalCostBasis,
+      proceeds: SafeMath.multiply(qtyToSell, sellPrice),
+      commission,
+      realizedPnl: totalRealizedPnl,
+      lotsConsumed,
+    };
+
+    item.transactions.push(transaction);
+    item.realizedPnl = SafeMath.add(item.realizedPnl, totalRealizedPnl);
+
+    this.remapAndSave();
     return { success: true };
   }
 
-  private async getInvestingPrice(page: Page, link: string): Promise<number[]> {
-    await page.goto(link.toLowerCase());
-    const price: string[] = [];
-    let attempts = 0;
+  public transferBetweenFunds(
+    sourceIsin: string,
+    targetIsin: string,
+    sourceQtySold: number,
+    targetQtyReceived: number,
+    commission: number
+  ): { success: boolean; message?: string } {
+    const sourceLookup = this.findItemOrFail(sourceIsin);
+    if ('error' in sourceLookup) return { success: false, message: 'Source item not found' };
+    const sourceItem = sourceLookup.item;
 
-    while (attempts < 5) {
-      const priceEL = await page.$('#last_last');
-      const changeEL = await page.$('#last_last + span');
-      const altPriceEL = await page.$('[data-test="instrument-price-last"]');
-      const altChangeEL = await page.$('[data-test="instrument-price-change"]');
+    const targetLookup = this.findItemOrFail(targetIsin);
+    if ('error' in targetLookup) return { success: false, message: 'Target item not found' };
+    const targetItem = targetLookup.item;
 
-      if (!priceEL && !changeEL && !altPriceEL && !altChangeEL) {
-        loggerService.warn(`Price elements not found, retrying... (${++attempts})`);
-        await setTimeout(250);
-      } else {
-        if (priceEL) {
-          price[0] = await page.evaluate((el: any) => el.textContent, changeEL);
-          price[1] = await page.evaluate((el: any) => el.textContent, priceEL);
-        } else {
-          price[0] = await page.evaluate((el: any) => el.textContent, altChangeEL);
-          price[1] = await page.evaluate((el: any) => el.textContent, altPriceEL);
-        }
-        break;
-      }
+    const { activeLots, totalAvailable } = this.getAvailableQty(sourceItem);
+    if (totalAvailable < sourceQtySold) {
+      return {
+        success: false,
+        message: `Not enough shares in source. Available: ${totalAvailable}, requested: ${sourceQtySold}`,
+      };
     }
-    return price.map(p => parseFloat(p.trim().replace(',', '.')));
+
+    let totalCostBasis = 0;
+    const lotsConsumed: ILotConsumed[] = [];
+
+    this.lotService.matchLots(activeLots, sourceQtySold, (deducted, lot) => {
+      const proratedCommission = this.lotService.prorateFee(commission, deducted, sourceQtySold);
+      const cost = SafeMath.multiply(deducted, lot.costPerUnit);
+      const costWithCommission = SafeMath.add(cost, proratedCommission);
+
+      totalCostBasis = SafeMath.add(totalCostBasis, costWithCommission);
+      lotsConsumed.push({ lotId: lot.id, qty: deducted, costPerUnit: lot.costPerUnit });
+
+      lot.qtyRemaining = SafeMath.subtract(lot.qtyRemaining, deducted);
+      lot.totalCost = SafeMath.multiply(lot.qtyRemaining, lot.costPerUnit);
+    });
+
+    const targetCostPerUnit = SafeMath.divide(totalCostBasis, targetQtyReceived);
+    const newLot: ILot = {
+      id: `${targetIsin}-transfer-${Date.now()}`,
+      createdDate: new Date().toISOString(),
+      qtyRemaining: targetQtyReceived,
+      costPerUnit: targetCostPerUnit,
+      commission: 0,
+      totalCost: totalCostBasis,
+      currency: 'EUR',
+      exchangeRate: 1,
+    };
+    targetItem.lots.push(newLot);
+
+    const now = new Date().toISOString();
+    if (!sourceItem.transactions) sourceItem.transactions = [];
+    if (!sourceItem.realizedPnl) sourceItem.realizedPnl = 0;
+    if (!targetItem.transactions) targetItem.transactions = [];
+    if (!targetItem.realizedPnl) targetItem.realizedPnl = 0;
+
+    sourceItem.transactions.push({
+      id: `${sourceIsin}-transfer_out-${Date.now()}`,
+      date: now,
+      type: 'transfer_out',
+      qty: sourceQtySold,
+      pricePerUnit: 0,
+      costBasis: totalCostBasis,
+      proceeds: 0,
+      commission,
+      realizedPnl: 0,
+      counterpartyIsin: targetIsin,
+      lotsConsumed,
+    });
+
+    targetItem.transactions.push({
+      id: `${targetIsin}-transfer_in-${Date.now()}`,
+      date: now,
+      type: 'transfer_in',
+      qty: targetQtyReceived,
+      pricePerUnit: targetCostPerUnit,
+      costBasis: totalCostBasis,
+      proceeds: 0,
+      commission: 0,
+      realizedPnl: 0,
+      counterpartyIsin: sourceIsin,
+      lotsConsumed: [],
+    });
+
+    this.remapAndSave();
+    return { success: true };
   }
 
   public async refreshPrices(): Promise<void> {
-    if (!this.browser) {
-      const puppeteerExtra = addExtra(puppeteer);
-      puppeteerExtra.use(StealthPlugin());
-      this.browser = await puppeteerExtra.launch({ headless: true, args: ['--start-maximized'] });
-    }
-
     try {
       const concurrency = 10;
 
       for (let i = 0; i < this.rawPortfolio.length; i += concurrency) {
         const batch = this.rawPortfolio.slice(i, i + concurrency);
         const promises = batch.map(async asset => {
-          const page = await this.browser.newPage();
-          await page.setViewport({ width: 1280, height: 720 });
+          const page = await priceScrapingService.createPage();
           try {
-            const price = await this.getInvestingPrice(page, asset.link);
-            if (price && price.length === 2 && !isNaN(price[0]) && !isNaN(price[1])) {
-              const difference = this.math.safeSubtract(price[1], price[0]);
-              asset.prevPrice = difference === 0 ? price[1] : difference;
-              asset.currPrice = price[1];
-              loggerService.info(`${asset.name}: ${asset.prevPrice} -> ${price[1]} (${price[0]})`);
+            const priceData = await priceScrapingService.getInvestingPrice(page, asset.link);
+            if (priceData) {
+              asset.prevPrice =
+                priceData.priceDiff === 0 ? priceData.currPrice : priceData.priceDiff;
+              asset.currPrice = priceData.currPrice;
+              loggerService.info(`${asset.name}: ${asset.prevPrice} -> ${priceData.currPrice}`);
             } else {
               loggerService.warn(`Price not found for ${asset.name}, skipping.`);
             }
@@ -172,7 +248,7 @@ class PortfolioService {
         });
         await Promise.all(promises);
       }
-      this.mappedPortfolio = this.mapper.mapStoredToPortfolio(this.rawPortfolio);
+      this.remap();
       loggerService.info('Prices refreshed successfully');
     } catch (error) {
       loggerService.error('Error refreshing prices:', error as Error);
@@ -180,10 +256,8 @@ class PortfolioService {
   }
 
   public saveOnShutdown(): void {
-    this.saveToFile();
-    if (this.browser) {
-      this.browser.close();
-    }
+    this.repo.save(this.rawPortfolio);
+    priceScrapingService.closeBrowser();
   }
 }
 

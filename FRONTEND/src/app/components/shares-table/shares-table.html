@@ -33,7 +33,7 @@
             </a>
           </td>
           <td>{{ item.name }}</td>
-          @if (item.isin === 'ES0128520006') {
+          @if (item.isExcluded) {
             <td>N/A</td>
           } @else {
             <td>{{ item.portfolioPerc | number: '1.2-2' : 'de-DE' }}%</td>
@@ -127,123 +127,16 @@
                   </tbody>
                 </table>
                 <div class="add-lot-form">
-                  <span class="form-label">Buy</span>
-                  <div class="add-lot-fields">
-                    <label>
-                      Date
-                      <input
-                        type="date"
-                        [value]="lotForms[item.isin].createdDate"
-                        (input)="updateFormText(item.isin, 'createdDate', $event)" />
-                    </label>
-                    <label>
-                      Qty
-                      <input
-                        type="number"
-                        [value]="lotForms[item.isin].qtyRemaining"
-                        (input)="updateFormNumber(item.isin, 'qtyRemaining', $event)"
-                        step="any"
-                        min="0" />
-                    </label>
-                    <label>
-                      Cost/Unit
-                      <input
-                        type="number"
-                        [value]="lotForms[item.isin].costPerUnit"
-                        (input)="updateFormNumber(item.isin, 'costPerUnit', $event)"
-                        step="any"
-                        min="0" />
-                    </label>
-                    <label>
-                      Commission
-                      <input
-                        type="number"
-                        [value]="lotForms[item.isin].commission"
-                        (input)="updateFormNumber(item.isin, 'commission', $event)"
-                        step="any"
-                        min="0" />
-                    </label>
-                    <label>
-                      Currency
-                      <select
-                        [value]="lotForms[item.isin].currency"
-                        (change)="updateFormText(item.isin, 'currency', $event)">
-                        <option value="EUR">EUR</option>
-                        <option value="GBP">GBP</option>
-                        <option value="USD">USD</option>
-                        <option value="CHF">CHF</option>
-                      </select>
-                    </label>
-                    @if (lotForms[item.isin].currency !== 'EUR') {
-                      <label>
-                        Exchange Rate
-                        <input
-                          type="number"
-                          [value]="lotForms[item.isin].exchangeRate"
-                          (input)="updateFormNumber(item.isin, 'exchangeRate', $event)"
-                          step="any"
-                          min="0" />
-                      </label>
-                    }
-                    <label>
-                      Total Cost
-                      <input
-                        type="text"
-                        [value]="computedTotalCost(item.isin) | number: '1.2-2' : 'de-DE'"
-                        disabled />
-                    </label>
-                    <button
-                      class="add-lot-btn"
-                      (click)="addLot(item)"
-                      [disabled]="!isFormValid(item.isin) || submitting[item.isin]">
-                      {{ submitting[item.isin] ? 'Adding...' : 'Add' }}
-                    </button>
-                  </div>
+                  <app-lot-form
+                    [item]="item"
+                    [submitting]="!!submitting[item.isin]"
+                    (lotSubmit)="addLot(item, $event)" />
                 </div>
-                <div class="sell-form">
-                  <span class="form-label sell">Sell</span>
-                  <div class="add-lot-fields">
-                    <label>
-                      Qty to sell
-                      <input
-                        type="number"
-                        [value]="sellForms[item.isin].qtyToSell"
-                        (input)="updateSellFormNumber(item.isin, 'qtyToSell', $event)"
-                        step="any"
-                        min="0"
-                        [max]="item.numShares" />
-                    </label>
-                    <label>
-                      Sell price
-                      <input
-                        type="number"
-                        [value]="sellForms[item.isin].sellPrice"
-                        (input)="updateSellFormNumber(item.isin, 'sellPrice', $event)"
-                        step="any"
-                        min="0" />
-                    </label>
-                    <label>
-                      Commission
-                      <input
-                        type="number"
-                        [value]="sellForms[item.isin].commission"
-                        (input)="updateSellFormNumber(item.isin, 'commission', $event)"
-                        step="any"
-                        min="0" />
-                    </label>
-                    <button
-                      class="add-lot-btn sell-btn"
-                      (click)="sellShares(item)"
-                      [disabled]="
-                        !isSellFormValid(item.isin) || sellSubmitting[item.isin]
-                      ">
-                      {{ sellSubmitting[item.isin] ? 'Selling...' : 'Sell' }}
-                    </button>
-                  </div>
-                  @if (sellError[item.isin]) {
-                    <span class="sell-error">{{ sellError[item.isin] }}</span>
-                  }
-                </div>
+                <app-sell-form
+                  [maxShares]="item.numShares"
+                  [submitting]="!!sellSubmitting[item.isin]"
+                  [error]="sellError[item.isin] || ''"
+                  (sellSubmit)="sellShares(item, $event)" />
               </div>
             </td>
           </tr>

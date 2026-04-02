@@ -30,11 +30,9 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
-    "inversify": "^7.11.0",
     "puppeteer": "^24.36.0",
     "puppeteer-extra": "^3.3.6",
     "puppeteer-extra-plugin-stealth": "^2.11.2",
-    "reflect-metadata": "^0.2.2",
     "winston": "^3.19.0",
     "zod": "^4.3.6"
   }

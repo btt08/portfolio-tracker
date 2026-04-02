@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import { RecordMapperService } from '../services/record-mapper.service';
-import { SafeMathService } from '../services/safe-math.service';
+import { SafeMath } from '../services/safe-math.service';
+import { LotService } from '../services/lot.service';
 import {
   IRawPortfolioItem,
   IStoredPortfolioItem,
@@ -11,7 +12,7 @@ import {
 
 class MigrationService {
   private recordMapper = new RecordMapperService();
-  private math = new SafeMathService();
+  private lotService = new LotService();
 
   processRawData(rawData: IRawPortfolioItem[]): IPortfolioItem[] {
     const itemMap = this.buildItemMap(rawData);
@@ -36,7 +37,7 @@ class MigrationService {
         .filter(rec => rec.type === 'buy');
       buyRecords.forEach((rec, idx) => {
         const totalCost = rec.totalCost!;
-        const costPerUnit = this.math.safeDivide(totalCost, rec.numShares || 1);
+        const costPerUnit = SafeMath.divide(totalCost, rec.numShares || 1);
         entry.lots.push(
           this.createLot(rawItem.isin, rec.date!, idx, rec.numShares, costPerUnit, totalCost)
         );
@@ -83,14 +84,14 @@ class MigrationService {
     rec: any
   ) {
     const totalSellCommission = rec.commission || 0;
-    this.matchLots(entry.lots, rec.numShares, (matched, lot) => {
-      const proratedFee = this.prorateFee(totalSellCommission, matched, rec.numShares);
-      const proceeds = this.math.safeMultiply(matched, rec.pricePerShare);
-      const cost = this.math.safeMultiply(matched, lot.costPerUnit);
-      const pnl = this.math.safeSubtract(this.math.safeSubtract(proceeds, cost), proratedFee);
-      entry.realizedPnl = this.math.safeAdd(entry.realizedPnl, pnl);
-      lot.qtyRemaining = this.math.safeSubtract(lot.qtyRemaining, matched);
-      lot.totalCost = this.math.safeMultiply(lot.qtyRemaining, lot.costPerUnit);
+    this.lotService.matchLots(entry.lots, rec.numShares, (matched, lot) => {
+      const proratedFee = this.lotService.prorateFee(totalSellCommission, matched, rec.numShares);
+      const proceeds = SafeMath.multiply(matched, rec.pricePerShare);
+      const cost = SafeMath.multiply(matched, lot.costPerUnit);
+      const pnl = SafeMath.subtract(SafeMath.subtract(proceeds, cost), proratedFee);
+      entry.realizedPnl = SafeMath.add(entry.realizedPnl, pnl);
+      lot.qtyRemaining = SafeMath.subtract(lot.qtyRemaining, matched);
+      lot.totalCost = SafeMath.multiply(lot.qtyRemaining, lot.costPerUnit);
     });
   }
 
@@ -117,16 +118,17 @@ class MigrationService {
       });
     }
     const targetEntry = itemMap.get(targetIsin)!;
-    this.matchLots(entry.lots, rec.numShares, (matched, lot) => {
-      const proratedFee = this.prorateFee(totalTransferCommission, matched, rec.numShares);
-      const addedTotalCost = this.math.safeAdd(
-        this.math.safeMultiply(matched, lot.costPerUnit),
-        proratedFee
+    this.lotService.matchLots(entry.lots, rec.numShares, (matched, lot) => {
+      const proratedFee = this.lotService.prorateFee(
+        totalTransferCommission,
+        matched,
+        rec.numShares
       );
+      const addedTotalCost = SafeMath.add(SafeMath.multiply(matched, lot.costPerUnit), proratedFee);
       const addedCostPerUnit =
-        matched !== 0 ? this.math.safeDivide(addedTotalCost, matched) : lot.costPerUnit;
-      lot.qtyRemaining = this.math.safeSubtract(lot.qtyRemaining, matched);
-      lot.totalCost = this.math.safeMultiply(lot.qtyRemaining, lot.costPerUnit);
+        matched !== 0 ? SafeMath.divide(addedTotalCost, matched) : lot.costPerUnit;
+      lot.qtyRemaining = SafeMath.subtract(lot.qtyRemaining, matched);
+      lot.totalCost = SafeMath.multiply(lot.qtyRemaining, lot.costPerUnit);
       targetEntry.lots.push({
         id: `${targetIsin}-${rec.date}-${targetEntry.lots.length}`,
         createdDate: lot.createdDate,
@@ -146,7 +148,7 @@ class MigrationService {
     rec: any
   ) {
     const totalCost = rec.originalTotalCost ?? rec.totalCost!;
-    const costPerUnit = this.math.safeDivide(totalCost, rec.numShares || 1);
+    const costPerUnit = SafeMath.divide(totalCost, rec.numShares || 1);
     entry.lots.push(
       this.createLot(
         entry.raw.isin,
@@ -157,26 +159,6 @@ class MigrationService {
         totalCost
       )
     );
-  }
-
-  private matchLots(
-    lots: ILot[],
-    qtyNeeded: number,
-    onMatch: (matched: number, lot: ILot) => void
-  ) {
-    let qtyRemaining = qtyNeeded;
-    for (const lot of lots) {
-      if (qtyRemaining <= 0) break;
-      const matched = Math.min(qtyRemaining, lot.qtyRemaining);
-      if (matched > 0) {
-        onMatch(matched, lot);
-        qtyRemaining = this.math.safeSubtract(qtyRemaining, matched);
-      }
-    }
-  }
-
-  private prorateFee(totalFee: number, matched: number, totalQty: number): number {
-    return this.math.safeMultiply(totalFee, this.math.safeDivide(matched, totalQty));
   }
 
   private buildPortfolioItems(itemMap: Map<string, IItemMap>): IPortfolioItem[] {
@@ -192,24 +174,27 @@ class MigrationService {
         records: raw.records ? this.recordMapper.normalizeRecords(raw.records) : [],
         lots: entry.lots,
         realizedPnl: entry.realizedPnl,
+        totalPnl: SafeMath.add(entry.realizedPnl, metrics.unrealizedPnl),
+        transactions: [],
         portfolioPerc: 0,
+        isExcluded: false,
       };
     });
   }
 
   private calculateItemMetrics(lots: ILot[], raw: IRawPortfolioItem) {
-    const numShares = lots.reduce((s, l) => this.math.safeAdd(s, l.qtyRemaining), 0);
-    const totalInvested = lots.reduce((s, l) => this.math.safeAdd(s, l.totalCost), 0);
-    const marketValue = this.math.safeMultiply(raw.currPrice || 0, numShares);
-    const avgPrice = numShares === 0 ? 0 : this.math.safeDivide(totalInvested, numShares);
-    const prevMarketValue = this.math.safeMultiply(raw.prevPrice || 0, numShares);
+    const numShares = lots.reduce((s, l) => SafeMath.add(s, l.qtyRemaining), 0);
+    const totalInvested = lots.reduce((s, l) => SafeMath.add(s, l.totalCost), 0);
+    const marketValue = SafeMath.multiply(raw.currPrice || 0, numShares);
+    const avgPrice = numShares === 0 ? 0 : SafeMath.divide(totalInvested, numShares);
+    const prevMarketValue = SafeMath.multiply(raw.prevPrice || 0, numShares);
     const unrealizedPnl = lots.reduce(
       (acc, lot) =>
-        this.math.safeAdd(
+        SafeMath.add(
           acc,
-          this.math.safeMultiply(
+          SafeMath.multiply(
             lot.qtyRemaining,
-            this.math.safeSubtract(raw.currPrice || 0, lot.costPerUnit)
+            SafeMath.subtract(raw.currPrice || 0, lot.costPerUnit)
           )
         ),
       0
@@ -221,32 +206,17 @@ class MigrationService {
       prevPrice: raw.prevPrice || 0,
       currPrice: raw.currPrice || 0,
       avgPrice,
-      dailyChangeEUR: this.calcDailyChangeEUR(prevMarketValue, marketValue),
+      dailyChangeEUR: SafeMath.subtract(marketValue, prevMarketValue),
       dailyChangePerc: this.calcPercChange(prevMarketValue, marketValue),
-      totalChangeEUR: this.calcTotalChangeEUR(totalInvested, marketValue),
-      totalChangePerc: this.calcTotalChangePerc(totalInvested, marketValue),
+      totalChangeEUR: SafeMath.subtract(marketValue, totalInvested),
+      totalChangePerc: this.calcPercChange(totalInvested, marketValue),
       unrealizedPnl,
     };
   }
 
-  private calcDailyChangeEUR(prevMarketValue: number, currentMarketValue: number): number {
-    return this.math.safeSubtract(currentMarketValue, prevMarketValue);
-  }
-
   private calcPercChange(oldValue: number, newValue: number): number {
     if (oldValue === 0) return 0;
-    return this.math.safeMultiply(
-      this.math.safeDivide(this.math.safeSubtract(newValue, oldValue), oldValue),
-      100
-    );
-  }
-
-  private calcTotalChangeEUR(totalInvested: number, marketValue: number): number {
-    return this.math.safeSubtract(marketValue, totalInvested);
-  }
-
-  private calcTotalChangePerc(totalInvested: number, marketValue: number): number {
-    return this.calcPercChange(totalInvested, marketValue);
+    return SafeMath.multiply(SafeMath.divide(SafeMath.subtract(newValue, oldValue), oldValue), 100);
   }
 }
 
@@ -278,6 +248,8 @@ class MigrationScript {
         currPrice: item.currPrice,
         lots: item.lots,
         priceUnit: 1,
+        realizedPnl: item.realizedPnl,
+        transactions: [],
       }));
 
       // Save the new format file

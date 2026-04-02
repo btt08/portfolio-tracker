@@ -1,10 +1,12 @@
 import app from './app';
-import config from './config/config';
+import configService from './services/config.service';
 import portfolioService from './services/portfolio.service';
 import loggerService from './services/logger.service';
 
-const server = app.listen(config.port, () => {
-  loggerService.info(`Server is running on port ${config.port}`);
+const { port } = configService.serverConfig;
+
+const server = app.listen(port, () => {
+  loggerService.info(`Server is running on port ${port}`);
 });
 
 const shutdown = () => {

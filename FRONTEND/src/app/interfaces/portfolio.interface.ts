@@ -9,6 +9,26 @@ export interface ILot {
   exchangeRate: number;
 }
 
+export interface ILotConsumed {
+  lotId: string;
+  qty: number;
+  costPerUnit: number;
+}
+
+export interface ITransaction {
+  id: string;
+  date: string;
+  type: 'sell' | 'transfer_out' | 'transfer_in';
+  qty: number;
+  pricePerUnit: number;
+  costBasis: number;
+  proceeds: number;
+  commission: number;
+  realizedPnl: number;
+  counterpartyIsin?: string;
+  lotsConsumed: ILotConsumed[];
+}
+
 export interface IPortfolioItem {
   isin: string;
   name: string;
@@ -27,7 +47,10 @@ export interface IPortfolioItem {
   lots: ILot[];
   realizedPnl: number;
   unrealizedPnl: number;
+  totalPnl: number;
+  transactions: ITransaction[];
   portfolioPerc: number;
+  isExcluded: boolean;
 }
 
 export interface IPortfolioSummary {
@@ -37,6 +60,8 @@ export interface IPortfolioSummary {
   portfolioChangePerc: number;
   portfolioDailyChangeEUR: number;
   portfolioDailyChangePerc: number;
+  portfolioRealizedPnl: number;
+  portfolioTotalPnl: number;
 }
 
 export interface IPortfolio {
