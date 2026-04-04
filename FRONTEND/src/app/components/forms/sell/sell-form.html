@@ -1,0 +1,26 @@
+<div class="sell-form">
+  <span class="form-label sell">Sell</span>
+  <div class="form-fields">
+    <label>
+      Qty to sell
+      <input type="number" [formField]="sellForm.qtyToSell" step="any" />
+    </label>
+    <label>
+      Sell price
+      <input type="number" [formField]="sellForm.sellPrice" step="any" />
+    </label>
+    <label>
+      Commission
+      <input type="number" [formField]="sellForm.commission" step="any" />
+    </label>
+    <button
+      class="form-btn sell-btn"
+      (click)="submit()"
+      [disabled]="!isValid() || submitting()">
+      {{ submitting() ? 'Selling...' : 'Sell' }}
+    </button>
+  </div>
+  @if (error()) {
+    <span class="sell-error">{{ error() }}</span>
+  }
+</div>

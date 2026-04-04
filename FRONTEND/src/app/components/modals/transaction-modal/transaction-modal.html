@@ -1,0 +1,53 @@
+<div
+  class="modal-backdrop"
+  (click)="onBackdropClick($event)"
+  (keydown)="onKeydown($event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Transactions — {{ itemName() }}</h3>
+      <button class="modal-close" (click)="close.emit()">&times;</button>
+    </div>
+    <div class="modal-body">
+      @if (transactions().length === 0) {
+        <p class="no-data">No transactions recorded.</p>
+      } @else {
+        <table class="txn-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Type</th>
+              <th>Qty</th>
+              <th>Price</th>
+              <th>Cost Basis</th>
+              <th>Proceeds</th>
+              <th>Comm</th>
+              <th>Realized P&L</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (txn of transactions(); track txn.id) {
+              <tr>
+                <td>{{ txn.date | date: 'yyyy-MM-dd' }}</td>
+                <td class="type-cell">
+                  <span class="type-badge" [attr.data-type]="txn.type">{{
+                    formatType(txn.type)
+                  }}</span>
+                </td>
+                <td>{{ txn.qty | number: '1.2-4' : 'de-DE' }}</td>
+                <td>{{ txn.pricePerUnit | number: '1.2-4' : 'de-DE' }}</td>
+                <td>{{ txn.costBasis | number: '1.2-2' : 'de-DE' }}</td>
+                <td>{{ txn.proceeds | number: '1.2-2' : 'de-DE' }}</td>
+                <td>{{ txn.commission | number: '1.2-2' : 'de-DE' }}</td>
+                <td
+                  [class.positive]="txn.realizedPnl >= 0"
+                  [class.negative]="txn.realizedPnl < 0">
+                  {{ txn.realizedPnl | number: '1.2-2' : 'de-DE' }}
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </div>
+  </div>
+</div>

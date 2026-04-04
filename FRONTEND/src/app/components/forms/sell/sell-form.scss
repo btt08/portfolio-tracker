@@ -1,0 +1,18 @@
+@use '@styles/colours.scss' as *;
+@use 'styles/form-fields' as *;
+
+.sell-form {
+  border-top: 1px dashed rgba($border-color, 0.6);
+}
+
+.sell-btn {
+  background-color: $negative !important;
+  color: $white !important;
+}
+
+.sell-error {
+  display: block;
+  font-size: 0.75rem;
+  color: $negative;
+  margin-top: 0.25rem;
+}

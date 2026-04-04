@@ -1,0 +1,117 @@
+<div class="summary">
+  <div class="summary__top">
+    <h2>Holding Summary</h2>
+    <span class="summary__top--market-value" title="Total market value of all holdings">
+      {{ summary().portfolioMarketValue | number: '1.2-2' : 'de-DE' }}€
+    </span>
+    <span
+      class="summary__top--change"
+      [class.negative]="summary().portfolioChangeEUR < 0"
+      [class.positive]="summary().portfolioChangeEUR >= 0">
+      {{ formatNumber(summary().portfolioChangeEUR) }} €
+    </span>
+    <span
+      class="summary__top--change"
+      [class.negative]="summary().portfolioChangePerc < 0"
+      [class.positive]="summary().portfolioChangePerc >= 0">
+      ({{ formatNumber(summary().portfolioChangePerc) }} %)
+    </span>
+    <span class="separator">|</span>
+    <div class="summary__top--daily">
+      <span
+        class="summary__top--label"
+        title="Change in portfolio value since previous close">
+        Daily Change:
+      </span>
+      <span
+        class="summary__top--change"
+        [class.negative]="summary().portfolioDailyChangeEUR < 0"
+        [class.positive]="summary().portfolioDailyChangeEUR >= 0">
+        {{ formatNumber(summary().portfolioDailyChangeEUR) }} €
+      </span>
+      <span
+        class="summary__top--change"
+        [class.negative]="summary().portfolioDailyChangePerc < 0"
+        [class.positive]="summary().portfolioDailyChangePerc >= 0">
+        ({{ formatNumber(summary().portfolioDailyChangePerc) }} %)
+      </span>
+    </div>
+    <div class="summary__top--actions">
+      <app-btn (onClick)="refreshData()" [disabled]="isRefreshing()">
+        @if (isRefreshing()) {
+          <span class="spinner"></span>
+        }
+        {{ isRefreshing() ? 'Refreshing...' : 'Refresh' }}
+      </app-btn>
+      <app-btn
+        (onClick)="addItem()"
+        [disabled]="isRefreshing()"
+        [variant]="'primary-positive'">
+        + Add Item
+      </app-btn>
+    </div>
+    <span
+      class="summary__toggle"
+      [class.expanded]="summaryExpanded()"
+      (click)="summaryExpanded.set(!summaryExpanded())">
+      ▶
+    </span>
+  </div>
+  @if (summaryExpanded()) {
+    <div class="summary__details">
+      <div class="summary__details--item">
+        <span
+          class="summary__details--label"
+          title="Total amount invested across all holdings">
+          Invested
+        </span>
+        <span class="summary__details--value">
+          {{ summary().portfolioInvested | number: '1.2-2' : 'de-DE' }}€
+        </span>
+      </div>
+      <div class="summary__details--item">
+        <span
+          class="summary__details--label"
+          title="Profit/Loss on current open positions">
+          Unrealized P&L
+        </span>
+        <span
+          class="summary__details--value"
+          [class.positive]="
+            summary().portfolioMarketValue - summary().portfolioInvested >= 0
+          "
+          [class.negative]="
+            summary().portfolioMarketValue - summary().portfolioInvested < 0
+          ">
+          {{ formatNumber(summary().portfolioMarketValue - summary().portfolioInvested) }}
+          €
+        </span>
+      </div>
+      <div class="summary__details--item">
+        <span
+          class="summary__details--label"
+          title="Profit/Loss from closed positions (sells & transfers)">
+          Realized P&L
+        </span>
+
+        <span
+          class="summary__details--value"
+          [class.positive]="summary().portfolioRealizedPnl >= 0"
+          [class.negative]="summary().portfolioRealizedPnl < 0">
+          {{ formatNumber(summary().portfolioRealizedPnl) }} €
+        </span>
+      </div>
+      <div class="summary__details--item">
+        <span class="summary__details--label" title="Realized + Unrealized profit/loss">
+          Total P&L
+        </span>
+        <span
+          class="summary__details--value"
+          [class.positive]="summary().portfolioTotalPnl >= 0"
+          [class.negative]="summary().portfolioTotalPnl < 0">
+          {{ formatNumber(summary().portfolioTotalPnl) }} €
+        </span>
+      </div>
+    </div>
+  }
+</div>

@@ -2,12 +2,13 @@ import { Page } from 'puppeteer';
 import { setTimeout } from 'node:timers/promises';
 import loggerService from './logger.service';
 import configService from './config.service';
+import { SafeMath } from './safe-math.service';
 const puppeteer = require('puppeteer');
 const { addExtra } = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 
-export interface PriceData {
-  priceDiff: number;
+export interface IPriceData {
+  prevClose: number;
   currPrice: number;
 }
 
@@ -23,7 +24,7 @@ export class PriceScrapingService {
     return this.browser;
   }
 
-  async getInvestingPrice(page: Page, link: string): Promise<PriceData | null> {
+  async getInvestingPrice(page: Page, link: string): Promise<IPriceData | null> {
     await page.goto(link.toLowerCase());
     const price: string[] = [];
     let attempts = 0;
@@ -61,7 +62,7 @@ export class PriceScrapingService {
     }
 
     return {
-      priceDiff: parsedPrices[1] - parsedPrices[0],
+      prevClose: SafeMath.subtract(parsedPrices[1], parsedPrices[0]),
       currPrice: parsedPrices[1],
     };
   }

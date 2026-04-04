@@ -6,7 +6,6 @@ dotenv.config();
 export interface AppConfig {
   dataPath: string;
   saveInterval: number;
-  excludedIsins: string[];
   puppeteer: {
     headless: boolean;
     args: string[];
@@ -23,7 +22,6 @@ export class ConfigService {
     this.config = {
       dataPath: path.resolve(__dirname, '../data/portfolio.json'),
       saveInterval: 60 * 60 * 1000, // 1 hour
-      excludedIsins: ['ES0128520006'],
       puppeteer: {
         headless: true,
         args: ['--start-maximized'],
@@ -44,10 +42,6 @@ export class ConfigService {
 
   get saveInterval(): number {
     return this.config.saveInterval;
-  }
-
-  get excludedIsins(): string[] {
-    return this.config.excludedIsins;
   }
 
   get puppeteerConfig() {

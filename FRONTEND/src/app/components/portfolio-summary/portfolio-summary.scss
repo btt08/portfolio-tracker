@@ -1,0 +1,91 @@
+@use '@styles/colours.scss' as *;
+
+.summary {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  border: 1px solid $border-color;
+  border-radius: 0.25rem;
+
+  &__top {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    &--actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+  }
+
+  &__toggle {
+    display: inline-block;
+    color: $accent;
+    font-size: 1rem;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.2s ease;
+    opacity: 0.6;
+
+    &.expanded {
+      transform: rotate(90deg);
+    }
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  &__details {
+    display: flex;
+    gap: 2rem;
+    padding: 0.75rem 0 0;
+    border-top: 1px solid rgba($border-color, 0.5);
+
+    &--item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    &--label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      opacity: 0.6;
+    }
+
+    &--value {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+  }
+}
+
+.spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid $light-dark;
+  border-top: 2px solid $black;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+
+  &--large {
+    width: 2rem;
+    height: 2rem;
+    border-width: 3px;
+    border-color: $border-color;
+    border-top-color: $accent;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

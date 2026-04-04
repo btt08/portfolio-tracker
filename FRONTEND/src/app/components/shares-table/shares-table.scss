@@ -42,6 +42,15 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
+
+    &.sortable {
+      cursor: pointer;
+      user-select: none;
+
+      &:hover {
+        color: $accent;
+      }
+    }
   }
 
   td {
@@ -57,14 +66,6 @@
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
-    }
-
-    &.small {
-      font-size: 0.75rem;
-    }
-
-    &.large {
-      font-size: 1rem;
     }
   }
 }
@@ -84,6 +85,7 @@
   font-size: 0.65rem;
   transition: transform 0.2s ease;
   opacity: 0.6;
+  cursor: pointer;
 
   &.expanded {
     transform: rotate(90deg);
@@ -92,6 +94,38 @@
 
 .item-row.expanded {
   background-color: rgba($white, 0.03);
+}
+
+// Group header for grouped view
+.group-table {
+  margin-bottom: 1rem;
+}
+
+.group-header {
+  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  border-bottom: 1px solid $border-color;
+  background: rgba($accent, 0.08);
+
+  .group-label {
+    margin-right: auto;
+    user-select: none;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: $accent;
+    font-weight: 600;
+    font-size: 0.8rem;
+  }
+
+  .group-summary {
+    font-size: 0.75rem;
+    color: $light-dark;
+    opacity: 0.7;
+    user-select: none;
+  }
 }
 
 // Lot detail expansion
@@ -140,5 +174,63 @@
     &:hover {
       background-color: rgba($white, 0.03);
     }
+  }
+}
+
+.delete-section {
+  margin-top: 0.75rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.txn-btn {
+  padding: 0.35rem 0.75rem;
+  background: none;
+  border: 1px solid $accent;
+  border-radius: 0.25rem;
+  color: $accent;
+  font-size: 0.75rem;
+  cursor: pointer;
+
+  &:hover {
+    background: $accent;
+    color: $black;
+  }
+}
+
+.delete-btn {
+  padding: 0.35rem 0.75rem;
+  background: none;
+  border: 1px solid $negative;
+  border-radius: 0.25rem;
+  color: $negative;
+  font-size: 0.75rem;
+  cursor: pointer;
+
+  &:hover {
+    background: $negative;
+    color: $white;
+  }
+}
+
+// Responsive: horizontal scroll for the table
+@media (max-width: 1200px) {
+  .shares-table {
+    overflow-x: auto;
+
+    table {
+      min-width: 60rem;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .lot-container {
+    padding: 0.5rem 1rem;
+  }
+
+  .lot-table {
+    width: 100% !important;
   }
 }

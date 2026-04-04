@@ -1,49 +1,41 @@
 <main class="main">
-  <div class="summary">
-    <h2>Holding Summary</h2>
-    <div class="summary__portfolio">
-      <span class="summary__portfolio--market-value">
-        {{ portfolioData().summary.portfolioMarketValue | number: '1.2-2' : 'de-DE' }}€
-      </span>
-      <span
-        class="summary__portfolio--change"
-        [class.negative]="portfolioData().summary.portfolioChangeEUR < 0"
-        [class.positive]="portfolioData().summary.portfolioChangeEUR >= 0">
-        {{ formatNumber(portfolioData().summary.portfolioChangeEUR) }} €
-      </span>
-      <span
-        class="summary__portfolio--change"
-        [class.negative]="portfolioData().summary.portfolioChangePerc < 0"
-        [class.positive]="portfolioData().summary.portfolioChangePerc >= 0">
-        ({{ formatNumber(portfolioData().summary.portfolioChangePerc) }} %)
-      </span>
+  @if (isLoading()) {
+    <div class="loading-state">
+      <span class="spinner spinner--large"></span>
+      <p>Loading portfolio...</p>
     </div>
-    <span class="separator">|</span>
-    <div class="summary__portfolio--daily">
-      <span class="summary__portfolio--label">Daily Change:</span>
-      <span
-        class="summary__portfolio--change"
-        [class.negative]="portfolioData().summary.portfolioDailyChangeEUR < 0"
-        [class.positive]="portfolioData().summary.portfolioDailyChangeEUR >= 0">
-        {{ formatNumber(portfolioData().summary.portfolioDailyChangeEUR) }} €
-      </span>
-      <span
-        class="summary__portfolio--change"
-        [class.negative]="portfolioData().summary.portfolioDailyChangePerc < 0"
-        [class.positive]="portfolioData().summary.portfolioDailyChangePerc >= 0">
-        ({{ formatNumber(portfolioData().summary.portfolioDailyChangePerc) }} %)
-      </span>
+  } @else if (loadError()) {
+    <div class="error-state">
+      <p class="error-state__msg">{{ loadError() }}</p>
+      <button class="refresh-button" (click)="refreshData()">Retry</button>
     </div>
-    <button class="refresh-button" (click)="refreshData()" [disabled]="isRefreshing()">
-      @if (isRefreshing()) {
-        <span class="spinner"></span>
-      }
-      {{ isRefreshing() ? 'Refreshing...' : 'Refresh' }}
-    </button>
-  </div>
-  <div class="content">
-    <app-shares-table [data]="portfolioData().items" (portfolioUpdated)="onPortfolioUpdated($event)" />
-  </div>
+  } @else {
+    <app-portfolio-summary
+      [isRefreshing]="isRefreshing()"
+      [summary]="portfolioData().summary"
+      (onAddItem)="showAddModal.set(true)"
+      (onRefreshData)="refreshData()" />
+    <div class="content">
+      <div class="content__toolbar">
+        <button class="view-toggle" (click)="groupByType.set(!groupByType())">
+          {{ groupByType() ? 'Simple View' : 'Group View' }}
+        </button>
+        <button class="view-toggle" (click)="exportCsv()">Export CSV</button>
+        <button class="view-toggle" (click)="exportJson()">Export JSON</button>
+        <button class="view-toggle" (click)="importJson()">Import JSON</button>
+      </div>
+      <div class="content__table-wrapper">
+        <app-shares-table
+          [data]="portfolioData().items"
+          [groupByType]="groupByType()"
+          (portfolioUpdated)="onPortfolioUpdated($event)" />
+      </div>
+    </div>
+  }
 </main>
+
+@if (showAddModal()) {
+  <app-add-item-modal (close)="showAddModal.set(false)" (itemSubmit)="addItem($event)" />
+}
 
 <router-outlet />

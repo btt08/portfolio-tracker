@@ -1,0 +1,41 @@
+@use '@styles/colours.scss' as *;
+@use 'sass:color';
+
+.primary {
+  --bg-color: #{$accent};
+  --bg-color-hover: #{color.adjust($accent, $lightness: -10%)};
+  --bg-color-disabled: #{$border-color};
+  --text-color: #{$black};
+  --text-color-disabled: #{$light-dark};
+}
+
+.primary-positive {
+  --bg-color: #{$positive};
+  --bg-color-hover: #{color.adjust($positive, $lightness: -8%)};
+  --bg-color-disabled: #{color.adjust($positive, $lightness: -20%)};
+  --text-color: #{$white};
+  --text-color-disabled: #{color.adjust($white, $lightness: 30%)};
+}
+
+.btn {
+  padding: 0.25rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: none;
+  border-radius: 0.25rem;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  cursor: pointer;
+  transition: background-color 0.2s;
+
+  &:hover:not(:disabled) {
+    background-color: var(--bg-color-hover);
+  }
+
+  &:disabled {
+    background-color: var(--bg-color-disabled);
+    color: var(--text-color-disabled);
+    cursor: default;
+  }
+}

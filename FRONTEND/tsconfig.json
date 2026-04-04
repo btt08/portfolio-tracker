@@ -14,9 +14,17 @@
     "importHelpers": true,
     "target": "ES2022",
     "module": "preserve",
-    "baseUrl": "./src",
     "paths": {
-      "@styles/*": ["styles/*"]
+      "*": ["./src/*"],
+      "@components/*": ["./src/app/components/*"],
+      "@environments/*": ["./src/environments/*"],
+      "@forms/*": ["./src/app/components/forms/*"],
+      "@interfaces/*": ["./src/app/interfaces/*"],
+      "@modals/*": ["./src/app/components/modals/*"],
+      "@services/*": ["./src/app/services/*"],
+      "@styles/*": ["./src/styles/*"],
+      "@appTypes/*": ["./src/app/types/*"],
+      "@utils/*": ["./src/app/utils/*"]
     }
   },
   "angularCompilerOptions": {

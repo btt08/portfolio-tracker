@@ -1,33 +1,37 @@
 import { Request, Response } from 'express';
-import portfolioService from '../services/portfolio.service';
-import { IStoredPortfolioItem, ILot } from '../interfaces/portfolio.interface';
-import {
-  PortfolioItemInputSchema,
-  LotSchema,
-  SellSchema,
-  TransferSchema,
-} from '../validation/schemas';
 import { asyncHandler } from '../middlewares/asyncHandler';
+import portfolioService from '../services/portfolio.service';
+import { IStoredPortfolioItem, ILot, ITransaction } from '../interfaces/portfolio.interface';
+import { ImportPortfolioSchema } from '../validation/schemas';
 
 export const addPortfolioItem = asyncHandler((req: Request, res: Response) => {
-  const validation = PortfolioItemInputSchema.safeParse(req.body);
-  if (!validation.success) {
-    res
-      .status(400)
-      .json({ success: false, message: 'Invalid input', errors: validation.error.issues });
-    return;
-  }
+  const { lots: inputLots, ...itemFields } = req.validated;
+  const lots: ILot[] = inputLots || [];
+  const transactions: ITransaction[] = lots.map(lot => ({
+    id: `${itemFields.isin}-buy-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    date: lot.createdDate,
+    type: 'buy',
+    qty: lot.qtyRemaining,
+    pricePerUnit: lot.costPerUnit,
+    costBasis: lot.totalCost,
+    proceeds: 0,
+    commission: lot.commission,
+    realizedPnl: 0,
+    lotsConsumed: [],
+  }));
+
   const newItem: IStoredPortfolioItem = {
-    ...validation.data,
-    lots: [],
+    ...itemFields,
+    lots,
     prevPrice: 0,
     currPrice: 0,
     priceUnit: 1,
     realizedPnl: 0,
-    transactions: [],
+    transactions,
   };
   portfolioService.addPortfolioItem(newItem);
-  res.status(201).json({ success: true, data: newItem });
+  const portfolio = portfolioService.getPortfolio();
+  res.status(201).json({ success: true, data: portfolio });
 });
 
 export const getPortfolio = asyncHandler((req: Request, res: Response) => {
@@ -37,14 +41,7 @@ export const getPortfolio = asyncHandler((req: Request, res: Response) => {
 
 export const addLotToItem = asyncHandler((req: Request, res: Response) => {
   const { isin } = req.params;
-  const validation = LotSchema.safeParse(req.body);
-  if (!validation.success) {
-    res
-      .status(400)
-      .json({ success: false, message: 'Invalid lot data', errors: validation.error.issues });
-    return;
-  }
-  const newLot: ILot = validation.data;
+  const newLot: ILot = req.validated;
   const success = portfolioService.addLotToItem(isin as string, newLot);
   if (!success) {
     res.status(404).json({ success: false, message: `Item with ISIN ${isin} not found` });
@@ -56,14 +53,7 @@ export const addLotToItem = asyncHandler((req: Request, res: Response) => {
 
 export const sellFromItem = asyncHandler((req: Request, res: Response) => {
   const { isin } = req.params;
-  const validation = SellSchema.safeParse(req.body);
-  if (!validation.success) {
-    res
-      .status(400)
-      .json({ success: false, message: 'Invalid sell data', errors: validation.error.issues });
-    return;
-  }
-  const { qtyToSell, sellPrice, commission } = validation.data;
+  const { qtyToSell, sellPrice, commission } = req.validated;
   const result = portfolioService.sellFromItem(isin as string, qtyToSell, sellPrice, commission);
   if (!result.success) {
     res.status(400).json({
@@ -84,16 +74,20 @@ export const refreshPortfolioPrices = asyncHandler(async (req: Request, res: Res
     .json({ success: true, data: portfolio, message: 'Prices refreshed successfully' });
 });
 
-export const transferBetweenFunds = asyncHandler((req: Request, res: Response) => {
+export const deletePortfolioItem = asyncHandler((req: Request, res: Response) => {
   const { isin } = req.params;
-  const validation = TransferSchema.safeParse(req.body);
-  if (!validation.success) {
-    res
-      .status(400)
-      .json({ success: false, message: 'Invalid transfer data', errors: validation.error.issues });
+  const success = portfolioService.deletePortfolioItem(isin as string);
+  if (!success) {
+    res.status(404).json({ success: false, message: `Item with ISIN ${isin} not found` });
     return;
   }
-  const { targetIsin, sourceQtySold, targetQtyReceived, commission } = validation.data;
+  const portfolio = portfolioService.getPortfolio();
+  res.status(200).json({ success: true, data: portfolio });
+});
+
+export const transferBetweenFunds = asyncHandler((req: Request, res: Response) => {
+  const { isin } = req.params;
+  const { targetIsin, sourceQtySold, targetQtyReceived, commission } = req.validated;
   const result = portfolioService.transferBetweenFunds(
     isin as string,
     targetIsin,
@@ -108,6 +102,26 @@ export const transferBetweenFunds = asyncHandler((req: Request, res: Response) =
     });
     return;
   }
+  const portfolio = portfolioService.getPortfolio();
+  res.status(200).json({ success: true, data: portfolio });
+});
+
+export const exportPortfolio = asyncHandler((req: Request, res: Response) => {
+  const raw = portfolioService.getRawPortfolio();
+  res.status(200).json(raw);
+});
+
+export const importPortfolio = asyncHandler((req: Request, res: Response) => {
+  const result = ImportPortfolioSchema.safeParse(req.body);
+  if (!result.success) {
+    res.status(400).json({
+      success: false,
+      message: 'Invalid portfolio format',
+      errors: result.error.issues,
+    });
+    return;
+  }
+  portfolioService.importPortfolio(result.data as IStoredPortfolioItem[]);
   const portfolio = portfolioService.getPortfolio();
   res.status(200).json({ success: true, data: portfolio });
 });

@@ -192,10 +192,7 @@ class MigrationService {
       (acc, lot) =>
         SafeMath.add(
           acc,
-          SafeMath.multiply(
-            lot.qtyRemaining,
-            SafeMath.subtract(raw.currPrice || 0, lot.costPerUnit)
-          )
+          SafeMath.unrealizedPnl(lot.qtyRemaining, raw.currPrice || 0, lot.costPerUnit)
         ),
       0
     );
@@ -207,16 +204,11 @@ class MigrationService {
       currPrice: raw.currPrice || 0,
       avgPrice,
       dailyChangeEUR: SafeMath.subtract(marketValue, prevMarketValue),
-      dailyChangePerc: this.calcPercChange(prevMarketValue, marketValue),
+      dailyChangePerc: SafeMath.percChange(prevMarketValue, marketValue),
       totalChangeEUR: SafeMath.subtract(marketValue, totalInvested),
-      totalChangePerc: this.calcPercChange(totalInvested, marketValue),
+      totalChangePerc: SafeMath.percChange(totalInvested, marketValue),
       unrealizedPnl,
     };
-  }
-
-  private calcPercChange(oldValue: number, newValue: number): number {
-    if (oldValue === 0) return 0;
-    return SafeMath.multiply(SafeMath.divide(SafeMath.subtract(newValue, oldValue), oldValue), 100);
   }
 }
 

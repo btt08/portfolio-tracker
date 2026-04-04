@@ -60,7 +60,6 @@ export interface IPortfolioItem {
   totalPnl: number;
   transactions: ITransaction[];
   portfolioPerc: number;
-  isExcluded: boolean;
 }
 
 export interface IPortfolioSummary {
@@ -85,10 +84,15 @@ export interface ILotConsumed {
   costPerUnit: number;
 }
 
+export interface IAvailableQty {
+  activeLots: ILot[];
+  totalAvailable: number;
+}
+
 export interface ITransaction {
   id: string;
   date: string;
-  type: 'sell' | 'transfer_out' | 'transfer_in';
+  type: 'buy' | 'sell' | 'transfer_out' | 'transfer_in';
   qty: number;
   pricePerUnit: number;
   costBasis: number;

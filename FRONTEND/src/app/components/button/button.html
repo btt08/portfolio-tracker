@@ -1,0 +1,7 @@
+<button
+  class="btn"
+  (click)="onClick.emit()"
+  [disabled]="disabled()"
+  [attr.class]="'btn ' + variant()">
+  <ng-content></ng-content>
+</button>

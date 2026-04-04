@@ -18,7 +18,7 @@ export interface ILotConsumed {
 export interface ITransaction {
   id: string;
   date: string;
-  type: 'sell' | 'transfer_out' | 'transfer_in';
+  type: 'buy' | 'sell' | 'transfer_out' | 'transfer_in';
   qty: number;
   pricePerUnit: number;
   costBasis: number;
@@ -67,6 +67,19 @@ export interface IPortfolioSummary {
 export interface IPortfolio {
   items: IPortfolioItem[];
   summary: IPortfolioSummary;
+}
+
+export interface IGroupedPortfolioItem {
+  type: string;
+  items: IPortfolioItem[];
+  hide: boolean;
+  weight: number;
+  invested: number;
+  marketValue: number;
+  dailyChangeEUR: number;
+  dailyChangePerc: number;
+  totalChangeEUR: number;
+  totalChangePerc: number;
 }
 
 export interface IResponse {

@@ -4,6 +4,7 @@ import {
   ILot,
   ITransaction,
   ILotConsumed,
+  IAvailableQty,
 } from '../interfaces/portfolio.interface';
 import { PortfolioMapperService } from './portfolio-mapper.service';
 import { PortfolioRepository } from './portfolio-repository.service';
@@ -46,6 +47,15 @@ class PortfolioService {
     return this.mappedPortfolio;
   }
 
+  public getRawPortfolio(): IStoredPortfolioItem[] {
+    return this.rawPortfolio;
+  }
+
+  public importPortfolio(items: IStoredPortfolioItem[]): void {
+    this.rawPortfolio = items;
+    this.remapAndSave();
+  }
+
   public addPortfolioItem(item: IStoredPortfolioItem): void {
     if (!item.realizedPnl) item.realizedPnl = 0;
     if (!item.transactions) item.transactions = [];
@@ -57,6 +67,30 @@ class PortfolioService {
     const item = this.rawPortfolio.find(i => i.isin === isin);
     if (!item) return false;
     item.lots.push(lot);
+
+    if (!item.transactions) item.transactions = [];
+    const buyTxn: ITransaction = {
+      id: `${isin}-buy-${Date.now()}`,
+      date: lot.createdDate,
+      type: 'buy',
+      qty: lot.qtyRemaining,
+      pricePerUnit: lot.costPerUnit,
+      costBasis: lot.totalCost,
+      proceeds: 0,
+      commission: lot.commission,
+      realizedPnl: 0,
+      lotsConsumed: [],
+    };
+    item.transactions.push(buyTxn);
+
+    this.remapAndSave();
+    return true;
+  }
+
+  public deletePortfolioItem(isin: string): boolean {
+    const index = this.rawPortfolio.findIndex(i => i.isin === isin);
+    if (index === -1) return false;
+    this.rawPortfolio.splice(index, 1);
     this.remapAndSave();
     return true;
   }
@@ -67,10 +101,7 @@ class PortfolioService {
     return { item };
   }
 
-  private getAvailableQty(item: IStoredPortfolioItem): {
-    activeLots: ILot[];
-    totalAvailable: number;
-  } {
+  private getAvailableQty(item: IStoredPortfolioItem): IAvailableQty {
     const activeLots = item.lots.filter(l => l.qtyRemaining > 0);
     const totalAvailable = activeLots.reduce((sum, l) => SafeMath.add(sum, l.qtyRemaining), 0);
     return { activeLots, totalAvailable };
@@ -235,8 +266,7 @@ class PortfolioService {
           try {
             const priceData = await priceScrapingService.getInvestingPrice(page, asset.link);
             if (priceData) {
-              asset.prevPrice =
-                priceData.priceDiff === 0 ? priceData.currPrice : priceData.priceDiff;
+              asset.prevPrice = priceData.prevClose || priceData.currPrice;
               asset.currPrice = priceData.currPrice;
               loggerService.info(`${asset.name}: ${asset.prevPrice} -> ${priceData.currPrice}`);
             } else {

@@ -1,0 +1,116 @@
+@use '@styles/colours.scss' as *;
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba($black, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal {
+  background: $dark-light;
+  border: 1px solid $border-color;
+  border-radius: 0.5rem;
+  width: min(52rem, 95vw);
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid $border-color;
+
+  h3 {
+    margin: 0;
+    font-size: 1rem;
+  }
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: $light-dark;
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  line-height: 1;
+
+  &:hover {
+    color: $white;
+  }
+}
+
+.modal-body {
+  padding: 1rem 1.25rem;
+  overflow-y: auto;
+}
+
+.no-data {
+  text-align: center;
+  opacity: 0.5;
+  padding: 2rem 0;
+}
+
+.txn-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    padding: 0.4rem 0.5rem;
+    text-align: center;
+    font-size: 0.8rem;
+  }
+
+  th {
+    font-size: 0.7rem;
+    opacity: 0.6;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  tbody tr {
+    border-top: 1px solid rgba($border-color, 0.5);
+    height: 2rem;
+
+    &:hover {
+      background: rgba($white, 0.03);
+    }
+  }
+}
+
+.type-badge {
+  display: inline-block;
+  padding: 0.15rem 0.4rem;
+  border-radius: 0.2rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+
+  &[data-type='buy'] {
+    background: rgba($positive, 0.15);
+    color: $positive;
+  }
+
+  &[data-type='sell'] {
+    background: rgba($negative, 0.15);
+    color: $negative;
+  }
+
+  &[data-type='transfer_out'] {
+    background: rgba($accent, 0.15);
+    color: $accent;
+  }
+
+  &[data-type='transfer_in'] {
+    background: rgba($positive, 0.15);
+    color: $positive;
+  }
+}

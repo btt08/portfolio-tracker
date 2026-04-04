@@ -1,8 +1,4 @@
-@use '@styles/colours.scss' as *;
-
-.sell-form {
-  border-top: 1px dashed rgba($border-color, 0.6);
-}
+@use 'styles/colours.scss' as *;
 
 .form-label {
   display: block;
@@ -15,7 +11,7 @@
   margin-bottom: -0.25rem;
 }
 
-.add-lot-fields {
+.form-fields {
   display: flex;
   align-items: flex-end;
   gap: 0.75rem;
@@ -27,7 +23,8 @@
     font-size: 0.7rem;
     opacity: 0.7;
 
-    input {
+    input,
+    select {
       margin-top: 0.15rem;
       padding: 0.3rem 0.4rem;
       font-size: 0.8rem;
@@ -49,7 +46,7 @@
   }
 }
 
-.add-lot-btn {
+.form-btn {
   padding: 0.35rem 1.2rem;
   font-size: 0.8rem;
   background-color: $accent;
@@ -67,16 +64,4 @@
     opacity: 0.35;
     cursor: not-allowed;
   }
-}
-
-.sell-btn {
-  background-color: $negative !important;
-  color: $white !important;
-}
-
-.sell-error {
-  display: block;
-  font-size: 0.75rem;
-  color: $negative;
-  margin-top: 0.25rem;
 }

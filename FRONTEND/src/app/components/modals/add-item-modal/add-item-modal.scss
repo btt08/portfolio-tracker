@@ -1,0 +1,210 @@
+@use '@styles/colours.scss' as *;
+@use 'sass:color';
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba($black, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal {
+  background: $dark-light;
+  border: 1px solid $border-color;
+  border-radius: 0.5rem;
+  width: min(40rem, 95vw);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid $border-color;
+
+  h3 {
+    margin: 0;
+    font-size: 1rem;
+  }
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: $light-dark;
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  line-height: 1;
+
+  &:hover {
+    color: $white;
+  }
+}
+
+.modal-body {
+  padding: 1.25rem;
+
+  .form-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .form-label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.8rem;
+    color: $light-dark;
+  }
+
+  input,
+  select {
+    padding: 0.5rem;
+    background: $black;
+    border: 1px solid $border-color;
+    border-radius: 0.25rem;
+    color: $white;
+    font-size: 0.875rem;
+
+    &:focus {
+      outline: none;
+      border-color: $accent;
+    }
+  }
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+}
+
+.btn-cancel {
+  padding: 0.5rem 1rem;
+  background: none;
+  border: 1px solid $border-color;
+  border-radius: 0.25rem;
+  color: $light-dark;
+  cursor: pointer;
+
+  &:hover {
+    border-color: $light-dark;
+    color: $white;
+  }
+}
+
+.btn-submit {
+  padding: 0.5rem 1rem;
+  background: $accent;
+  color: $black;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  font-weight: 600;
+
+  &:hover:not(:disabled) {
+    background: color.adjust($accent, $lightness: -10%);
+  }
+
+  &:disabled {
+    background: $border-color;
+    color: $light-dark;
+    cursor: default;
+  }
+}
+
+.lots-section {
+  margin-top: 1.25rem;
+  border-top: 1px solid $border-color;
+  padding-top: 1rem;
+}
+
+.lots-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.lots-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: $light-dark;
+}
+
+.btn-add-lot {
+  padding: 0.25rem 0.6rem;
+  background: none;
+  border: 1px solid $accent;
+  border-radius: 0.25rem;
+  color: $accent;
+  font-size: 0.75rem;
+  cursor: pointer;
+
+  &:hover {
+    background: $accent;
+    color: $black;
+  }
+}
+
+.lot-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.lot-field {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.7rem;
+  color: $light-dark;
+  gap: 0.15rem;
+
+  input,
+  select {
+    padding: 0.35rem 0.4rem;
+    font-size: 0.8rem;
+    background: $black;
+    border: 1px solid $border-color;
+    border-radius: 0.25rem;
+    color: $white;
+    width: 100px;
+
+    &:focus {
+      outline: none;
+      border-color: $accent;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+    }
+  }
+}
+
+.btn-remove-lot {
+  background: none;
+  border: 1px solid $negative;
+  border-radius: 0.25rem;
+  color: $negative;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.2rem 0.5rem;
+  line-height: 1;
+  align-self: flex-end;
+  margin-bottom: 0.15rem;
+
+  &:hover {
+    background: $negative;
+    color: $white;
+  }
+}

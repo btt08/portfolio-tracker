@@ -27,4 +27,24 @@ export class SafeMath {
     const decimals = Math.max(numOfDecimalsA, numOfDecimalsB, precision);
     return Number((a / b).toFixed(decimals));
   }
+
+  /** qty * price * exchangeRate */
+  static valuate(qty: number, price: number, exchangeRate = 1): number {
+    return SafeMath.multiply(SafeMath.multiply(qty, price), exchangeRate);
+  }
+
+  /** qty * (currentPrice - costPerUnit) * exchangeRate */
+  static unrealizedPnl(
+    qty: number,
+    currentPrice: number,
+    costPerUnit: number,
+    exchangeRate = 1
+  ): number {
+    return SafeMath.valuate(qty, SafeMath.subtract(currentPrice, costPerUnit), exchangeRate);
+  }
+
+  static percChange(prevValue: number, currentValue: number): number {
+    if (prevValue === 0) return 0;
+    return (SafeMath.subtract(currentValue, prevValue) * 100) / prevValue;
+  }
 }
