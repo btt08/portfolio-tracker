@@ -29,8 +29,8 @@ export class SafeMath {
   }
 
   /** qty * price * exchangeRate */
-  static valuate(qty: number, price: number, exchangeRate = 1): number {
-    return SafeMath.multiply(SafeMath.multiply(qty, price), exchangeRate);
+  static valuate(qty: number, price: number, exchangeRate = 1, commisions = 0): number {
+    return SafeMath.multiply(SafeMath.add(SafeMath.multiply(qty, price), commisions), exchangeRate);
   }
 
   /** qty * (currentPrice - costPerUnit) * exchangeRate */
@@ -38,9 +38,15 @@ export class SafeMath {
     qty: number,
     currentPrice: number,
     costPerUnit: number,
-    exchangeRate = 1
+    exchangeRate = 1,
+    commisions = 0
   ): number {
-    return SafeMath.valuate(qty, SafeMath.subtract(currentPrice, costPerUnit), exchangeRate);
+    return SafeMath.valuate(
+      qty,
+      SafeMath.subtract(currentPrice, costPerUnit),
+      exchangeRate,
+      commisions
+    );
   }
 
   static percChange(prevValue: number, currentValue: number): number {

@@ -1,4 +1,5 @@
 import { SafeMath } from './safe-math.service';
+import configService from './config.service';
 import {
   IPortfolio,
   IPortfolioItem,
@@ -8,10 +9,11 @@ import {
 
 export class PortfolioMapperService {
   mapStoredToPortfolio(storedData: IStoredPortfolioItem[]): IPortfolio {
+    const excludedIsins = configService.excludedIsins;
     const mappedItems = storedData.map(item => this.mapStoredItemToPortfolioItem(item));
 
     const { totalInvested, marketValue, prevMarketValue, realizedPnl, unrealizedPnl } =
-      this.aggregatePortfolioTotals(mappedItems);
+      this.aggregatePortfolioTotals(mappedItems, excludedIsins);
 
     mappedItems.forEach(item => {
       item.portfolioPerc = marketValue === 0 ? 0 : (item.marketValue * 100) / marketValue;
@@ -31,7 +33,7 @@ export class PortfolioMapperService {
     return { summary, items: mappedItems };
   }
 
-  private aggregatePortfolioTotals(items: IPortfolioItem[]) {
+  private aggregatePortfolioTotals(items: IPortfolioItem[], excludedIsins: string[]) {
     let totalInvested = 0;
     let marketValue = 0;
     let prevMarketValue = 0;
@@ -39,6 +41,7 @@ export class PortfolioMapperService {
     let unrealizedPnl = 0;
 
     for (const item of items) {
+      if (excludedIsins.includes(item.isin)) continue;
       totalInvested = SafeMath.add(totalInvested, item.totalInvested);
       marketValue = SafeMath.add(marketValue, item.marketValue);
       prevMarketValue = SafeMath.add(
@@ -72,7 +75,7 @@ export class PortfolioMapperService {
       numShares = SafeMath.add(numShares, lot.qtyRemaining);
       totalInvested = SafeMath.add(
         totalInvested,
-        SafeMath.valuate(lot.qtyRemaining, costPerUnit, exchangeRate)
+        SafeMath.valuate(lot.qtyRemaining, costPerUnit, exchangeRate, lot.commission)
       );
       marketValue = SafeMath.add(
         marketValue,
@@ -84,10 +87,15 @@ export class PortfolioMapperService {
       );
       unrealizedPnl = SafeMath.add(
         unrealizedPnl,
-        SafeMath.unrealizedPnl(lot.qtyRemaining, normalizedCurrPrice, costPerUnit, exchangeRate)
+        SafeMath.unrealizedPnl(
+          lot.qtyRemaining,
+          normalizedCurrPrice,
+          costPerUnit,
+          exchangeRate,
+          lot.commission
+        )
       );
     }
-
     const avgPrice = numShares === 0 ? 0 : SafeMath.divide(totalInvested, numShares);
     const realizedPnl = stored.realizedPnl || 0;
 
@@ -112,6 +120,7 @@ export class PortfolioMapperService {
       totalPnl: SafeMath.add(realizedPnl, unrealizedPnl),
       transactions: stored.transactions || [],
       portfolioPerc: 0,
+      isExcluded: false,
     };
   }
 

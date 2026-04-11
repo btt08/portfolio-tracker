@@ -60,6 +60,7 @@ export interface IPortfolioItem {
   totalPnl: number;
   transactions: ITransaction[];
   portfolioPerc: number;
+  isExcluded: boolean;
 }
 
 export interface IPortfolioSummary {

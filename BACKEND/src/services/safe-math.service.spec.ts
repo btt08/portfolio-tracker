@@ -54,6 +54,10 @@ describe('SafeMath', () => {
     it('applies exchange rate', () => {
       expect(SafeMath.valuate(10, 50, 1.1)).toBe(550);
     });
+
+    it('applies commission', () => {
+      expect(SafeMath.valuate(10, 50, 1, 10)).toBe(510);
+    });
   });
 
   describe('unrealizedPnl', () => {

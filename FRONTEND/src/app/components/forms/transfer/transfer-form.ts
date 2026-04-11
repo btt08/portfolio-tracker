@@ -28,7 +28,7 @@ export class TransferForm {
   });
 
   targetOptions = computed(() =>
-    this.allItems().filter(i => i.isin !== this.sourceIsin())
+    this.allItems().filter(i => i.isin !== this.sourceIsin() && i.type === 'funds')
   );
 
   isValid = computed(() => {

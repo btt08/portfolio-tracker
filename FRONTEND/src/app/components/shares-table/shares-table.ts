@@ -142,12 +142,13 @@ export class SharesTable {
   transferSubmitting: Record<string, boolean> = {};
   transferError: Record<string, string> = {};
 
-  activeLots = this.lotUtils.activeLots;
-  lotCostPerUnit = this.lotUtils.lotCostPerUnit;
-  lotTotalCost = this.lotUtils.lotTotalCost;
-  lotCurrentValue = this.lotUtils.lotCurrentValue;
-  lotPnl = this.lotUtils.lotPnl;
-  lotPnlPerc = this.lotUtils.lotPnlPerc;
+  activeLots = (lots: ILot[]) => this.lotUtils.activeLots(lots);
+  lotCostPerUnit = (lot: ILot) => this.lotUtils.lotCostPerUnit(lot);
+  lotTotalCost = (lot: ILot) => this.lotUtils.lotTotalCost(lot);
+  lotCurrentValue = (lot: ILot, currPrice: number) =>
+    this.lotUtils.lotCurrentValue(lot, currPrice);
+  lotPnl = (lot: ILot, currPrice: number) => this.lotUtils.lotPnl(lot, currPrice);
+  lotPnlPerc = (lot: ILot, currPrice: number) => this.lotUtils.lotPnlPerc(lot, currPrice);
 
   toggleSort(key: TSortKey): void {
     if (this.sortKey() === key) {
