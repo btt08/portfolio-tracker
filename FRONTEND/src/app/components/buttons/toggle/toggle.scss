@@ -1,0 +1,11 @@
+.toggle {
+  display: inline-block;
+  font-size: 0.65rem;
+  transition: transform 0.2s ease;
+  opacity: 0.6;
+  cursor: pointer;
+
+  &.expanded {
+    transform: rotate(90deg);
+  }
+}

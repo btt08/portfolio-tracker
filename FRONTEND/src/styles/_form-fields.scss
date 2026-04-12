@@ -1,21 +1,20 @@
-@use 'styles/colours.scss' as *;
+@use '@styles/colours.scss' as *;
 
 .form-label {
+  margin-inline: 0.5rem -0.25rem;
   display: block;
   font-size: 0.7rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   opacity: 0.5;
-  margin-top: 0.5rem;
-  margin-bottom: -0.25rem;
 }
 
 .form-fields {
+  margin-top: 0.35rem;
   display: flex;
   align-items: flex-end;
   gap: 0.75rem;
-  margin-top: 0.35rem;
 
   label {
     display: flex;
@@ -27,12 +26,12 @@
     select {
       margin-top: 0.15rem;
       padding: 0.3rem 0.4rem;
-      font-size: 0.8rem;
-      background-color: $dark-light;
+      width: 130px;
       border: 1px solid $border-color;
       border-radius: 0.25rem;
+      background-color: $dark-light;
+      font-size: 0.8rem;
       color: $light-dark;
-      width: 130px;
 
       &:focus {
         outline: none;
@@ -49,12 +48,12 @@
 .form-btn {
   padding: 0.35rem 1.2rem;
   font-size: 0.8rem;
-  background-color: $accent;
-  color: $black;
   border: none;
   border-radius: 0.25rem;
-  cursor: pointer;
+  background-color: $accent;
+  color: $black;
   font-weight: 600;
+  cursor: pointer;
 
   &:hover:not(:disabled) {
     opacity: 0.85;

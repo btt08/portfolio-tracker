@@ -1,6 +1,2 @@
 @use '@styles/colours.scss' as *;
-@use 'styles/form-fields' as *;
-
-.add-lot-form {
-  border-top: 1px dashed rgba($border-color, 0.6);
-}
+@use '@styles/_form-fields.scss' as *;

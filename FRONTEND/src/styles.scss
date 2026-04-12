@@ -24,6 +24,11 @@ body {
   color: $light-dark;
 }
 
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
 .accent {
   color: $accent;
 }

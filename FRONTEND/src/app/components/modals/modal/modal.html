@@ -1,0 +1,12 @@
+<div
+  class="modal-backdrop"
+  (click)="onBackdropClick($event)"
+  (keydown)="onKeydown($event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>{{ title() }}</h3>
+      <button class="modal-close" (click)="close.emit()">&times;</button>
+    </div>
+    <div class="modal-body"><ng-content></ng-content></div>
+  </div>
+</div>

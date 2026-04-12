@@ -1,0 +1,71 @@
+@use 'sass:color';
+@use '@styles/colours.scss' as *;
+
+.lot-table {
+  width: 60% !important;
+
+  th,
+  td {
+    text-align: center;
+  }
+
+  th {
+    padding-bottom: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    opacity: 0.6;
+  }
+
+  thead tr {
+    &:hover {
+      background-color: transparent;
+    }
+  }
+
+  tbody tr {
+    border-top: 1px solid rgba($border-color, 0.4);
+    height: 1.75rem;
+
+    td {
+      font-size: 0.875rem;
+    }
+
+    &:hover {
+      background-color: rgba($white, 0.03);
+    }
+  }
+
+  .actions {
+    mat-icon {
+      width: fit-content;
+      height: fit-content;
+      font-size: 1rem;
+    }
+
+    .edit {
+      cursor: pointer;
+      color: $accent;
+
+      &:hover {
+        color: color.adjust($accent, $lightness: -10%);
+      }
+    }
+
+    .delete {
+      cursor: pointer;
+      color: $negative;
+
+      &:hover {
+        color: color.adjust($negative, $lightness: -10%);
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .lot-table {
+    width: 100% !important;
+  }
+}

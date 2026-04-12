@@ -1,44 +1,7 @@
 @for (group of displayGroups(); track group.type) {
   <div class="shares-table" [class.group-table]="groupByType()">
     @if (groupByType()) {
-      <div class="group-header" (dblclick)="group.hide = !group.hide">
-        <span
-          class="toggle-icon"
-          [class.expanded]="!group.hide"
-          (click)="group.hide = !group.hide">
-          ▶
-        </span>
-        <span class="group-label">{{ group.type }}</span>
-        <span class="group-summary">
-          <span>Weight: {{ group.weight | number: '1.2-2' : 'de-DE' }}%</span> ·
-          <span>Invested: {{ group.invested | number: '1.2-2' : 'de-DE' }}</span> ·
-          <span>Market: {{ group.marketValue | number: '1.2-2' : 'de-DE' }}</span> ·
-          <span>Daily: </span>
-          <span
-            [class.positive]="isPositive(group.dailyChangeEUR)"
-            [class.negative]="!isPositive(group.dailyChangeEUR)">
-            {{ formatNumber(group.dailyChangeEUR) }}
-          </span>
-          ·
-          <span
-            [class.positive]="isPositive(group.dailyChangePerc)"
-            [class.negative]="!isPositive(group.dailyChangePerc)">
-            {{ formatNumber(group.dailyChangePerc) }}%
-          </span>
-          <span>Total: </span>
-          <span
-            [class.positive]="isPositive(group.totalChangeEUR)"
-            [class.negative]="!isPositive(group.totalChangeEUR)">
-            {{ formatNumber(group.totalChangeEUR) }}
-          </span>
-          ·
-          <span
-            [class.positive]="isPositive(group.totalChangePerc)"
-            [class.negative]="!isPositive(group.totalChangePerc)">
-            {{ formatNumber(group.totalChangePerc) }}%
-          </span>
-        </span>
-      </div>
+      <app-group-header [group]="group" />
     }
     @if (!group.hide) {
       <table>
@@ -112,125 +75,38 @@
             <tr
               class="item-row"
               [class.expanded]="isExpanded(item.isin)"
-              (dblclick)="toggleExpand(item.isin)">
-              <td class="toggle-cell" (click)="toggleExpand(item.isin)">
-                <span class="toggle-icon" [class.expanded]="isExpanded(item.isin)">
-                  ▶
-                </span>
-              </td>
-              <td class="accent">
-                <a [href]="item.link" rel="noopener noreferrer" target="_blank">
-                  {{ item.isin }}
-                </a>
-              </td>
-              <td>{{ item.name }}</td>
-              @if (item.isExcluded) {
-                <td>N/A</td>
-              } @else {
-                <td>{{ item.portfolioPerc | number: '1.2-2' : 'de-DE' }}%</td>
-              }
-              <td>{{ item.numShares | number: '1.2-2' : 'de-DE' }}</td>
-              <td>{{ item.totalInvested | number: '1.2-2' : 'de-DE' }}</td>
-              <td>{{ item.marketValue | number: '1.2-2' : 'de-DE' }}</td>
-              <td>{{ item.avgPrice | number: '1.2-2' : 'de-DE' }}</td>
-              <td>{{ item.prevPrice | number: '1.2-3' : 'de-DE' }}</td>
-              <td>{{ item.currPrice | number: '1.2-3' : 'de-DE' }}</td>
-              <td
-                [class.positive]="item.dailyChangeEUR >= 0"
-                [class.negative]="item.dailyChangeEUR < 0">
-                {{ item.dailyChangeEUR | number: '1.2-2' : 'de-DE' }}
-              </td>
-              <td
-                [class.positive]="item.dailyChangePerc >= 0"
-                [class.negative]="item.dailyChangePerc < 0">
-                {{ item.dailyChangePerc | number: '1.2-2' : 'de-DE' }}%
-              </td>
-              <td
-                [class.positive]="item.totalChangeEUR >= 0"
-                [class.negative]="item.totalChangeEUR < 0">
-                {{ item.totalChangeEUR | number: '1.2-2' : 'de-DE' }}
-              </td>
-              <td
-                [class.positive]="item.totalChangePerc >= 0"
-                [class.negative]="item.totalChangePerc < 0">
-                {{ item.totalChangePerc | number: '1.2-2' : 'de-DE' }}%
-              </td>
-            </tr>
+              (dblclick)="toggleExpand(item.isin)"
+              app-item-row
+              [item]="item"
+              [(expandedItems)]="expandedItems"></tr>
             @if (isExpanded(item.isin)) {
-              <tr class="lot-detail-row">
-                <td colspan="15">
+              <tr class="lots">
+                <td colspan="14">
                   <div class="lot-container">
-                    <table class="lot-table">
-                      <thead>
-                        <tr>
-                          <th>Date</th>
-                          <th>Qty</th>
-                          <th>Cost/Unit</th>
-                          <th title="Commissions">Comm</th>
-                          <th title="Total cost">Cost</th>
-                          <th title="Current value">Value</th>
-                          <th>P/L (€)</th>
-                          <th>P/L (%)</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        @for (lot of activeLots(item.lots); track lot.id) {
-                          <tr>
-                            <td>{{ lot.createdDate | date: 'yyyy-MM-dd' }}</td>
-                            <td>{{ lot.qtyRemaining | number: '1.2-4' : 'de-DE' }}</td>
-                            <td>{{ lotCostPerUnit(lot) | number: '1.2-4' : 'de-DE' }}</td>
-                            <td>{{ lot.commission | number: '1.2-2' : 'de-DE' }}</td>
-                            <td>{{ lotTotalCost(lot) | number: '1.2-2' : 'de-DE' }}</td>
-                            <td>
-                              {{
-                                lotCurrentValue(lot, item.currPrice)
-                                  | number: '1.2-2' : 'de-DE'
-                              }}
-                            </td>
-                            <td
-                              [class.positive]="lotPnl(lot, item.currPrice) >= 0"
-                              [class.negative]="lotPnl(lot, item.currPrice) < 0">
-                              {{
-                                lotPnl(lot, item.currPrice) | number: '1.2-2' : 'de-DE'
-                              }}
-                            </td>
-                            <td
-                              [class.positive]="lotPnlPerc(lot, item.currPrice) >= 0"
-                              [class.negative]="lotPnlPerc(lot, item.currPrice) < 0">
-                              {{
-                                lotPnlPerc(lot, item.currPrice)
-                                  | number: '1.2-2' : 'de-DE'
-                              }}%
-                            </td>
-                          </tr>
-                        }
-                      </tbody>
-                    </table>
-                    <div class="add-lot-form">
+                    <app-lot-table
+                      [item]="item"
+                      (onEditLot)="editLot(item.isin, $event)"
+                      (onDeleteLot)="deleteLot(item.isin, $event)" />
+                    <div class="lot-container__forms">
                       <app-lot-form
                         [item]="item"
                         [submitting]="!!submitting[item.isin]"
                         (lotSubmit)="addLot(item, $event)" />
+                      <app-sell-form
+                        [maxShares]="item.numShares"
+                        [submitting]="!!sellSubmitting[item.isin]"
+                        [error]="sellError[item.isin] || ''"
+                        (sellSubmit)="sellShares(item, $event)" />
                     </div>
-                    <app-sell-form
-                      [maxShares]="item.numShares"
-                      [submitting]="!!sellSubmitting[item.isin]"
-                      [error]="sellError[item.isin] || ''"
-                      (sellSubmit)="sellShares(item, $event)" />
-                    <app-transfer-form
-                      [sourceIsin]="item.isin"
-                      [maxShares]="item.numShares"
-                      [allItems]="data()"
-                      [submitting]="!!transferSubmitting[item.isin]"
-                      [error]="transferError[item.isin] || ''"
-                      (transferSubmit)="transferFunds(item, $event)" />
-                    <div class="delete-section">
-                      <button class="txn-btn" (click)="txnModalItem.set(item)">
+                    <div class="actions">
+                      <app-btn [variant]="'secondary'" (onClick)="txnModalItem.set(item)">
                         Transactions ({{ item.transactions.length }})
-                      </button>
-                      <button class="delete-btn" (click)="deleteItem(item)">
+                      </app-btn>
+                      <app-btn
+                        [variant]="'secondary-negative'"
+                        (onClick)="deleteItem(item)">
                         Delete Item
-                      </button>
+                      </app-btn>
                     </div>
                   </div>
                 </td>
@@ -244,8 +120,38 @@
 }
 
 @if (txnModalItem(); as item) {
-  <app-transaction-modal
-    [itemName]="item.name"
-    [transactions]="item.transactions"
-    (close)="txnModalItem.set(null)" />
+  <app-modal [title]="'Transactions — ' + item.name" (close)="txnModalItem.set(null)">
+    <app-transaction-modal [transactions]="item.transactions" />
+  </app-modal>
 }
+
+@if (addModalItem(); as item) {
+  <app-modal [title]="'Add Lot — ' + item.name" (close)="addModalItem.set(null)">
+    <app-lot-form
+      [item]="item"
+      [submitting]="!!submitting[item.isin]"
+      (lotSubmit)="addLot(item, $event)" />
+  </app-modal>
+}
+
+<!-- 
+<app-sell-form
+  [maxShares]="item.numShares"
+  [submitting]="!!sellSubmitting[item.isin]"
+  [error]="sellError[item.isin] || ''"
+  (sellSubmit)="sellShares(item, $event)" />
+<app-transfer-form
+  [sourceIsin]="item.isin"
+  [maxShares]="item.numShares"
+  [allItems]="data()"
+  [submitting]="!!transferSubmitting[item.isin]"
+  [error]="transferError[item.isin] || ''"
+  (transferSubmit)="transferFunds(item, $event)" />
+<div class="delete-section">
+  <button class="txn-btn" (click)="txnModalItem.set(item)">
+    Transactions ({{ item.transactions.length }})
+  </button>
+  <button class="delete-btn" (click)="deleteItem(item)">
+    Delete Item
+  </button>
+</div> -->

@@ -1,0 +1,33 @@
+<div class="group-header" (dblclick)="group().hide = !group().hide">
+  <app-toggle [hiddenStatus]="group().hide" (onToggle)="group().hide = !group().hide" />
+  <span class="group-label">{{ group().type }}</span>
+  <div class="group-summary">
+    <span>Weight: {{ group().weight | number: '1.2-2' : 'de-DE' }}%</span> ·
+    <span>Invested: {{ group().invested | number: '1.2-2' : 'de-DE' }}</span> ·
+    <span>Market: {{ group().marketValue | number: '1.2-2' : 'de-DE' }}</span> ·
+    <span>Daily: </span>
+    <span
+      [class.positive]="isPositive(group().dailyChangeEUR)"
+      [class.negative]="!isPositive(group().dailyChangeEUR)">
+      {{ formatNumber(group().dailyChangeEUR) }}
+    </span>
+    ·
+    <span
+      [class.positive]="isPositive(group().dailyChangePerc)"
+      [class.negative]="!isPositive(group().dailyChangePerc)">
+      {{ formatNumber(group().dailyChangePerc) }}%
+    </span>
+    <span>Total: </span>
+    <span
+      [class.positive]="isPositive(group().totalChangeEUR)"
+      [class.negative]="!isPositive(group().totalChangeEUR)">
+      {{ formatNumber(group().totalChangeEUR) }}
+    </span>
+    ·
+    <span
+      [class.positive]="isPositive(group().totalChangePerc)"
+      [class.negative]="!isPositive(group().totalChangePerc)">
+      {{ formatNumber(group().totalChangePerc) }}%
+    </span>
+  </div>
+</div>

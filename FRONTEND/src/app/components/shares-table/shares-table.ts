@@ -7,8 +7,6 @@ import {
   computed,
   viewChildren,
 } from '@angular/core';
-import { DecimalPipe, DatePipe } from '@angular/common';
-import { LotUtilsService } from 'app/utils/lot-utils.service';
 import { PortfolioRestService } from '@services/portfolio-rest';
 import {
   IPortfolioItem,
@@ -19,22 +17,34 @@ import {
 import { ISellData } from '@interfaces/sell-form.interface';
 import { ITransferData } from '@interfaces/transfer.interface';
 import type { TSortKey, TSortDir } from '@appTypes/shares-table.types';
-import { LotForm } from '@forms/lot/lot-form';
+import { GroupHeader } from './components/group-header/group-header';
+import { ItemRow } from './components/item-row-data/item-row';
+import { LotTable } from './components/lot-table/lot-table';
 import { SellForm } from '@forms/sell/sell-form';
 import { TransactionModal } from '@modals/transaction-modal/transaction-modal';
 import { TransferForm } from '@forms/transfer/transfer-form';
-import { UtilsService } from 'app/utils/utils.service';
+import { Modal } from '../modals/modal/modal';
+import { LotForm } from '../forms/lot/lot-form';
+import { Button } from '../buttons/button/button';
 
 @Component({
   selector: 'app-shares-table',
-  imports: [DatePipe, DecimalPipe, LotForm, SellForm, TransactionModal, TransferForm],
+  imports: [
+    GroupHeader,
+    LotForm,
+    LotTable,
+    Modal,
+    SellForm,
+    TransactionModal,
+    // TransferForm,
+    ItemRow,
+    Button,
+  ],
   templateUrl: './shares-table.html',
   styleUrls: ['./shares-table.scss'],
 })
 export class SharesTable {
   private portfolioService = inject(PortfolioRestService);
-  private utils = inject(UtilsService);
-  private lotUtils = inject(LotUtilsService);
 
   sellFormComponents = viewChildren(SellForm);
 
@@ -43,6 +53,7 @@ export class SharesTable {
   portfolioUpdated = output<IPortfolio>();
 
   expandedItems = signal<Set<string>>(new Set());
+  addModalItem = signal<IPortfolioItem | null>(null);
   txnModalItem = signal<IPortfolioItem | null>(null);
   sortKey = signal<TSortKey | null>(null);
   sortDir = signal<TSortDir>('asc');
@@ -72,18 +83,7 @@ export class SharesTable {
     for (const item of items) {
       const type = item.type || 'Other';
       if (!groups.has(type)) {
-        groups.set(type, {
-          type,
-          items: [],
-          hide: false,
-          weight: 0,
-          marketValue: 0,
-          invested: 0,
-          dailyChangeEUR: 0,
-          dailyChangePerc: 0,
-          totalChangeEUR: 0,
-          totalChangePerc: 0,
-        });
+        groups.set(type, this.getDefaultGroupedPortfolioItem(type));
       }
       const g = groups.get(type)!;
       g.items.push(item);
@@ -120,20 +120,7 @@ export class SharesTable {
     if (this.groupByType()) {
       return this.groupedData();
     }
-    return [
-      {
-        type: '',
-        items: this.sortedData(),
-        hide: false,
-        weight: 0,
-        marketValue: 0,
-        invested: 0,
-        dailyChangeEUR: 0,
-        dailyChangePerc: 0,
-        totalChangeEUR: 0,
-        totalChangePerc: 0,
-      },
-    ];
+    return [this.getDefaultGroupedPortfolioItem('', this.sortedData())];
   });
 
   submitting: Record<string, boolean> = {};
@@ -141,14 +128,6 @@ export class SharesTable {
   sellError: Record<string, string> = {};
   transferSubmitting: Record<string, boolean> = {};
   transferError: Record<string, string> = {};
-
-  activeLots = (lots: ILot[]) => this.lotUtils.activeLots(lots);
-  lotCostPerUnit = (lot: ILot) => this.lotUtils.lotCostPerUnit(lot);
-  lotTotalCost = (lot: ILot) => this.lotUtils.lotTotalCost(lot);
-  lotCurrentValue = (lot: ILot, currPrice: number) =>
-    this.lotUtils.lotCurrentValue(lot, currPrice);
-  lotPnl = (lot: ILot, currPrice: number) => this.lotUtils.lotPnl(lot, currPrice);
-  lotPnlPerc = (lot: ILot, currPrice: number) => this.lotUtils.lotPnlPerc(lot, currPrice);
 
   toggleSort(key: TSortKey): void {
     if (this.sortKey() === key) {
@@ -240,11 +219,37 @@ export class SharesTable {
     });
   }
 
-  formatNumber(value: number): string {
-    return this.utils.formatNumber(value);
+  editLot(isin: string, lot: ILot): void {
+    alert(`Edit lot ${lot.id} - feature not implemented yet`);
   }
 
-  isPositive(value: number): boolean {
-    return value > 0;
+  deleteLot(isin: string, lot: ILot): void {
+    if (!confirm(`Delete lot? This cannot be undone.`)) return;
+    this.portfolioService.deleteLot(isin, lot.id).subscribe({
+      next: response => {
+        this.portfolioUpdated.emit(response.data);
+      },
+      error: error => {
+        console.error('Error deleting lot:', error);
+      },
+    });
+  }
+
+  getDefaultGroupedPortfolioItem(
+    type: string = '',
+    items: IPortfolioItem[] = []
+  ): IGroupedPortfolioItem {
+    return {
+      type: type,
+      items: items,
+      hide: false,
+      weight: 0,
+      marketValue: 0,
+      invested: 0,
+      dailyChangeEUR: 0,
+      dailyChangePerc: 0,
+      totalChangeEUR: 0,
+      totalChangePerc: 0,
+    };
   }
 }

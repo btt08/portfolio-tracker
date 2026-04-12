@@ -49,50 +49,6 @@
       &::-webkit-scrollbar-thumb:hover {
         background-color: #{color.adjust($accent, $lightness: -10%)};
       }
-
-      &::scroll-button(*) {
-        position: fixed;
-        position-anchor: --content;
-        justify-self: anchor-center;
-        width: 1.75rem;
-        aspect-ratio: 1 / 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border: 0;
-        border-radius: 50%;
-        font-size: 1rem;
-        background: $black;
-        color: $accent;
-        opacity: 0.5;
-        cursor: pointer;
-
-        //#region Button states
-        &:hover,
-        &:focus {
-          opacity: 1;
-        }
-
-        &:active {
-          translate: 1px 1px;
-        }
-
-        &:disabled {
-          display: none;
-        }
-        //#endregion
-      }
-
-      &::scroll-button(up) {
-        content: '▲';
-        top: anchor(top);
-        top: calc(anchor(top) - 30px);
-      }
-
-      &::scroll-button(down) {
-        content: '▼';
-        bottom: anchor(bottom);
-      }
     }
   }
 
@@ -179,3 +135,61 @@
     display: none;
   }
 }
+
+.positive {
+  color: $positive;
+}
+
+.negative {
+  color: $negative;
+}
+
+.accent {
+  color: $accent;
+}
+
+// #region scroll buttons for __table-wrapper
+// &::scroll-button(*) {
+//   position: fixed;
+//   position-anchor: --content;
+//   justify-self: anchor-center;
+//   width: 1.75rem;
+//   aspect-ratio: 1 / 1;
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   border: 0;
+//   border-radius: 50%;
+//   font-size: 1rem;
+//   background: $black;
+//   color: $accent;
+//   opacity: 0.5;
+//   cursor: pointer;
+
+//   //#region Button states
+//   &:hover,
+//   &:focus {
+//     opacity: 1;
+//   }
+
+//   &:active {
+//     translate: 1px 1px;
+//   }
+
+//   &:disabled {
+//     display: none;
+//   }
+//   //#endregion
+// }
+
+// &::scroll-button(up) {
+//   content: '▲';
+//   top: anchor(top);
+//   top: calc(anchor(top) - 30px);
+// }
+
+// &::scroll-button(down) {
+//   content: '▼';
+//   bottom: anchor(bottom);
+// }
+// #endregion

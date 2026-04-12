@@ -1,0 +1,28 @@
+@use '@styles/colours.scss' as *;
+
+.group-header {
+  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  border-bottom: 1px solid $border-color;
+  background: rgba($accent, 0.08);
+
+  .group-label {
+    margin-right: auto;
+    user-select: none;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: $accent;
+    font-weight: 600;
+    font-size: 0.8rem;
+  }
+
+  .group-summary {
+    font-size: 0.75rem;
+    color: $light-dark;
+    opacity: 0.7;
+    user-select: none;
+  }
+}

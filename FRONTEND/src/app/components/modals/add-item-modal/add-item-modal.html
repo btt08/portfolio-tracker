@@ -1,97 +1,84 @@
-<div class="modal-backdrop" (click)="onBackdropClick($event)">
-  <div class="modal">
-    <div class="modal-header">
-      <h3>Add Portfolio Item</h3>
-      <button class="modal-close" (click)="close.emit()">&times;</button>
+<form (submit)="submit($event)" class="add-item-form">
+  <div class="form-fields">
+    <label class="form-label">
+      ISIN
+      <input type="text" [formField]="itemForm.isin" placeholder="e.g. IE00B4L5Y983" />
+    </label>
+    <label class="form-label">
+      Name
+      <input
+        type="text"
+        [formField]="itemForm.name"
+        placeholder="e.g. iShares Core MSCI World" />
+    </label>
+    <label class="form-label">
+      Type
+      <select [formField]="itemForm.type">
+        @for (t of assetTypes; track t) {
+          <option [value]="t">{{ t }}</option>
+        }
+      </select>
+    </label>
+    <label class="form-label">
+      Link
+      <input type="text" [formField]="itemForm.link" placeholder="https://..." />
+    </label>
+  </div>
+
+  <div class="lots-section">
+    <div class="lots-header">
+      <span class="lots-title">Lots (optional)</span>
+      <button type="button" class="btn-add-lot" (click)="addLotRow()">+ Add Lot</button>
     </div>
-    <form (submit)="submit($event)" class="modal-body">
-      <div class="form-fields">
-        <label class="form-label">
-          ISIN
-          <input
-            type="text"
-            [formField]="itemForm.isin"
-            placeholder="e.g. IE00B4L5Y983" />
+    @for (row of lotRows; track $index) {
+      <div class="lot-row">
+        <label class="lot-field">
+          Date
+          <input type="date" [formField]="row.lotForm.date" />
         </label>
-        <label class="form-label">
-          Name
-          <input
-            type="text"
-            [formField]="itemForm.name"
-            placeholder="e.g. iShares Core MSCI World" />
+        <label class="lot-field">
+          Qty
+          <input type="number" [formField]="row.lotForm.qty" step="any" />
         </label>
-        <label class="form-label">
-          Type
-          <select [formField]="itemForm.type">
-            @for (t of assetTypes; track t) {
-              <option [value]="t">{{ t }}</option>
-            }
+        <label class="lot-field">
+          Cost/Unit
+          <input type="number" [formField]="row.lotForm.costPerUnit" step="any" />
+        </label>
+        <label class="lot-field">
+          Comm
+          <input type="number" [formField]="row.lotForm.commission" step="any" />
+        </label>
+        <label class="lot-field">
+          Currency
+          <select [formField]="row.lotForm.currency">
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="USD">USD</option>
+            <option value="CHF">CHF</option>
           </select>
         </label>
-        <label class="form-label">
-          Link
-          <input type="text" [formField]="itemForm.link" placeholder="https://..." />
-        </label>
-      </div>
-
-      <div class="lots-section">
-        <div class="lots-header">
-          <span class="lots-title">Lots (optional)</span>
-          <button type="button" class="btn-add-lot" (click)="addLotRow()">
-            + Add Lot
-          </button>
-        </div>
-        @for (row of lotRows; track $index) {
-          <div class="lot-row">
-            <label class="lot-field">
-              Date
-              <input type="date" [formField]="row.lotForm.date" />
-            </label>
-            <label class="lot-field">
-              Qty
-              <input type="number" [formField]="row.lotForm.qty" step="any" />
-            </label>
-            <label class="lot-field">
-              Cost/Unit
-              <input type="number" [formField]="row.lotForm.costPerUnit" step="any" />
-            </label>
-            <label class="lot-field">
-              Comm
-              <input type="number" [formField]="row.lotForm.commission" step="any" />
-            </label>
-            <label class="lot-field">
-              Currency
-              <select [formField]="row.lotForm.currency">
-                <option value="EUR">EUR</option>
-                <option value="GBP">GBP</option>
-                <option value="USD">USD</option>
-                <option value="CHF">CHF</option>
-              </select>
-            </label>
-            @if (row.model().currency !== 'EUR') {
-              <label class="lot-field">
-                Rate
-                <input type="number" [formField]="row.lotForm.exchangeRate" step="any" />
-              </label>
-            }
-            <label class="lot-field">
-              Total
-              <input
-                type="text"
-                [value]="lotTotalCost(row) | number: '1.2-2' : 'de-DE'"
-                disabled />
-            </label>
-            <button type="button" class="btn-remove-lot" (click)="removeLotRow($index)">
-              &times;
-            </button>
-          </div>
+        @if (row.model().currency !== 'EUR') {
+          <label class="lot-field">
+            Rate
+            <input type="number" [formField]="row.lotForm.exchangeRate" step="any" />
+          </label>
         }
+        <label class="lot-field">
+          Total
+          <input
+            type="text"
+            [value]="lotTotalCost(row) | number: '1.2-2' : 'de-DE'"
+            disabled />
+        </label>
+        <button type="button" class="btn-remove-lot" (click)="removeLotRow($index)">
+          &times;
+        </button>
       </div>
-
-      <div class="modal-actions">
-        <button type="button" class="btn-cancel" (click)="close.emit()">Cancel</button>
-        <button type="submit" class="btn-submit" [disabled]="!isValid()">Add Item</button>
-      </div>
-    </form>
+    }
   </div>
-</div>
+
+  <div class="modal-actions">
+    <button type="button" class="btn-cancel" (click)="close.emit()">Cancel</button>
+    <button type="submit" class="btn-submit" [disabled]="!isValid()">Add Item</button>
+  </div>
+</form>

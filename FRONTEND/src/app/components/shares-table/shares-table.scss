@@ -5,11 +5,6 @@
   border: 1px solid $border-color;
   border-radius: 0.25rem;
 
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-
   tbody tr {
     border-top: 1px solid $border-color;
 
@@ -18,26 +13,14 @@
     }
   }
 
-  tbody tr.lot-detail-row {
-    border-top: none;
-
-    &:hover {
-      background-color: transparent;
-    }
-  }
-
   tr {
     height: 2rem;
   }
 
-  th,
-  td {
-    padding-inline: 0.5rem;
-    line-height: 1.5rem;
-    text-align: center;
-  }
-
   th {
+    padding-inline: 0.5rem;
+    text-align: center;
+    line-height: 1.5rem;
     font-size: 0.75rem;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -52,166 +35,27 @@
       }
     }
   }
-
-  td {
-    font-size: 0.875rem;
-
-    &:first-child {
-      text-align: center;
-    }
-
-    &:nth-child(2),
-    &:nth-child(3) {
-      text-align: left;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      overflow: hidden;
-    }
-  }
-}
-
-// Toggle expand button
-.toggle-col {
-  width: rem;
-}
-
-.toggle-cell {
-  cursor: pointer;
-  user-select: none;
-}
-
-.toggle-icon {
-  display: inline-block;
-  font-size: 0.65rem;
-  transition: transform 0.2s ease;
-  opacity: 0.6;
-  cursor: pointer;
-
-  &.expanded {
-    transform: rotate(90deg);
-  }
-}
-
-.item-row.expanded {
-  background-color: rgba($white, 0.03);
-}
-
-// Group header for grouped view
-.group-table {
-  margin-bottom: 1rem;
-}
-
-.group-header {
-  padding: 0.5rem 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  border-bottom: 1px solid $border-color;
-  background: rgba($accent, 0.08);
-
-  .group-label {
-    margin-right: auto;
-    user-select: none;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: $accent;
-    font-weight: 600;
-    font-size: 0.8rem;
-  }
-
-  .group-summary {
-    font-size: 0.75rem;
-    color: $light-dark;
-    opacity: 0.7;
-    user-select: none;
-  }
-}
-
-// Lot detail expansion
-.lot-detail-row td {
-  padding: 0 !important;
 }
 
 .lot-container {
-  padding: 0.5rem 2.5rem;
+  padding: 1rem 2rem 1rem 5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
   background-color: rgba($black, 0.3);
-}
 
-.lot-table {
-  width: 60% !important;
-  border-collapse: collapse;
-
-  th,
-  td {
-    padding: 0 0.5rem;
-    text-align: center;
-    font-size: 0.875rem;
-  }
-
-  th {
-    font-size: 0.75rem;
-    opacity: 0.6;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-  }
-
-  thead tr {
-    &:hover {
-      background-color: transparent;
-    }
-  }
-
-  tbody tr {
-    border-top: 1px solid rgba($border-color, 0.4);
-    height: 1.75rem;
-
-    td {
-      text-align: center;
-    }
-
-    &:hover {
-      background-color: rgba($white, 0.03);
-    }
+  &__forms {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
   }
 }
 
-.delete-section {
+.actions {
   margin-top: 0.75rem;
   display: flex;
   justify-content: flex-end;
   gap: 0.5rem;
-}
-
-.txn-btn {
-  padding: 0.35rem 0.75rem;
-  background: none;
-  border: 1px solid $accent;
-  border-radius: 0.25rem;
-  color: $accent;
-  font-size: 0.75rem;
-  cursor: pointer;
-
-  &:hover {
-    background: $accent;
-    color: $black;
-  }
-}
-
-.delete-btn {
-  padding: 0.35rem 0.75rem;
-  background: none;
-  border: 1px solid $negative;
-  border-radius: 0.25rem;
-  color: $negative;
-  font-size: 0.75rem;
-  cursor: pointer;
-
-  &:hover {
-    background: $negative;
-    color: $white;
-  }
 }
 
 // Responsive: horizontal scroll for the table

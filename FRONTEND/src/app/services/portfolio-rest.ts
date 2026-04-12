@@ -62,6 +62,12 @@ export class PortfolioRestService {
       .pipe(catchError(this.handleError));
   }
 
+  deleteLot(isin: string, lotId: string): Observable<IResponse> {
+    return this.http
+      .delete<IResponse>(`${this.baseUrl}/${isin}/${lotId}`)
+      .pipe(catchError(this.handleError));
+  }
+
   exportPortfolio(): Observable<unknown[]> {
     return this.http
       .get<unknown[]>(`${this.baseUrl}/export`)

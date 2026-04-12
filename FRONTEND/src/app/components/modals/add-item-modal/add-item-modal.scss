@@ -1,53 +1,7 @@
 @use '@styles/colours.scss' as *;
 @use 'sass:color';
 
-.modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba($black, 0.6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-}
-
-.modal {
-  background: $dark-light;
-  border: 1px solid $border-color;
-  border-radius: 0.5rem;
-  width: min(40rem, 95vw);
-  max-height: 90vh;
-  overflow-y: auto;
-}
-
-.modal-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid $border-color;
-
-  h3 {
-    margin: 0;
-    font-size: 1rem;
-  }
-}
-
-.modal-close {
-  background: none;
-  border: none;
-  color: $light-dark;
-  font-size: 1.25rem;
-  cursor: pointer;
-  padding: 0.25rem 0.5rem;
-  line-height: 1;
-
-  &:hover {
-    color: $white;
-  }
-}
-
-.modal-body {
+.add-item-form {
   padding: 1.25rem;
 
   .form-fields {

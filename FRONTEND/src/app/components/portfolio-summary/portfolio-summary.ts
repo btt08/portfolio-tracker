@@ -1,6 +1,6 @@
 import { Component, inject, input, output, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { Button } from '../button/button';
+import { Button } from '../buttons/button/button';
 import { IPortfolioSummary } from 'app/interfaces/portfolio.interface';
 import { UtilsService } from 'app/utils/utils.service';
 

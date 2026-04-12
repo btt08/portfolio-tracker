@@ -1,0 +1,23 @@
+import { Component, inject, input } from '@angular/core';
+import { DatePipe, DecimalPipe } from '@angular/common';
+import { ILot } from 'app/interfaces/portfolio.interface';
+import { LotUtilsService } from 'app/utils/lot-utils.service';
+
+@Component({
+  selector: 'app-lot-item-row-data',
+  imports: [DatePipe, DecimalPipe],
+  templateUrl: './lot-item-row-data.html',
+  styleUrls: ['./lot-item-row-data.scss'],
+})
+export class LotItemRowData {
+  private lotUtils = inject(LotUtilsService);
+  currPrice = input.required<number>();
+  lot = input.required<ILot>();
+
+  activeLots = (lots: ILot[]) => this.lotUtils.activeLots(lots);
+  lotCostPerUnit = (lot: ILot) => this.lotUtils.lotCostPerUnit(lot);
+  lotTotalCost = (lot: ILot) => this.lotUtils.lotTotalCost(lot);
+  lotCurrentValue = (lot: ILot) => this.lotUtils.lotCurrentValue(lot, this.currPrice());
+  lotPnl = (lot: ILot) => this.lotUtils.lotPnl(lot, this.currPrice());
+  lotPnlPerc = (lot: ILot) => this.lotUtils.lotPnlPerc(lot, this.currPrice());
+}

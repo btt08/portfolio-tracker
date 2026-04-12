@@ -1,5 +1,5 @@
 @use '@styles/colours.scss' as *;
-@use 'styles/form-fields' as *;
+@use '@styles/_form-fields.scss' as *;
 
 .sell-form {
   border-top: 1px dashed rgba($border-color, 0.6);
@@ -11,8 +11,8 @@
 }
 
 .sell-error {
+  margin-top: 0.25rem;
   display: block;
   font-size: 0.75rem;
   color: $negative;
-  margin-top: 0.25rem;
 }
