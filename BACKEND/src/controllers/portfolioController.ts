@@ -85,12 +85,26 @@ export const deletePortfolioItem = asyncHandler((req: Request, res: Response) =>
   res.status(200).json({ success: true, data: portfolio });
 });
 
+export const deleteLot = asyncHandler((req: Request, res: Response) => {
+  const { isin, lotId } = req.params;
+  const success = portfolioService.deleteLot(isin as string, lotId as string);
+  if (!success) {
+    res.status(404).json({
+      success: false,
+      message: `Lot with ID ${lotId} for item with ISIN ${isin} not found`,
+    });
+    return;
+  }
+  const portfolio = portfolioService.getPortfolio();
+  res.status(200).json({ success: true, data: portfolio });
+});
+
 export const transferBetweenFunds = asyncHandler((req: Request, res: Response) => {
   const { isin } = req.params;
   const { targetIsin, sourceQtySold, targetQtyReceived, commission } = req.validated;
   const result = portfolioService.transferBetweenFunds(
     isin as string,
-    targetIsin,
+    targetIsin as string,
     sourceQtySold,
     targetQtyReceived,
     commission

@@ -3,6 +3,7 @@ import {
   addLotToItem,
   addPortfolioItem,
   deletePortfolioItem,
+  deleteLot,
   exportPortfolio,
   getPortfolio,
   importPortfolio,
@@ -30,5 +31,6 @@ router.post('/:isin/add', validate(LotSchema), addLotToItem);
 router.post('/:isin/sell', validate(SellSchema), sellFromItem);
 router.post('/:isin/transfer', validate(TransferSchema), transferBetweenFunds);
 router.delete('/:isin', deletePortfolioItem);
+router.delete('/:isin/:lotId', deleteLot);
 
 export default router;

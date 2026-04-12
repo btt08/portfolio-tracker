@@ -95,6 +95,16 @@ class PortfolioService {
     return true;
   }
 
+  public deleteLot(isin: string, lotId: string): boolean {
+    const item = this.rawPortfolio.find(i => i.isin === isin);
+    if (!item) return false;
+    const lotIndex = item.lots.findIndex(l => l.id === lotId);
+    if (lotIndex === -1) return false;
+    item.lots.splice(lotIndex, 1);
+    this.remapAndSave();
+    return true;
+  }
+
   private findItemOrFail(isin: string): { item: IStoredPortfolioItem } | { error: string } {
     const item = this.rawPortfolio.find(i => i.isin === isin);
     if (!item) return { error: 'Item not found' };
