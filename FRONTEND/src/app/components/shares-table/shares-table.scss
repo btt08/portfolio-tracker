@@ -1,6 +1,7 @@
 @use '@styles/colours.scss' as *;
 
 .shares-table {
+  margin-bottom: 1rem;
   width: 100%;
   border: 1px solid $border-color;
   border-radius: 0.25rem;
