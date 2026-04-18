@@ -1,0 +1,33 @@
+@use 'sass:color';
+@use '@styles/colours.scss' as *;
+
+td {
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.actions {
+  mat-icon {
+    width: fit-content;
+    height: fit-content;
+    font-size: 1rem;
+  }
+
+  .edit {
+    cursor: pointer;
+    color: $accent;
+
+    &:hover {
+      color: color.adjust($accent, $lightness: -10%);
+    }
+  }
+
+  .delete {
+    cursor: pointer;
+    color: $negative;
+
+    &:hover {
+      color: color.adjust($negative, $lightness: -10%);
+    }
+  }
+}

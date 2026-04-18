@@ -48,7 +48,7 @@
               class="sortable"
               (click)="toggleSort('dailyChangeEUR')"
               title="Daily change in EUR">
-              Daily (€){{ sortIndicator('dailyChangeEUR') }}
+              Daily {{ sortIndicator('dailyChangeEUR') }}
             </th>
             <th
               class="sortable"
@@ -60,7 +60,7 @@
               class="sortable"
               (click)="toggleSort('totalChangeEUR')"
               title="Total unrealized gain/loss in EUR">
-              Total (€){{ sortIndicator('totalChangeEUR') }}
+              Total {{ sortIndicator('totalChangeEUR') }}
             </th>
             <th
               class="sortable"
@@ -83,10 +83,7 @@
               <tr class="lots">
                 <td colspan="14">
                   <div class="lot-container">
-                    <app-lot-table
-                      [item]="item"
-                      (onEditLot)="editLot(item.isin, $event)"
-                      (onDeleteLot)="deleteLot(item.isin, $event)" />
+                    <app-lot-table [item]="item" />
                     <div class="lot-container__forms">
                       <app-lot-form
                         [item]="item"

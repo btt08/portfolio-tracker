@@ -1,5 +1,6 @@
 <td>{{ lot().createdDate | date: 'yyyy-MM-dd' }}</td>
 <td>{{ lot().qtyRemaining | number: '1.2-4' : 'de-DE' }}</td>
+<td>{{ lot().currency }}</td>
 <td>{{ lotCostPerUnit(lot()) | number: '1.2-4' : 'de-DE' }}</td>
 <td>{{ lot().commission | number: '1.2-2' : 'de-DE' }}</td>
 <td>{{ lotTotalCost(lot()) | number: '1.2-2' : 'de-DE' }}</td>
@@ -9,4 +10,8 @@
 </td>
 <td [class.positive]="lotPnlPerc(lot()) >= 0" [class.negative]="lotPnlPerc(lot()) < 0">
   {{ lotPnlPerc(lot()) | number: '1.2-2' : 'de-DE' }}%
+</td>
+<td class="actions">
+  <mat-icon class="edit" (click)="editLot(lot())">edit</mat-icon>
+  <mat-icon class="delete" (click)="deleteLot(lot())">delete</mat-icon>
 </td>

@@ -221,10 +221,6 @@ export class SharesTable {
     });
   }
 
-  editLot(isin: string, lot: ILot): void {
-    alert(`Edit lot ${lot.id} - feature not implemented yet`);
-  }
-
   deleteLot(isin: string, lot: ILot): void {
     if (!confirm(`Delete lot? This cannot be undone.`)) return;
     this.portfolioService.deleteLot(isin, lot.id).subscribe({

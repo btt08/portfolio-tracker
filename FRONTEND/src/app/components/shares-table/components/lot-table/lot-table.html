@@ -3,42 +3,18 @@
     <tr>
       <th>Date</th>
       <th>Qty</th>
+      <th>Currency</th>
       <th>Cost/Unit</th>
       <th title="Commissions">Comm</th>
       <th title="Total cost">Cost</th>
       <th title="Current value">Value</th>
-      <th>P/L (€)</th>
-      <th>P/L (%)</th>
+      <th title="Profit/Loss">P/L</th>
+      <th title="Profit/Loss (%)">P/L (%)</th>
     </tr>
   </thead>
   <tbody>
     @for (lot of activeLots(item().lots); track lot.id) {
-      <tr>
-        <td>{{ lot.createdDate | date: 'yyyy-MM-dd' }}</td>
-        <td>{{ lot.qtyRemaining | number: '1.2-4' : 'de-DE' }}</td>
-        <td>
-          {{ lotCostPerUnit(lot) | number: '1.2-4' : 'de-DE' }}
-        </td>
-        <td>{{ lot.commission | number: '1.2-2' : 'de-DE' }}</td>
-        <td>{{ lotTotalCost(lot) | number: '1.2-2' : 'de-DE' }}</td>
-        <td>
-          {{ lotCurrentValue(lot, item().currPrice) | number: '1.2-2' : 'de-DE' }}
-        </td>
-        <td
-          [class.positive]="lotPnl(lot, item().currPrice) >= 0"
-          [class.negative]="lotPnl(lot, item().currPrice) < 0">
-          {{ lotPnl(lot, item().currPrice) | number: '1.2-2' : 'de-DE' }}
-        </td>
-        <td
-          [class.positive]="lotPnlPerc(lot, item().currPrice) >= 0"
-          [class.negative]="lotPnlPerc(lot, item().currPrice) < 0">
-          {{ lotPnlPerc(lot, item().currPrice) | number: '1.2-2' : 'de-DE' }}%
-        </td>
-        <td class="actions">
-          <mat-icon class="edit" (click)="editLot(lot)">edit</mat-icon>
-          <mat-icon class="delete" (click)="deleteLot(lot)">delete</mat-icon>
-        </td>
-      </tr>
+      <tr app-lot-item-row-data [lot]="lot" [currPrice]="item().currPrice"></tr>
     }
   </tbody>
 </table>
