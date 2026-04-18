@@ -7,6 +7,7 @@ export interface AppConfig {
   dataPath: string;
   saveInterval: number;
   excludedIsins: string[];
+  exchangeRateComissionPerc: number;
   puppeteer: {
     headless: boolean;
     args: string[];
@@ -21,9 +22,10 @@ export class ConfigService {
 
   constructor() {
     this.config = {
-      dataPath: path.resolve(__dirname, '../data/portfolio.json'),
+      dataPath: path.resolve(__dirname, '../data'),
       saveInterval: 60 * 60 * 1000, // 1 hour
       excludedIsins: ['ES0128520006'],
+      exchangeRateComissionPerc: 0.3, // 0.3% commission for currency conversion
       puppeteer: {
         headless: true,
         args: ['--start-maximized'],
@@ -48,6 +50,10 @@ export class ConfigService {
 
   get excludedIsins(): string[] {
     return this.config.excludedIsins;
+  }
+
+  get exchangeRateComissionPerc(): number {
+    return this.config.exchangeRateComissionPerc;
   }
 
   get puppeteerConfig() {

@@ -1,0 +1,9 @@
+[
+  {
+    "name": "Pound Sterling",
+    "symbol": "£",
+    "code": "GBP",
+    "exchangeRateToEur": 1.149,
+    "link": "https://es.investing.com/currencies/gbp-eur"
+  }
+]

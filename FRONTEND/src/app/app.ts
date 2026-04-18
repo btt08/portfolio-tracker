@@ -1,13 +1,15 @@
 import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Subscription, interval } from 'rxjs';
+import { CurrencyRestService } from './services/currency-rest';
 import { FileUtilsService } from '@utils/file-utils.service';
 import { PortfolioRestService } from '@services/portfolio-rest';
 import { IAddItemData } from '@interfaces/add-item.interface';
+import { ICurrency } from './interfaces/currency.interface';
 import { IPortfolio, IPortfolioSummary } from '@interfaces/portfolio.interface';
 import { AddItemModal } from '@components/modals/add-item-modal/add-item-modal';
-import { SharesTable } from '@components/shares-table/shares-table';
 import { PortfolioSummary } from '@components/portfolio-summary/portfolio-summary';
+import { SharesTable } from '@components/shares-table/shares-table';
 import { UtilsService } from './utils/utils.service';
 
 const AUTO_REFRESH_INTERVAL_MS = 5 * 60 * 1000;
@@ -19,11 +21,13 @@ const AUTO_REFRESH_INTERVAL_MS = 5 * 60 * 1000;
   styleUrls: ['./app.scss'],
 })
 export class App implements OnInit, OnDestroy {
+  private currencyService = inject(CurrencyRestService);
   private portfolioService = inject(PortfolioRestService);
   private fileUtils = inject(FileUtilsService);
   private utils = inject(UtilsService);
   private autoRefreshSub?: Subscription;
 
+  currencyData = signal<ICurrency[]>([]);
   groupByType = signal<boolean>(false);
   isLoading = signal<boolean>(true);
   isRefreshing = signal<boolean>(false);
@@ -52,6 +56,15 @@ export class App implements OnInit, OnDestroy {
         console.error('Error loading portfolio:', error);
         this.loadError.set('Failed to load portfolio. Is the backend running?');
         this.isLoading.set(false);
+      },
+    });
+
+    this.currencyService.getCurrencies().subscribe({
+      next: data => {
+        this.currencyData.set(data);
+      },
+      error: error => {
+        console.error('Error loading currencies:', error);
       },
     });
 

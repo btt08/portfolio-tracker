@@ -26,6 +26,7 @@
       </div>
       <div class="content__table-wrapper">
         <app-shares-table
+          [currencyData]="currencyData()"
           [data]="portfolioData().items"
           [groupByType]="groupByType()"
           (portfolioUpdated)="onPortfolioUpdated($event)" />

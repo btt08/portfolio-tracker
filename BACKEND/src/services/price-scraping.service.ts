@@ -67,6 +67,30 @@ export class PriceScrapingService {
     };
   }
 
+  async getExchangeRates(page: Page, link: string): Promise<number | null> {
+    await page.goto(link.toLowerCase());
+    const rateEL = await page.$('#last_last');
+    const altRateEL = await page.$('[data-test="instrument-price-last"]');
+    const rateText = rateEL
+      ? await page.evaluate((el: any) => el.textContent, rateEL)
+      : altRateEL
+        ? await page.evaluate((el: any) => el.textContent, altRateEL)
+        : null;
+
+    if (!rateText) {
+      loggerService.warn('Exchange rate not found', { link });
+      return null;
+    }
+
+    const parsedRate = parseFloat(rateText.trim().replace(/\./g, '').replace(',', '.'));
+    if (isNaN(parsedRate)) {
+      loggerService.warn('Invalid exchange rate data', { link, rate: rateText });
+      return null;
+    }
+
+    return parsedRate;
+  }
+
   async createPage(): Promise<Page> {
     const browser = await this.ensureBrowser();
     const page = await browser.newPage();

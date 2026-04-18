@@ -17,28 +17,29 @@ import {
 import { ISellData } from '@interfaces/sell-form.interface';
 import { ITransferData } from '@interfaces/transfer.interface';
 import type { TSortKey, TSortDir } from '@appTypes/shares-table.types';
+import { ICurrency } from 'app/interfaces/currency.interface';
+import { Button } from '../buttons/button/button';
 import { GroupHeader } from './components/group-header/group-header';
 import { ItemRow } from './components/item-row-data/item-row';
+import { LotForm } from '../forms/lot/lot-form';
 import { LotTable } from './components/lot-table/lot-table';
+import { Modal } from '../modals/modal/modal';
 import { SellForm } from '@forms/sell/sell-form';
 import { TransactionModal } from '@modals/transaction-modal/transaction-modal';
 import { TransferForm } from '@forms/transfer/transfer-form';
-import { Modal } from '../modals/modal/modal';
-import { LotForm } from '../forms/lot/lot-form';
-import { Button } from '../buttons/button/button';
 
 @Component({
   selector: 'app-shares-table',
   imports: [
+    Button,
     GroupHeader,
+    ItemRow,
     LotForm,
     LotTable,
     Modal,
     SellForm,
     TransactionModal,
     // TransferForm,
-    ItemRow,
-    Button,
   ],
   templateUrl: './shares-table.html',
   styleUrls: ['./shares-table.scss'],
@@ -48,6 +49,7 @@ export class SharesTable {
 
   sellFormComponents = viewChildren(SellForm);
 
+  currencyData = input.required<ICurrency[]>();
   data = input.required<IPortfolioItem[]>();
   groupByType = input<boolean>(false);
   portfolioUpdated = output<IPortfolio>();

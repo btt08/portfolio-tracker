@@ -125,3 +125,4 @@ firestore-debug.log
 
 # Backend specific (for BACKEND folder)
 # (Already covered by general entries above, but ensuring dist/ and node_modules/ apply to subfolders)
+BACKEND/src/data/portfolio.json
