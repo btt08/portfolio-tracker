@@ -5,14 +5,14 @@ import {
   ITransaction,
   ILotConsumed,
   IAvailableQty,
-} from '../interfaces/portfolio.interface';
+} from '../../interfaces/portfolio.interface';
 import { PortfolioMapperService } from './portfolio-mapper.service';
 import { PortfolioRepository } from './portfolio-repository.service';
-import { LotService } from './lot.service';
-import { SafeMath } from './safe-math.service';
-import priceScrapingService from './price-scraping.service';
-import configService from './config.service';
-import loggerService from './logger.service';
+import { LotService } from '../lot/lot.service';
+import { SafeMath } from '../safe-math/safe-math.service';
+import priceScrapingService from '../price-scraping.service';
+import configService from '../config.service';
+import loggerService from '../logger.service';
 
 class PortfolioService {
   private rawPortfolio: IStoredPortfolioItem[] = [];
@@ -28,7 +28,7 @@ class PortfolioService {
   }
 
   private reload(): void {
-    this.rawPortfolio = this.repo.load();
+    this.rawPortfolio = this.repo.loadPortfolio();
     this.mappedPortfolio = this.rawPortfolio.length
       ? this.mapper.mapStoredToPortfolio(this.rawPortfolio)
       : null;
@@ -267,7 +267,7 @@ class PortfolioService {
 
   public async refreshPrices(): Promise<void> {
     try {
-      const concurrency = 10;
+      const concurrency = this.rawPortfolio.length;
 
       for (let i = 0; i < this.rawPortfolio.length; i += concurrency) {
         const batch = this.rawPortfolio.slice(i, i + concurrency);

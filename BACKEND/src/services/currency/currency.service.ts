@@ -1,12 +1,11 @@
-import { ICurrency } from '../interfaces/currency.interface';
-import { CurrencyRepo } from './currency-repo.service';
+import ICurrency from '../../interfaces/currency.interface';
+import currencyRepo from './currency-repo.service';
 
 class CurrencyService {
-  private currencyRepo = new CurrencyRepo();
   private currencyData: ICurrency[] = [];
 
   constructor() {
-    this.currencyData = this.currencyRepo.loadCurrencies();
+    this.currencyData = currencyRepo.loadCurrencies();
   }
 
   getCurrencyData(): ICurrency[] {
@@ -15,7 +14,7 @@ class CurrencyService {
 
   updateCurrencyData(newCurrencies: ICurrency[]): void {
     this.currencyData = newCurrencies;
-    this.currencyRepo.saveCurrencies(newCurrencies);
+    currencyRepo.saveCurrencies(newCurrencies);
   }
 }
 

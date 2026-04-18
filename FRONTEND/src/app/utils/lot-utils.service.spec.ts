@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { LotUtilsService } from './lot-utils.service';
-import { ILot } from '../interfaces/portfolio.interface';
+import { ILot } from '../../interfaces/portfolio.interface';
 
 function makeLot(overrides: Partial<ILot> = {}): ILot {
   return {

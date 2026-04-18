@@ -1,15 +1,15 @@
 import fs from 'fs';
-import { IStoredPortfolioItem } from '../interfaces/portfolio.interface';
-import configService from './config.service';
-import loggerService from './logger.service';
+import { IStoredPortfolioItem } from '../../interfaces/portfolio.interface';
+import configService from '../config.service';
+import loggerService from '../logger.service';
 
 export class PortfolioRepository {
-  private dataPath = configService.dataPath;
+  private portfolioPath = configService.dataPath + '/portfolio.json';
 
-  load(): IStoredPortfolioItem[] {
+  loadPortfolio(): IStoredPortfolioItem[] {
     try {
-      const data = fs.readFileSync(this.dataPath, 'utf-8');
-      const parsed = JSON.parse(data) as IStoredPortfolioItem[];
+      const portfolio = fs.readFileSync(this.portfolioPath, 'utf-8');
+      const parsed = JSON.parse(portfolio) as IStoredPortfolioItem[];
       return parsed.map(item => ({
         ...item,
         realizedPnl: item.realizedPnl ?? 0,
@@ -24,7 +24,7 @@ export class PortfolioRepository {
   save(portfolio: IStoredPortfolioItem[]): void {
     try {
       loggerService.info('Saving portfolio to file...');
-      fs.writeFileSync(this.dataPath, JSON.stringify(portfolio, null, 2));
+      fs.writeFileSync(this.portfolioPath, JSON.stringify(portfolio, null, 2));
       loggerService.info('Portfolio saved to file');
     } catch (error) {
       loggerService.error('Error saving portfolio to file:', error as Error);
@@ -33,7 +33,7 @@ export class PortfolioRepository {
 
   watch(onChange: () => void): void {
     try {
-      fs.watchFile(this.dataPath, { interval: 10000 }, (curr, prev) => {
+      fs.watchFile(this.portfolioPath, { interval: 10000 }, (curr, prev) => {
         if (curr.mtimeMs !== prev.mtimeMs) {
           loggerService.info('Detected change in portfolio file, reloading from disk');
           onChange();
@@ -44,3 +44,6 @@ export class PortfolioRepository {
     }
   }
 }
+
+const portfolioRepo = new PortfolioRepository();
+export default portfolioRepo;

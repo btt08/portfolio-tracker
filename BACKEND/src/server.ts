@@ -1,6 +1,6 @@
 import app from './app';
 import configService from './services/config.service';
-import portfolioService from './services/portfolio.service';
+import portfolioService from './services/portfolio/portfolio.service';
 import loggerService from './services/logger.service';
 
 const { port } = configService.serverConfig;

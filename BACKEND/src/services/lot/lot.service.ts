@@ -1,5 +1,5 @@
-import { ILot } from '../interfaces/portfolio.interface';
-import { SafeMath } from './safe-math.service';
+import { ILot } from '../../interfaces/portfolio.interface';
+import { SafeMath } from '../safe-math/safe-math.service';
 
 export class LotService {
   matchLots(lots: ILot[], qtyNeeded: number, onMatch: (matched: number, lot: ILot) => void) {
@@ -18,3 +18,6 @@ export class LotService {
     return SafeMath.multiply(totalFee, SafeMath.divide(matched, totalQty));
   }
 }
+
+const lotService = new LotService();
+export default lotService;

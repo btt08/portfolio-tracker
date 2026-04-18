@@ -1,9 +1,9 @@
 import fs from 'fs';
-import configService from './config.service';
-import loggerService from './logger.service';
-import { ICurrency } from '../interfaces/currency.interface';
+import configService from '../config.service';
+import loggerService from '../logger.service';
+import ICurrency from '../../interfaces/currency.interface';
 
-export class CurrencyRepo {
+export class CurrencyRepository {
   private currencyPath = configService.dataPath + '/currencies.json';
 
   loadCurrencies(): ICurrency[] {
@@ -26,3 +26,6 @@ export class CurrencyRepo {
     }
   }
 }
+
+const currencyRepo = new CurrencyRepository();
+export default currencyRepo;

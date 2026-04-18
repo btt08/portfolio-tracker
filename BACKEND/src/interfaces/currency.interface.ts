@@ -1,4 +1,4 @@
-export interface ICurrency {
+export default interface ICurrency {
   name: string;
   symbol: string;
   code: string;

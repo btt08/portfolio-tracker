@@ -2,7 +2,7 @@ import { Page } from 'puppeteer';
 import { setTimeout } from 'node:timers/promises';
 import loggerService from './logger.service';
 import configService from './config.service';
-import { SafeMath } from './safe-math.service';
+import { SafeMath } from './safe-math/safe-math.service';
 const puppeteer = require('puppeteer');
 const { addExtra } = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');

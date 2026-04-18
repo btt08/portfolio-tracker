@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { asyncHandler } from '../middlewares/asyncHandler';
-import { ICurrency } from '../interfaces/currency.interface';
-import currencyService from '../services/currency.service';
+import currencyService from '../services/currency/currency.service';
+import ICurrency from '../interfaces/currency.interface';
 
 export const getCurrencies = asyncHandler((req: Request, res: Response) => {
   const currencies: ICurrency[] = currencyService.getCurrencyData();

@@ -1,11 +1,11 @@
-import { SafeMath } from './safe-math.service';
-import configService from './config.service';
+import { SafeMath } from '../safe-math/safe-math.service';
+import configService from '../config.service';
 import {
   IPortfolio,
   IPortfolioItem,
   IPortfolioSummary,
   IStoredPortfolioItem,
-} from '../interfaces/portfolio.interface';
+} from '../../interfaces/portfolio.interface';
 
 export class PortfolioMapperService {
   mapStoredToPortfolio(storedData: IStoredPortfolioItem[]): IPortfolio {
@@ -69,29 +69,29 @@ export class PortfolioMapperService {
 
     for (const lot of stored.lots) {
       if (lot.qtyRemaining <= 0) continue;
-      const exchangeRate = lot.exchangeRate || 1;
       const costPerUnit = lot.costPerUnit || 0;
 
       numShares = SafeMath.add(numShares, lot.qtyRemaining);
       totalInvested = SafeMath.add(
         totalInvested,
-        SafeMath.valuate(lot.qtyRemaining, costPerUnit, exchangeRate, lot.commission)
+        SafeMath.valuate(lot.qtyRemaining, costPerUnit, 1, lot.commission)
       );
       marketValue = SafeMath.add(
         marketValue,
-        SafeMath.valuate(lot.qtyRemaining, normalizedCurrPrice, exchangeRate)
+        SafeMath.valuate(lot.qtyRemaining, normalizedCurrPrice)
       );
       prevMarketValue = SafeMath.add(
         prevMarketValue,
-        SafeMath.valuate(lot.qtyRemaining, normalizedPrevPrice, exchangeRate)
+        SafeMath.valuate(lot.qtyRemaining, normalizedPrevPrice)
       );
+
       unrealizedPnl = SafeMath.add(
         unrealizedPnl,
         SafeMath.unrealizedPnl(
           lot.qtyRemaining,
           normalizedCurrPrice,
           costPerUnit,
-          exchangeRate,
+          1,
           lot.commission
         )
       );
@@ -128,3 +128,6 @@ export class PortfolioMapperService {
     return SafeMath.percChange(prevValue, currentValue);
   }
 }
+
+const portfolioMapper = new PortfolioMapperService();
+export default portfolioMapper;

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
-import { LotService } from './lot.service';
-import { ILot } from '../interfaces/portfolio.interface';
+import { LotService } from '../lot/lot.service';
+import { ILot } from '../../interfaces/portfolio.interface';
 
 function makeLot(id: string, qtyRemaining: number): ILot {
   return {

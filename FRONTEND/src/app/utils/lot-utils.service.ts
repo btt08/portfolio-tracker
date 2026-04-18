@@ -6,7 +6,8 @@ import { ILot } from '../interfaces/portfolio.interface';
 })
 export class LotUtilsService {
   lotExchangeRate(lot: ILot): number {
-    return lot.exchangeRate ?? 1;
+    // return lot.exchangeRate ?? 1;
+    return 1;
   }
 
   lotCostPerUnit(lot: ILot): number {
@@ -18,6 +19,12 @@ export class LotUtilsService {
   }
 
   lotCurrentValue(lot: ILot, currPrice: number): number {
+    console.log(
+      'lotCurrentValue: ',
+      lot.qtyRemaining,
+      currPrice,
+      this.lotExchangeRate(lot)
+    );
     return lot.qtyRemaining * currPrice * this.lotExchangeRate(lot);
   }
 
@@ -28,6 +35,7 @@ export class LotUtilsService {
   lotPnlPerc(lot: ILot, currPrice: number): number {
     const cost = this.lotTotalCost(lot);
     if (cost === 0) return 0;
+    console.log('lotPnlPerc: ', (this.lotPnl(lot, currPrice) / cost) * 100);
     return (this.lotPnl(lot, currPrice) / cost) * 100;
   }
 
