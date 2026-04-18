@@ -12,6 +12,11 @@ class CurrencyService {
     return this.currencyData;
   }
 
+  getExchangeRateForCurrency(code: string): number {
+    const currency = this.currencyData.find(c => c.code === code);
+    return currency ? currency.exchangeRateToEur : 1;
+  }
+
   updateCurrencyData(newCurrencies: ICurrency[]): void {
     this.currencyData = newCurrencies;
     currencyRepo.saveCurrencies(newCurrencies);

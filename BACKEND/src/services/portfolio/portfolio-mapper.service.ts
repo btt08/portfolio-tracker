@@ -1,5 +1,6 @@
-import { SafeMath } from '../safe-math/safe-math.service';
 import configService from '../config.service';
+import currencyService from '../currency/currency.service';
+import { SafeMath } from '../safe-math/safe-math.service';
 import {
   IPortfolio,
   IPortfolioItem,
@@ -8,12 +9,13 @@ import {
 } from '../../interfaces/portfolio.interface';
 
 export class PortfolioMapperService {
+  private excludedIsins: string[] = configService.excludedIsins;
+
   mapStoredToPortfolio(storedData: IStoredPortfolioItem[]): IPortfolio {
-    const excludedIsins = configService.excludedIsins;
     const mappedItems = storedData.map(item => this.mapStoredItemToPortfolioItem(item));
 
     const { totalInvested, marketValue, prevMarketValue, realizedPnl, unrealizedPnl } =
-      this.aggregatePortfolioTotals(mappedItems, excludedIsins);
+      this.aggregatePortfolioTotals(mappedItems);
 
     mappedItems.forEach(item => {
       item.portfolioPerc = marketValue === 0 ? 0 : (item.marketValue * 100) / marketValue;
@@ -33,7 +35,7 @@ export class PortfolioMapperService {
     return { summary, items: mappedItems };
   }
 
-  private aggregatePortfolioTotals(items: IPortfolioItem[], excludedIsins: string[]) {
+  private aggregatePortfolioTotals(items: IPortfolioItem[]) {
     let totalInvested = 0;
     let marketValue = 0;
     let prevMarketValue = 0;
@@ -41,7 +43,7 @@ export class PortfolioMapperService {
     let unrealizedPnl = 0;
 
     for (const item of items) {
-      if (excludedIsins.includes(item.isin)) continue;
+      if (this.excludedIsins.includes(item.isin)) continue;
       totalInvested = SafeMath.add(totalInvested, item.totalInvested);
       marketValue = SafeMath.add(marketValue, item.marketValue);
       prevMarketValue = SafeMath.add(
@@ -63,6 +65,7 @@ export class PortfolioMapperService {
     // Single pass over lots
     let numShares = 0;
     let totalInvested = 0;
+    let totalWithoutExchRate = 0;
     let marketValue = 0;
     let prevMarketValue = 0;
     let unrealizedPnl = 0;
@@ -70,19 +73,24 @@ export class PortfolioMapperService {
     for (const lot of stored.lots) {
       if (lot.qtyRemaining <= 0) continue;
       const costPerUnit = lot.costPerUnit || 0;
+      const currExchRate = currencyService.getExchangeRateForCurrency(lot.currency);
 
       numShares = SafeMath.add(numShares, lot.qtyRemaining);
       totalInvested = SafeMath.add(
         totalInvested,
+        SafeMath.valuate(lot.qtyRemaining, costPerUnit, lot.exchangeRate || 1, lot.commission)
+      );
+      totalWithoutExchRate = SafeMath.add(
+        totalWithoutExchRate,
         SafeMath.valuate(lot.qtyRemaining, costPerUnit, 1, lot.commission)
       );
       marketValue = SafeMath.add(
         marketValue,
-        SafeMath.valuate(lot.qtyRemaining, normalizedCurrPrice)
+        SafeMath.valuate(lot.qtyRemaining, normalizedCurrPrice, currExchRate)
       );
       prevMarketValue = SafeMath.add(
         prevMarketValue,
-        SafeMath.valuate(lot.qtyRemaining, normalizedPrevPrice)
+        SafeMath.valuate(lot.qtyRemaining, normalizedPrevPrice, currExchRate)
       );
 
       unrealizedPnl = SafeMath.add(
@@ -91,12 +99,12 @@ export class PortfolioMapperService {
           lot.qtyRemaining,
           normalizedCurrPrice,
           costPerUnit,
-          1,
+          currExchRate,
           lot.commission
         )
       );
     }
-    const avgPrice = numShares === 0 ? 0 : SafeMath.divide(totalInvested, numShares);
+    const avgPrice = numShares === 0 ? 0 : SafeMath.divide(totalWithoutExchRate, numShares);
     const realizedPnl = stored.realizedPnl || 0;
 
     return {
@@ -126,6 +134,15 @@ export class PortfolioMapperService {
 
   private calcPercChange(prevValue: number, currentValue: number): number {
     return SafeMath.percChange(prevValue, currentValue);
+  }
+
+  private calcExchRateMultiplier(): number {
+    const excRateCommPerc = configService.exchangeRateComissionPerc;
+    return SafeMath.subtract(1, SafeMath.divide(excRateCommPerc, 100));
+  }
+
+  private applyExchRate(amount: number, exchRate: number): number {
+    return SafeMath.multiply(amount, exchRate);
   }
 }
 

@@ -71,6 +71,9 @@
   font-size: var(--font-size);
   background-color: var(--bg-color);
   color: var(--text-color);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
   cursor: pointer;
   transition: background-color 0.2s;
 

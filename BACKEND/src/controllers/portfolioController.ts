@@ -36,7 +36,6 @@ export const addPortfolioItem = asyncHandler((req: Request, res: Response) => {
 });
 
 export const getPortfolio = asyncHandler((req: Request, res: Response) => {
-  console.log('Fetching portfolio...');
   const portfolio = portfolioService.getPortfolio();
   loggerService.info('Portfolio fetched successfully');
   res.status(200).json({ success: true, data: portfolio });
@@ -70,7 +69,6 @@ export const sellFromItem = asyncHandler((req: Request, res: Response) => {
 });
 
 export const refreshPortfolioPrices = asyncHandler(async (req: Request, res: Response) => {
-  console.log('Refreshing portfolio prices...');
   await portfolioService.refreshPrices();
   const portfolio = portfolioService.getPortfolio();
   res
