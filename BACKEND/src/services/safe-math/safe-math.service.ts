@@ -1,3 +1,5 @@
+import { ILot } from '../../interfaces/portfolio.interface';
+
 export class SafeMath {
   static add(a: number, b: number): number {
     const numOfDecimalsA = (a.toString().split('.')[1] || '').length;
@@ -33,20 +35,20 @@ export class SafeMath {
     return SafeMath.multiply(SafeMath.add(SafeMath.multiply(qty, price), commisions), exchangeRate);
   }
 
-  /** qty * (currentPrice - costPerUnit) * exchangeRate */
   static unrealizedPnl(
-    qty: number,
-    currentPrice: number,
+    lot: ILot,
     costPerUnit: number,
-    exchangeRate = 1,
-    commisions = 0
+    currPrice: number,
+    currExchRate = 1
   ): number {
-    return SafeMath.valuate(
-      qty,
-      SafeMath.subtract(currentPrice, costPerUnit),
-      exchangeRate,
-      commisions
+    const lotInvested = SafeMath.valuate(
+      lot.qtyRemaining,
+      costPerUnit,
+      lot.exchangeRate || 1,
+      lot.commission
     );
+    const lotMarketValue = SafeMath.valuate(lot.qtyRemaining, currPrice, currExchRate || 1);
+    return SafeMath.subtract(lotMarketValue, lotInvested);
   }
 
   static percChange(prevValue: number, currentValue: number): number {

@@ -86,22 +86,16 @@ export class PortfolioMapperService {
       );
       marketValue = SafeMath.add(
         marketValue,
-        SafeMath.valuate(lot.qtyRemaining, normalizedCurrPrice, currExchRate)
+        SafeMath.valuate(lot.qtyRemaining, normalizedCurrPrice, currExchRate || 1)
       );
       prevMarketValue = SafeMath.add(
         prevMarketValue,
-        SafeMath.valuate(lot.qtyRemaining, normalizedPrevPrice, currExchRate)
+        SafeMath.valuate(lot.qtyRemaining, normalizedPrevPrice, currExchRate || 1)
       );
 
       unrealizedPnl = SafeMath.add(
         unrealizedPnl,
-        SafeMath.unrealizedPnl(
-          lot.qtyRemaining,
-          normalizedCurrPrice,
-          costPerUnit,
-          currExchRate,
-          lot.commission
-        )
+        SafeMath.unrealizedPnl(lot, costPerUnit, normalizedCurrPrice, currExchRate)
       );
     }
     const avgPrice = numShares === 0 ? 0 : SafeMath.divide(totalWithoutExchRate, numShares);
