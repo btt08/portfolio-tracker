@@ -15,12 +15,6 @@ export class LotTable {
   // onEditLot = output<ILot>();
 
   activeLots = (lots: ILot[]) => this.lotUtils.activeLots(lots);
-  lotCostPerUnit = (lot: ILot) => this.lotUtils.lotCostPerUnit(lot);
-  lotTotalCost = (lot: ILot) => this.lotUtils.lotTotalCost(lot);
-  lotCurrentValue = (lot: ILot, currPrice: number) =>
-    this.lotUtils.lotCurrentValue(lot, currPrice);
-  lotPnl = (lot: ILot, currPrice: number) => this.lotUtils.lotPnl(lot, currPrice);
-  lotPnlPerc = (lot: ILot, currPrice: number) => this.lotUtils.lotPnlPerc(lot, currPrice);
 
   // editLot(lot: ILot) {
   //   this.onEditLot.emit(lot);

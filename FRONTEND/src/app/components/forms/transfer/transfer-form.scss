@@ -1,10 +1,6 @@
 @use '@styles/colours.scss' as *;
 @use 'styles/form-fields' as *;
 
-.transfer-form {
-  margin-top: 0.5rem;
-}
-
 .transfer-summary {
   cursor: pointer;
   font-size: 0.8rem;
@@ -17,14 +13,6 @@
 }
 
 .transfer-body {
-  margin-top: 0.5rem;
-
-  .form-fields {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-  }
-
   select {
     padding: 0.35rem;
     background: $black;
@@ -41,13 +29,7 @@
   }
 }
 
-.transfer-btn {
-  background-color: $accent !important;
-  color: $black !important;
-}
-
 .transfer-error {
   color: $negative;
   font-size: 0.75rem;
-  margin-left: 0.5rem;
 }

@@ -1,49 +1,43 @@
-<details class="transfer-form">
-  <summary class="transfer-summary">Transfer</summary>
-  <form (submit)="submit($event)" class="transfer-body">
-    <div class="form-fields">
-      <label class="form-label">
-        Target Fund
-        <select [formField]="transferForm.targetIsin">
-          <option value="" disabled>Select target...</option>
-          @for (item of targetOptions(); track item.isin) {
-            <option [value]="item.isin">{{ item.name }} ({{ item.isin }})</option>
-          }
-        </select>
-      </label>
-      <label class="form-label">
-        Source Qty
-        <input
-          type="number"
-          [formField]="transferForm.sourceQtySold"
-          step="any"
-          placeholder="Qty sold from source" />
-      </label>
-      <label class="form-label">
-        Target Qty
-        <input
-          type="number"
-          [formField]="transferForm.targetQtyReceived"
-          step="any"
-          placeholder="Qty received in target" />
-      </label>
-      <label class="form-label">
-        Commission
-        <input
-          type="number"
-          [formField]="transferForm.commission"
-          step="any"
-          placeholder="0" />
-      </label>
-    </div>
-    <button
-      type="submit"
-      class="form-btn transfer-btn"
-      [disabled]="!isValid() || submitting()">
+<form (submit)="submit($event)" class="transfer-body">
+  <div class="form-fields">
+    <label class="form-label">
+      Target Fund
+      <select [formField]="transferForm.targetIsin">
+        <option value="" disabled>Select target...</option>
+        @for (item of targetOptions(); track item.isin) {
+          <option [value]="item.isin">{{ item.name }} ({{ item.isin }})</option>
+        }
+      </select>
+    </label>
+    <label class="form-label">
+      Source Qty
+      <input
+        type="number"
+        [formField]="transferForm.sourceQtySold"
+        step="any"
+        placeholder="Qty sold from source" />
+    </label>
+    <label class="form-label">
+      Target Qty
+      <input
+        type="number"
+        [formField]="transferForm.targetQtyReceived"
+        step="any"
+        placeholder="Qty received in target" />
+    </label>
+    <label class="form-label">
+      Commission
+      <input
+        type="number"
+        [formField]="transferForm.commission"
+        step="any"
+        placeholder="0" />
+    </label>
+    <app-btn type="submit" variant="primary" [disabled]="!isValid() || submitting()">
       {{ submitting() ? 'Transferring...' : 'Transfer' }}
-    </button>
-    @if (error()) {
-      <span class="transfer-error">{{ error() }}</span>
-    }
-  </form>
-</details>
+    </app-btn>
+  </div>
+  @if (error()) {
+    <span class="transfer-error">{{ error() }}</span>
+  }
+</form>

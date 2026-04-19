@@ -11,10 +11,11 @@
 }
 
 .form-fields {
-  margin-top: 0.35rem;
+  padding-top: 0.75rem;
   display: flex;
   align-items: flex-end;
   gap: 0.75rem;
+  border-top: 1px dashed rgba($border-color, 0.6);
 
   label {
     display: flex;

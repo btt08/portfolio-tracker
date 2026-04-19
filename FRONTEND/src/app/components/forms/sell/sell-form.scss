@@ -1,10 +1,6 @@
 @use '@styles/colours.scss' as *;
 @use '@styles/_form-fields.scss' as *;
 
-.sell-form {
-  border-top: 1px dashed rgba($border-color, 0.6);
-}
-
 .sell-btn {
   background-color: $negative !important;
   color: $white !important;

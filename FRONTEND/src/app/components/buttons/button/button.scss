@@ -3,61 +3,51 @@
 
 .primary {
   --bg-color: #{$accent};
-  --bg-color-hover: #{color.adjust($accent, $lightness: -10%)};
   --bg-color-disabled: #{$border-color};
   --border: none;
   --font-size: 1rem;
   --padding: 0.25rem 1rem;
   --text-color: #{$black};
-  --text-color-hover: #{$black};
   --text-color-disabled: #{$light-dark};
 }
 
 .primary-positive {
   --bg-color: #{$positive};
-  --bg-color-hover: #{color.adjust($positive, $lightness: -8%)};
   --bg-color-disabled: #{color.adjust($positive, $lightness: -20%)};
   --border: none;
   --font-size: 1rem;
   --padding: 0.25rem 1rem;
   --text-color: #{$white};
-  --text-color-hover: #{$white};
   --text-color-disabled: #{color.adjust($white, $lightness: 30%)};
 }
 
 .secondary {
   --bg-color: transparent;
-  --bg-color-hover: #{$accent};
   --bg-color-disabled: #{color.adjust($positive, $lightness: -20%)};
   --border: 1px solid #{$accent};
   --font-size: 0.75rem;
   --padding: 0.35rem 0.75rem;
   --text-color: #{$accent};
-  --text-color-hover: #{$black};
   --text-color-disabled: #{color.adjust($white, $lightness: 30%)};
 }
 
 .secondary-positive {
   --bg-color: transparent;
-  --bg-color-hover: #{$positive};
   --bg-color-disabled: #{color.adjust($positive, $lightness: -20%)};
   --border: 1px solid #{$positive};
   --font-size: 0.75rem;
   --padding: 0.35rem 0.75rem;
   --text-color: #{$positive};
-  --text-color-hover: #{$black};
   --text-color-disabled: #{color.adjust($white, $lightness: 30%)};
 }
 
 .secondary-negative {
   --bg-color: transparent;
-  --bg-color-hover: #{$negative};
   --bg-color-disabled: #{color.adjust($negative, $lightness: -20%)};
   --border: 1px solid #{$negative};
   --font-size: 0.75rem;
   --padding: 0.35rem 0.75rem;
   --text-color: #{$negative};
-  --text-color-hover: #{$black};
   --text-color-disabled: #{color.adjust($white, $lightness: 30%)};
 }
 
@@ -75,11 +65,13 @@
   white-space: nowrap;
   overflow: hidden;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition:
+    background-color 0.2s,
+    opacity 0.2s,
+    color 0.2s;
 
   &:hover:not(:disabled) {
-    background-color: var(--bg-color-hover);
-    color: var(--text-color-hover);
+    opacity: 0.75;
   }
 
   &:disabled {

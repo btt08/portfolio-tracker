@@ -1,9 +1,9 @@
 <td>{{ lot().createdDate | date: 'yyyy-MM-dd' }}</td>
 <td>{{ lot().qtyRemaining | number: '1.2-4' : 'de-DE' }}</td>
 <td>{{ lot().currency }}</td>
-<td>{{ lotCostPerUnit(lot()) | number: '1.2-4' : 'de-DE' }}</td>
+<td>{{ lot().costPerUnit | number: '1.2-4' : 'de-DE' }}</td>
 <td>{{ lot().commission | number: '1.2-2' : 'de-DE' }}</td>
-<td>{{ lotTotalCost(lot()) | number: '1.2-2' : 'de-DE' }}</td>
+<td>{{ lot().totalCost | number: '1.2-2' : 'de-DE' }}</td>
 <td>{{ lotCurrentValue(lot()) | number: '1.2-2' : 'de-DE' }}</td>
 <td [class.positive]="lotPnl(lot()) >= 0" [class.negative]="lotPnl(lot()) < 0">
   {{ lotPnl(lot()) | number: '1.2-2' : 'de-DE' }}

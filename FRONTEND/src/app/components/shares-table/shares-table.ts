@@ -39,7 +39,7 @@ import { TransferForm } from '@forms/transfer/transfer-form';
     Modal,
     SellForm,
     TransactionModal,
-    // TransferForm,
+    TransferForm,
   ],
   templateUrl: './shares-table.html',
   styleUrls: ['./shares-table.scss'],
@@ -56,6 +56,7 @@ export class SharesTable {
 
   expandedItems = signal<Set<string>>(new Set());
   addModalItem = signal<IPortfolioItem | null>(null);
+  transferModalItem = signal<IPortfolioItem | null>(null);
   txnModalItem = signal<IPortfolioItem | null>(null);
   sortKey = signal<TSortKey | null>(null);
   sortDir = signal<TSortDir>('asc');
@@ -212,6 +213,7 @@ export class SharesTable {
       next: response => {
         this.portfolioUpdated.emit(response.data);
         this.transferSubmitting[item.isin] = false;
+        console.log('Transfer successful, form reset');
       },
       error: error => {
         console.error('Error transferring:', error);

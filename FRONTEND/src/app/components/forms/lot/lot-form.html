@@ -1,22 +1,22 @@
 <div class="add-lot-form">
   <div class="form-fields">
-    <label>
+    <label class="form-label">
       Date
       <input type="date" [formField]="lotForm.createdDate" />
     </label>
-    <label>
+    <label class="form-label">
       Qty
       <input type="number" [formField]="lotForm.qtyRemaining" step="any" />
     </label>
-    <label>
+    <label class="form-label">
       Cost/Unit
       <input type="number" [formField]="lotForm.costPerUnit" step="any" />
     </label>
-    <label>
+    <label class="form-label">
       Commission
       <input type="number" [formField]="lotForm.commission" step="any" />
     </label>
-    <label>
+    <label class="form-label">
       Currency
       <select [formField]="lotForm.currency">
         <option value="EUR">EUR</option>
@@ -26,12 +26,12 @@
       </select>
     </label>
     @if (isNonEur()) {
-      <label>
+      <label class="form-label">
         Exchange Rate
         <input type="number" [formField]="lotForm.exchangeRate" step="any" />
       </label>
     }
-    <label>
+    <label class="form-label">
       Total Cost
       <input type="text" [value]="totalCost() | number: '1.2-2' : 'de-DE'" disabled />
     </label>

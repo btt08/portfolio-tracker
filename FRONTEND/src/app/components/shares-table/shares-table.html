@@ -94,6 +94,13 @@
                         [submitting]="!!sellSubmitting[item.isin]"
                         [error]="sellError[item.isin] || ''"
                         (sellSubmit)="sellShares(item, $event)" />
+                      <app-transfer-form
+                        [sourceIsin]="item.isin"
+                        [maxShares]="item.numShares"
+                        [allItems]="data()"
+                        [submitting]="!!transferSubmitting[item.isin]"
+                        [error]="transferError[item.isin] || ''"
+                        (transferSubmit)="transferFunds(item, $event)" />
                     </div>
                     <div class="actions">
                       <app-btn [variant]="'secondary'" (onClick)="txnModalItem.set(item)">
@@ -130,13 +137,3 @@
       (lotSubmit)="addLot(item, $event)" />
   </app-modal>
 }
-
-<!-- 
-<app-transfer-form
-  [sourceIsin]="item.isin"
-  [maxShares]="item.numShares"
-  [allItems]="data()"
-  [submitting]="!!transferSubmitting[item.isin]"
-  [error]="transferError[item.isin] || ''"
-  (transferSubmit)="transferFunds(item, $event)" />
- -->

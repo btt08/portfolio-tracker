@@ -3,10 +3,11 @@ import { form, FormField, required, min } from '@angular/forms/signals';
 import { IPortfolioItem } from '@interfaces/portfolio.interface';
 import { ITransferData } from '@interfaces/transfer.interface';
 import { ITransferFormModel, DEFAULTS } from '@interfaces/transfer-form.interface';
+import { Button } from 'app/components/buttons/button/button';
 
 @Component({
   selector: 'app-transfer-form',
-  imports: [FormField],
+  imports: [Button, FormField],
   templateUrl: './transfer-form.html',
   styleUrls: ['./transfer-form.scss'],
 })
