@@ -128,7 +128,7 @@ export class PortfolioMapperService {
       totalPnl: SafeMath.add(realizedPnl, unrealizedPnl),
       transactions: stored.transactions || [],
       portfolioPerc: 0,
-      isExcluded: false,
+      isExcluded: this.excludedIsins.includes(stored.isin),
     };
   }
 

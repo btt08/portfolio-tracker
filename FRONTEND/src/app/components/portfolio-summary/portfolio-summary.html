@@ -2,7 +2,7 @@
   <div class="summary__top">
     <h2>Holding Summary</h2>
     <span class="summary__top--market-value" title="Total market value of all holdings">
-      {{ summary().portfolioMarketValue | number: '1.2-2' : 'de-DE' }}€
+      {{ calcTotalMarketValue() | number: '1.2-2' : 'de-DE' }}€
     </span>
     <span
       class="summary__top--change"

@@ -132,11 +132,6 @@
 }
 
 <!-- 
-<app-sell-form
-  [maxShares]="item.numShares"
-  [submitting]="!!sellSubmitting[item.isin]"
-  [error]="sellError[item.isin] || ''"
-  (sellSubmit)="sellShares(item, $event)" />
 <app-transfer-form
   [sourceIsin]="item.isin"
   [maxShares]="item.numShares"
@@ -144,11 +139,4 @@
   [submitting]="!!transferSubmitting[item.isin]"
   [error]="transferError[item.isin] || ''"
   (transferSubmit)="transferFunds(item, $event)" />
-<div class="delete-section">
-  <button class="txn-btn" (click)="txnModalItem.set(item)">
-    Transactions ({{ item.transactions.length }})
-  </button>
-  <button class="delete-btn" (click)="deleteItem(item)">
-    Delete Item
-  </button>
-</div> -->
+ -->

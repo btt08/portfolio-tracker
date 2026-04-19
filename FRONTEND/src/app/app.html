@@ -11,6 +11,7 @@
     </div>
   } @else {
     <app-portfolio-summary
+      [excludedItems]="excludedItems()"
       [isRefreshing]="isRefreshing()"
       [summary]="portfolioData().summary"
       (onAddItem)="showAddModal.set(true)"
@@ -36,7 +37,11 @@
 </main>
 
 @if (showAddModal()) {
-  <app-add-item-modal (close)="showAddModal.set(false)" (itemSubmit)="addItem($event)" />
+  <app-modal title="Add New Item" (close)="showAddModal.set(false)">
+    <app-add-item-modal
+      (close)="showAddModal.set(false)"
+      (itemSubmit)="addItem($event)" />
+  </app-modal>
 }
 
 <router-outlet />

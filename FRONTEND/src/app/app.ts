@@ -1,13 +1,18 @@
-import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, signal, computed } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Subscription, interval } from 'rxjs';
-import { CurrencyRestService } from './services/currency-rest';
+import { CurrencyRestService } from '@services/currency-rest';
 import { FileUtilsService } from '@utils/file-utils.service';
 import { PortfolioRestService } from '@services/portfolio-rest';
 import { IAddItemData } from '@interfaces/add-item.interface';
 import { ICurrency } from './interfaces/currency.interface';
-import { IPortfolio, IPortfolioSummary } from '@interfaces/portfolio.interface';
+import {
+  IPortfolio,
+  IPortfolioItem,
+  IPortfolioSummary,
+} from '@interfaces/portfolio.interface';
 import { AddItemModal } from '@components/modals/add-item-modal/add-item-modal';
+import { Modal } from './components/modals/modal/modal';
 import { PortfolioSummary } from '@components/portfolio-summary/portfolio-summary';
 import { SharesTable } from '@components/shares-table/shares-table';
 import { UtilsService } from './utils/utils.service';
@@ -16,7 +21,7 @@ const AUTO_REFRESH_INTERVAL_MS = 5 * 60 * 1000;
 
 @Component({
   selector: 'app-root',
-  imports: [AddItemModal, RouterOutlet, SharesTable, PortfolioSummary],
+  imports: [AddItemModal, Modal, PortfolioSummary, SharesTable, RouterOutlet],
   templateUrl: './app.html',
   styleUrls: ['./app.scss'],
 })
@@ -28,6 +33,7 @@ export class App implements OnInit, OnDestroy {
   private autoRefreshSub?: Subscription;
 
   currencyData = signal<ICurrency[]>([]);
+  excludedItems = computed<IPortfolioItem[]>(() => this.filterExcludedItems());
   groupByType = signal<boolean>(false);
   isLoading = signal<boolean>(true);
   isRefreshing = signal<boolean>(false);
@@ -134,5 +140,9 @@ export class App implements OnInit, OnDestroy {
         alert('Import failed. Check console for details.');
       },
     });
+  }
+
+  private filterExcludedItems(): IPortfolioItem[] {
+    return this.portfolioData().items.filter(item => item.isExcluded);
   }
 }
