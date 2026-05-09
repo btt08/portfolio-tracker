@@ -5,8 +5,20 @@ import { ILot } from '../interfaces/portfolio.interface';
   providedIn: 'root',
 })
 export class LotUtilsService {
+  lotExchangeRate(lot: ILot): number {
+    return lot.exchangeRate || 1;
+  }
+
+  lotCostPerUnit(lot: ILot): number {
+    return lot.costPerUnit * this.lotExchangeRate(lot);
+  }
+
+  lotTotalCost(lot: ILot): number {
+    return lot.totalCost * this.lotExchangeRate(lot);
+  }
+
   lotCurrentValue(lot: ILot, currPrice: number): number {
-    return lot.qtyRemaining * currPrice;
+    return lot.qtyRemaining * currPrice * this.lotExchangeRate(lot);
   }
 
   lotPnl(lot: ILot, currPrice: number): number {

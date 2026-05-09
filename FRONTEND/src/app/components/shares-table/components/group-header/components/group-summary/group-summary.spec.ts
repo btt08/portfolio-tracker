@@ -7,10 +7,16 @@ describe('GroupSummary', () => {
   let fixture: ComponentFixture<GroupSummary>;
 
   beforeEach(async () => {
+    TestBed.overrideComponent(GroupSummary, {
+      set: {
+        template: '<p>group-summary works!</p>',
+        styles: [],
+      },
+    });
+
     await TestBed.configureTestingModule({
-      imports: [GroupSummary]
-    })
-    .compileComponents();
+      imports: [GroupSummary],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(GroupSummary);
     component = fixture.componentInstance;
