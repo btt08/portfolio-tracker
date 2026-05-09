@@ -22,13 +22,8 @@ Operational values must never drive fiscal PnL calculations.
 
 Canonical fields for transfer payload:
 
-- `sourceOperationAmount`
-- `targetOperationAmount`
-
-Legacy aliases are still accepted temporarily:
-
-- `sourceAmountSold` (deprecated)
-- `targetAmountReceived` (deprecated)
+- `sourceOpAmount`
+- `targetOpAmount`
 
 Validation currently allows a maximum difference of `0.01 EUR` between source and target operation amounts.
 

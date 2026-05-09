@@ -141,13 +141,11 @@ export interface ITransferData {
   date: string;
   sourceQtySold: number;
   sourcePPU: number;
-  sourceOpAmount?: number;
-  sourceAmountSold?: number;
+  sourceOpAmount: number;
   targetIsin: string;
   targetQtyReceived: number;
   targetPPU: number;
-  targetOpAmount?: number;
-  targetAmountReceived?: number;
+  targetOpAmount: number;
 }
 
 export interface ISourceTranche {

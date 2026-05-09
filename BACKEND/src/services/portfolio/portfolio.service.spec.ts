@@ -251,11 +251,11 @@ describe('PortfolioService transferBetweenFunds', () => {
     const payload = {
       date: '2025-08-01',
       sourcePPU: 10,
-      sourceOperationAmount: 10,
+      sourceOpAmount: 10,
       targetIsin: 'TGT',
       targetQtyReceived: 1,
       targetPPU: 10,
-      targetOperationAmount: 10,
+      targetOpAmount: 10,
     };
 
     const first = service.transferBetweenFunds('SRC', { ...payload, sourceQtySold: 1 });

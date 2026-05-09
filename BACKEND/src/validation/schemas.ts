@@ -50,43 +50,20 @@ export const TransferSchema = z
     date: z.string(),
     sourceQtySold: z.number().positive(),
     sourcePPU: z.number().positive(),
-    sourceOperationAmount: z.number().positive().optional(),
-    sourceAmountSold: z.number().positive().optional(),
+    sourceOpAmount: z.number().positive(),
     targetIsin: z.string(),
     targetQtyReceived: z.number().positive(),
     targetPPU: z.number().positive(),
-    targetOperationAmount: z.number().positive().optional(),
-    targetAmountReceived: z.number().positive().optional(),
+    targetOpAmount: z.number().positive(),
   })
   .superRefine((data, ctx) => {
-    const sourceOperationAmount = data.sourceOperationAmount ?? data.sourceAmountSold;
-    const targetOperationAmount = data.targetOperationAmount ?? data.targetAmountReceived;
-
-    if (sourceOperationAmount === undefined) {
+    const diff = Math.abs(data.sourceOpAmount - data.targetOpAmount);
+    if (diff > OPERATION_AMOUNT_TOLERANCE) {
       ctx.addIssue({
         code: 'custom',
-        path: ['sourceOperationAmount'],
-        message: 'sourceOperationAmount (or sourceAmountSold) is required',
+        path: ['targetOpAmount'],
+        message: `Operation amounts differ by ${diff.toFixed(4)}, max tolerance is ${OPERATION_AMOUNT_TOLERANCE}`,
       });
-    }
-
-    if (targetOperationAmount === undefined) {
-      ctx.addIssue({
-        code: 'custom',
-        path: ['targetOperationAmount'],
-        message: 'targetOperationAmount (or targetAmountReceived) is required',
-      });
-    }
-
-    if (sourceOperationAmount !== undefined && targetOperationAmount !== undefined) {
-      const diff = Math.abs(sourceOperationAmount - targetOperationAmount);
-      if (diff > OPERATION_AMOUNT_TOLERANCE) {
-        ctx.addIssue({
-          code: 'custom',
-          path: ['targetOperationAmount'],
-          message: `Operation amounts differ by ${diff.toFixed(4)}, max tolerance is ${OPERATION_AMOUNT_TOLERANCE}`,
-        });
-      }
     }
   });
 

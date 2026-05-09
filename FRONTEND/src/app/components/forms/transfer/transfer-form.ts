@@ -65,11 +65,9 @@ export class TransferForm {
         sourceQtySold: f.sourceQtySold!,
         sourcePPU: f.sourcePPU!,
         sourceOpAmount,
-        sourceAmountSold: sourceOpAmount,
         targetQtyReceived: f.targetQtyReceived!,
         targetPPU: f.targetPPU!,
         targetOpAmount,
-        targetAmountReceived: targetOpAmount,
       });
       this.resetForm();
     }

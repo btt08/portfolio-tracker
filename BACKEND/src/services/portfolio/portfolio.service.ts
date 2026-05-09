@@ -222,22 +222,19 @@ export class PortfolioService {
       sourceQtySold,
       sourcePPU,
       sourceOpAmount,
-      sourceAmountSold,
       targetIsin,
       targetQtyReceived,
       targetPPU,
       targetOpAmount,
-      targetAmountReceived,
     } = transferData;
 
     if (sourceIsin === targetIsin) {
       return { success: false, message: 'sourceIsin and targetIsin must be different' };
     }
 
-    const resolvedSourceOpAmount =
-      sourceOpAmount ?? sourceAmountSold ?? SafeMath.multiply(sourceQtySold, sourcePPU);
+    const resolvedSourceOpAmount = sourceOpAmount ?? SafeMath.multiply(sourceQtySold, sourcePPU);
     const resolvedTargetOpAmount =
-      targetOpAmount ?? targetAmountReceived ?? SafeMath.multiply(targetQtyReceived, targetPPU);
+      targetOpAmount ?? SafeMath.multiply(targetQtyReceived, targetPPU);
 
     const sourceLookup = this.findItemOrFail(sourceIsin);
     if ('error' in sourceLookup) return { success: false, message: 'Source item not found' };
