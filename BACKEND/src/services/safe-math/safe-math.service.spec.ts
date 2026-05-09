@@ -62,15 +62,48 @@ describe('SafeMath', () => {
 
   describe('unrealizedPnl', () => {
     it('calculates positive PnL', () => {
-      expect(SafeMath.unrealizedPnl(10, 60, 50)).toBe(100);
+      const lot = {
+        id: 'lot-1',
+        createdDate: '2026-01-01',
+        qtyRemaining: 10,
+        costPerUnit: 50,
+        commission: 0,
+        totalCost: 500,
+        currency: 'EUR',
+        exchangeRate: 1,
+      };
+
+      expect(SafeMath.unrealizedPnl(lot, 50, 60)).toBe(100);
     });
 
     it('calculates negative PnL', () => {
-      expect(SafeMath.unrealizedPnl(10, 40, 50)).toBe(-100);
+      const lot = {
+        id: 'lot-1',
+        createdDate: '2026-01-01',
+        qtyRemaining: 10,
+        costPerUnit: 50,
+        commission: 0,
+        totalCost: 500,
+        currency: 'EUR',
+        exchangeRate: 1,
+      };
+
+      expect(SafeMath.unrealizedPnl(lot, 50, 40)).toBe(-100);
     });
 
     it('applies exchange rate', () => {
-      expect(SafeMath.unrealizedPnl(10, 60, 50, 2)).toBe(200);
+      const lot = {
+        id: 'lot-1',
+        createdDate: '2026-01-01',
+        qtyRemaining: 10,
+        costPerUnit: 50,
+        commission: 0,
+        totalCost: 500,
+        currency: 'EUR',
+        exchangeRate: 2,
+      };
+
+      expect(SafeMath.unrealizedPnl(lot, 50, 60, 2)).toBe(200);
     });
   });
 
