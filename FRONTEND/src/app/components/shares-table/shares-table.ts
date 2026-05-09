@@ -52,6 +52,7 @@ export class SharesTable {
   currencyData = input.required<ICurrency[]>();
   data = input.required<IPortfolioItem[]>();
   groupByType = input<boolean>(false);
+  onAddItem = output<void>();
   portfolioUpdated = output<IPortfolio>();
 
   expandedItems = signal<Set<string>>(new Set());

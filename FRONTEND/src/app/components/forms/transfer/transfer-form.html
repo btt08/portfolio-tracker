@@ -2,36 +2,49 @@
   <div class="form-fields">
     <label class="form-label">
       Target Fund
-      <select [formField]="transferForm.targetIsin">
+      <select [formField]="transferForm.targetIsin" (change)="onChange($event)">
         <option value="" disabled>Select target...</option>
+        <option value="new">Add new item</option>
         @for (item of targetOptions(); track item.isin) {
           <option [value]="item.isin">{{ item.name }} ({{ item.isin }})</option>
         }
       </select>
     </label>
-    <label class="form-label">
+    <label class="form-label" title="Transfer date">
+      Date
+      <input type="date" [formField]="transferForm.date" />
+    </label>
+    <label class="form-label" title="Source quantity">
       Source Qty
       <input
         type="number"
         [formField]="transferForm.sourceQtySold"
         step="any"
-        placeholder="Qty sold from source" />
+        placeholder="Src Qty" />
     </label>
-    <label class="form-label">
+    <label class="form-label" title="Source Cost / Unit">
+      Source Cost / Unit
+      <input
+        type="number"
+        [formField]="transferForm.sourcePricePerUnit"
+        step="any"
+        placeholder="Src Cost / Unit" />
+    </label>
+    <label class="form-label" title="Target quantity">
       Target Qty
       <input
         type="number"
         [formField]="transferForm.targetQtyReceived"
         step="any"
-        placeholder="Qty received in target" />
+        placeholder="Target Qty" />
     </label>
-    <label class="form-label">
-      Commission
+    <label class="form-label" title="Target Cost / Unit">
+      Target Cost / Unit
       <input
         type="number"
-        [formField]="transferForm.commission"
+        [formField]="transferForm.targetPricePerUnit"
         step="any"
-        placeholder="0" />
+        placeholder="Target Cost / Unit" />
     </label>
     <app-btn type="submit" variant="primary" [disabled]="!isValid() || submitting()">
       {{ submitting() ? 'Transferring...' : 'Transfer' }}

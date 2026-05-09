@@ -57,7 +57,6 @@ export class App implements OnInit, OnDestroy {
       next: rawData => {
         this.portfolioData.set(rawData.data || this.portfolioData());
         this.isLoading.set(false);
-        console.log('Initial portfolio data loaded:', this.portfolioData());
       },
       error: error => {
         console.error('Error loading portfolio:', error);

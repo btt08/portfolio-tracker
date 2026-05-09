@@ -11,7 +11,6 @@ export class LoggerService {
         winston.format.errors({ stack: true }),
         winston.format.json()
       ),
-      defaultMeta: { service: 'portfolio-tracker' },
       transports: [
         new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
         new winston.transports.File({ filename: 'logs/combined.log' }),
@@ -41,6 +40,10 @@ export class LoggerService {
 
   debug(message: string, meta?: any) {
     this.logger.debug(message, meta);
+  }
+
+  emptyLine() {
+    console.log('');
   }
 }
 

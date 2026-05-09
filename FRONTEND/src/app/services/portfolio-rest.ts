@@ -4,7 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from '@environments/environment';
 import { ILot, IResponse } from '@interfaces/portfolio.interface';
-import { ITransferFormModel } from '@interfaces/transfer-form.interface';
+import { ITransferData } from 'app/interfaces/transfer.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -50,7 +50,7 @@ export class PortfolioRestService {
       .pipe(catchError(this.handleError));
   }
 
-  transferFunds(sourceIsin: string, transfer: ITransferFormModel): Observable<IResponse> {
+  transferFunds(sourceIsin: string, transfer: ITransferData): Observable<IResponse> {
     return this.http
       .post<IResponse>(`${this.baseUrl}/${sourceIsin}/transfer`, transfer)
       .pipe(catchError(this.handleError));

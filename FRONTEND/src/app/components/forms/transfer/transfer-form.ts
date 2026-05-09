@@ -17,42 +17,79 @@ export class TransferForm {
   allItems = input.required<IPortfolioItem[]>();
   submitting = input<boolean>(false);
   error = input<string>('');
+  onAddItem = output<void>();
   transferSubmit = output<ITransferData>();
 
   formModel = signal<ITransferFormModel>({ ...DEFAULTS });
   transferForm = form(this.formModel, schema => {
+    required(schema.date);
     required(schema.targetIsin);
     required(schema.sourceQtySold);
-    min(schema.sourceQtySold, 0.0001);
+    required(schema.sourcePricePerUnit);
     required(schema.targetQtyReceived);
+    required(schema.targetPricePerUnit);
+    min(schema.sourceQtySold, 0.0001);
+    min(schema.sourcePricePerUnit, 0.0001);
     min(schema.targetQtyReceived, 0.0001);
+    min(schema.targetPricePerUnit, 0.0001);
   });
 
   targetOptions = computed(() =>
-    this.allItems().filter(i => i.isin !== this.sourceIsin() && i.type === 'funds')
+    this.allItems().filter(
+      i => i.isin !== this.sourceIsin() && i.type.toLowerCase() === 'fund'
+    )
   );
 
   isValid = computed(() => {
     return (
       this.transferForm.targetIsin().valid() &&
+      this.transferForm.targetIsin().value() !== 'new' &&
       this.transferForm.sourceQtySold().valid() &&
-      this.transferForm.targetQtyReceived().valid()
+      this.transferForm.sourcePricePerUnit().valid() &&
+      this.transferForm.targetQtyReceived().valid() &&
+      this.transferForm.targetPricePerUnit().valid()
     );
   });
 
   submit(event?: Event): void {
     event?.preventDefault();
     const f = this.formModel();
-    if (!f.targetIsin || !f.sourceQtySold || !f.targetQtyReceived) return;
-    this.transferSubmit.emit({
-      targetIsin: f.targetIsin,
-      sourceQtySold: f.sourceQtySold,
-      targetQtyReceived: f.targetQtyReceived,
-      commission: f.commission ?? 0,
-    });
+    if (!this.checkFormValidity()) return;
+    else {
+      this.transferSubmit.emit({
+        date: f.date,
+        targetIsin: f.targetIsin,
+        sourceQtySold: f.sourceQtySold!,
+        sourcePricePerUnit: f.sourcePricePerUnit!,
+        sourceAmountSold: (f.sourceQtySold ?? 0) * (f.sourcePricePerUnit ?? 0)!,
+        targetQtyReceived: f.targetQtyReceived!,
+        targetPricePerUnit: f.targetPricePerUnit!,
+        targetAmountReceived: (f.targetQtyReceived ?? 0) * (f.targetPricePerUnit ?? 0)!,
+      });
+      this.resetForm();
+    }
   }
 
   resetForm(): void {
     this.formModel.set({ ...DEFAULTS });
+  }
+
+  onChange(event: Event): void {
+    const select = event.target as HTMLSelectElement;
+    const selectedIsin = select.value;
+    if (selectedIsin === 'new') {
+      this.onAddItem.emit();
+    }
+  }
+
+  private checkFormValidity(): boolean {
+    const f = this.formModel();
+    return (
+      !!f.targetIsin &&
+      !!f.sourceQtySold &&
+      !!f.sourcePricePerUnit &&
+      !!f.targetQtyReceived &&
+      !!f.targetPricePerUnit
+    );
   }
 }

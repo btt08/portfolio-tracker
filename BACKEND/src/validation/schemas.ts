@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { date, z } from 'zod';
 
 export const LotSchema = z.object({
   id: z.string(),
@@ -31,16 +31,21 @@ export const PortfolioItemInputSchema = z.object({
 });
 
 export const SellSchema = z.object({
+  date: z.string(),
   qtyToSell: z.number().positive(),
   sellPrice: z.number().positive(),
   commission: z.number().min(0).default(0),
 });
 
 export const TransferSchema = z.object({
-  targetIsin: z.string(),
+  date: z.string(),
   sourceQtySold: z.number().positive(),
+  sourcePricePerUnit: z.number().positive(),
+  sourceAmountSold: z.number().positive(),
+  targetIsin: z.string(),
   targetQtyReceived: z.number().positive(),
-  commission: z.number().min(0).default(0),
+  targetPricePerUnit: z.number().positive(),
+  targetAmountReceived: z.number().positive(),
 });
 
 const LotConsumedSchema = z.object({

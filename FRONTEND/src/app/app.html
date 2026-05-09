@@ -30,6 +30,7 @@
           [currencyData]="currencyData()"
           [data]="portfolioData().items"
           [groupByType]="groupByType()"
+          (onAddItem)="showAddModal.set(true)"
           (portfolioUpdated)="onPortfolioUpdated($event)" />
       </div>
     </div>

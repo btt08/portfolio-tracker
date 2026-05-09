@@ -31,7 +31,7 @@ export class AddItemModal {
   close = output<void>();
   itemSubmit = output<IAddItemData>();
 
-  formModel = signal<IItemFormModel>({ isin: '', name: '', type: 'ETF', link: '' });
+  formModel = signal<IItemFormModel>({ isin: '', name: '', type: 'Fund', link: '' });
   itemForm = form(this.formModel, schema => {
     required(schema.isin);
     required(schema.name);
@@ -39,7 +39,7 @@ export class AddItemModal {
     required(schema.link);
   });
 
-  assetTypes = ['ETF', 'Stock', 'Fund'];
+  assetTypes = ['Fund', 'Stock', 'ETF'];
 
   lotRows: { model: WritableSignal<ILotRowModel>; lotForm: LotFieldTree }[] = [];
 

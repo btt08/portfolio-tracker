@@ -1,6 +1,10 @@
 <div class="sell-form">
   <div class="form-fields">
     <label class="form-label">
+      Date
+      <input type="date" [formField]="sellForm.date" />
+    </label>
+    <label class="form-label">
       Qty to sell
       <input type="number" [formField]="sellForm.qtyToSell" step="any" />
     </label>
@@ -11,6 +15,10 @@
     <label class="form-label">
       Commission
       <input type="number" [formField]="sellForm.commission" step="any" />
+    </label>
+    <label class="form-label">
+      Total
+      <input type="text" [value]="totalSold() | number: '1.2-2' : 'de-DE'" disabled />
     </label>
     <button
       class="form-btn sell-btn"

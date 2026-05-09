@@ -3,6 +3,8 @@ import { setTimeout } from 'node:timers/promises';
 import loggerService from './logger.service';
 import configService from './config.service';
 import { SafeMath } from './safe-math/safe-math.service';
+import { IStoredPortfolioItem } from '../interfaces/portfolio.interface';
+
 const puppeteer = require('puppeteer');
 const { addExtra } = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
@@ -24,7 +26,8 @@ export class PriceScrapingService {
     return this.browser;
   }
 
-  async getInvestingPrice(page: Page, link: string): Promise<IPriceData | null> {
+  async getInvestingPrice(page: Page, asset: IStoredPortfolioItem): Promise<IPriceData | null> {
+    const { link, name } = asset;
     await page.goto(link.toLowerCase());
     const price: string[] = [];
     let attempts = 0;
@@ -36,8 +39,8 @@ export class PriceScrapingService {
       const altChangeEL = await page.$('[data-test="instrument-price-change"]');
 
       if (!priceEL && !changeEL && !altPriceEL && !altChangeEL) {
-        loggerService.warn(`Price elements not found, retrying... (${++attempts})`, { link });
-        await setTimeout(250);
+        await setTimeout(2000);
+        attempts++;
       } else {
         if (priceEL) {
           price[0] = await page.evaluate((el: any) => el.textContent, changeEL);
@@ -51,13 +54,11 @@ export class PriceScrapingService {
     }
 
     if (price.length !== 2) {
-      loggerService.warn('Price not found', { link });
       return null;
     }
-
-    const parsedPrices = price.map(p => parseFloat(p.trim().replace(/\./g, '').replace(',', '.')));
-    if (parsedPrices.some(isNaN)) {
-      loggerService.warn('Invalid price data', { link, prices: price });
+    const parsedPrices = price.map(p => parseFloat(p.trim().replace(/,/g, '')));
+    if (parsedPrices.some(p => isNaN(p))) {
+      loggerService.warn('Invalid price data', { name, prices: price });
       return null;
     }
 
@@ -82,7 +83,7 @@ export class PriceScrapingService {
       return null;
     }
 
-    const parsedRate = parseFloat(rateText.trim().replace(/\./g, '').replace(',', '.'));
+    const parsedRate = parseFloat(rateText.trim().replace(/,/g, ''));
     if (isNaN(parsedRate)) {
       loggerService.warn('Invalid exchange rate data', { link, rate: rateText });
       return null;

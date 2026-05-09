@@ -55,8 +55,14 @@ export const addLotToItem = asyncHandler((req: Request, res: Response) => {
 
 export const sellFromItem = asyncHandler((req: Request, res: Response) => {
   const { isin } = req.params;
-  const { qtyToSell, sellPrice, commission } = req.validated;
-  const result = portfolioService.sellFromItem(isin as string, qtyToSell, sellPrice, commission);
+  const { date, qtyToSell, sellPrice, commission } = req.validated;
+  const result = portfolioService.sellFromItem(
+    isin as string,
+    date,
+    qtyToSell,
+    sellPrice,
+    commission
+  );
   if (!result.success) {
     res.status(400).json({
       success: false,
@@ -103,14 +109,7 @@ export const deleteLot = asyncHandler((req: Request, res: Response) => {
 
 export const transferBetweenFunds = asyncHandler((req: Request, res: Response) => {
   const { isin } = req.params;
-  const { targetIsin, sourceQtySold, targetQtyReceived, commission } = req.validated;
-  const result = portfolioService.transferBetweenFunds(
-    isin as string,
-    targetIsin as string,
-    sourceQtySold,
-    targetQtyReceived,
-    commission
-  );
+  const result = portfolioService.transferBetweenFunds(isin as string, req.validated);
   if (!result.success) {
     res.status(400).json({
       success: false,
