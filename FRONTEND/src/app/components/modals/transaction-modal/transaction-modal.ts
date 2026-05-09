@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { DecimalPipe, DatePipe } from '@angular/common';
 import { ITransaction } from '@interfaces/portfolio.interface';
 
@@ -13,5 +13,18 @@ export class TransactionModal {
 
   formatType(type: string): string {
     return type.replaceAll('_', ' ').replace(/\b\w/g, char => char.toUpperCase());
+  }
+
+  isTransfer(txn: ITransaction): boolean {
+    return txn.type === 'transfer_in' || txn.type === 'transfer_out';
+  }
+
+  hasTransferDetails(txn: ITransaction): boolean {
+    return (
+      this.isTransfer(txn) &&
+      (!!txn.transferBreakdown?.length ||
+        txn.operationAmount !== undefined ||
+        txn.operationPPU !== undefined)
+    );
   }
 }

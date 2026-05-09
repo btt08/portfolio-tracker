@@ -25,13 +25,13 @@ export class TransferForm {
     required(schema.date);
     required(schema.targetIsin);
     required(schema.sourceQtySold);
-    required(schema.sourcePricePerUnit);
+    required(schema.sourcePPU);
     required(schema.targetQtyReceived);
-    required(schema.targetPricePerUnit);
+    required(schema.targetPPU);
     min(schema.sourceQtySold, 0.0001);
-    min(schema.sourcePricePerUnit, 0.0001);
+    min(schema.sourcePPU, 0.0001);
     min(schema.targetQtyReceived, 0.0001);
-    min(schema.targetPricePerUnit, 0.0001);
+    min(schema.targetPPU, 0.0001);
   });
 
   targetOptions = computed(() =>
@@ -45,9 +45,9 @@ export class TransferForm {
       this.transferForm.targetIsin().valid() &&
       this.transferForm.targetIsin().value() !== 'new' &&
       this.transferForm.sourceQtySold().valid() &&
-      this.transferForm.sourcePricePerUnit().valid() &&
+      this.transferForm.sourcePPU().valid() &&
       this.transferForm.targetQtyReceived().valid() &&
-      this.transferForm.targetPricePerUnit().valid()
+      this.transferForm.targetPPU().valid()
     );
   });
 
@@ -56,15 +56,20 @@ export class TransferForm {
     const f = this.formModel();
     if (!this.checkFormValidity()) return;
     else {
+      const sourceOpAmount = (f.sourceQtySold ?? 0) * (f.sourcePPU ?? 0);
+      const targetOpAmount = (f.targetQtyReceived ?? 0) * (f.targetPPU ?? 0);
+
       this.transferSubmit.emit({
         date: f.date,
         targetIsin: f.targetIsin,
         sourceQtySold: f.sourceQtySold!,
-        sourcePricePerUnit: f.sourcePricePerUnit!,
-        sourceAmountSold: (f.sourceQtySold ?? 0) * (f.sourcePricePerUnit ?? 0)!,
+        sourcePPU: f.sourcePPU!,
+        sourceOpAmount,
+        sourceAmountSold: sourceOpAmount,
         targetQtyReceived: f.targetQtyReceived!,
-        targetPricePerUnit: f.targetPricePerUnit!,
-        targetAmountReceived: (f.targetQtyReceived ?? 0) * (f.targetPricePerUnit ?? 0)!,
+        targetPPU: f.targetPPU!,
+        targetOpAmount,
+        targetAmountReceived: targetOpAmount,
       });
       this.resetForm();
     }
@@ -87,9 +92,9 @@ export class TransferForm {
     return (
       !!f.targetIsin &&
       !!f.sourceQtySold &&
-      !!f.sourcePricePerUnit &&
+      !!f.sourcePPU &&
       !!f.targetQtyReceived &&
-      !!f.targetPricePerUnit
+      !!f.targetPPU
     );
   }
 }

@@ -53,9 +53,9 @@ export class App implements OnInit, OnDestroy {
   title = signal<string>('My Portfolio');
 
   ngOnInit() {
-    this.portfolioService.getportfolio().subscribe({
+    this.portfolioService.getPortfolio().subscribe({
       next: rawData => {
-        this.portfolioData.set(rawData.data || this.portfolioData());
+        this.portfolioData.set(rawData || this.portfolioData());
         this.isLoading.set(false);
       },
       error: error => {
@@ -94,7 +94,7 @@ export class App implements OnInit, OnDestroy {
     this.loadError.set('');
     this.portfolioService.refreshPortfolio().subscribe({
       next: rawData => {
-        this.portfolioData.set(rawData.data || this.portfolioData());
+        this.portfolioData.set(rawData || this.portfolioData());
       },
       error: error => {
         console.error('Error refreshing data:', error);

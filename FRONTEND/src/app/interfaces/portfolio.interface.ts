@@ -7,6 +7,12 @@ export interface ILot {
   totalCost: number;
   currency: string;
   exchangeRate: number;
+  transferDate?: string;
+  sourceIsin?: string;
+  sourceLotId?: string;
+  operationPPU?: number;
+  operationAmount?: number;
+  isTransfer?: boolean;
 }
 
 export interface ILotConsumed {
@@ -27,6 +33,20 @@ export interface ITransaction {
   realizedPnl: number;
   counterpartyIsin?: string;
   lotsConsumed: ILotConsumed[];
+  operationAmount?: number;
+  operationPPU?: number;
+  transferBreakdown?: ITransferBreakdown[];
+}
+
+export interface ITransferBreakdown {
+  sourceLotId: string;
+  sourceCreatedDate: string;
+  sourceCostPerUnit: number;
+  consumedQty: number;
+  consumedFiscalCost: number;
+  targetQty: number;
+  targetCostPerUnit: number;
+  operationAmount?: number;
 }
 
 export interface IPortfolioItem {

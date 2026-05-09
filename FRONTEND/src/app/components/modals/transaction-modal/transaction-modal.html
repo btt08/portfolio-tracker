@@ -34,6 +34,59 @@
             {{ txn.realizedPnl | number: '1.2-2' : 'de-DE' }}
           </td>
         </tr>
+        @if (hasTransferDetails(txn)) {
+          <tr class="transfer-details-row">
+            <td colspan="8">
+              <div class="transfer-meta">
+                @if (txn.operationPPU !== undefined) {
+                  <span>
+                    Operation Price: {{ txn.operationPPU | number: '1.2-6' : 'de-DE' }}
+                  </span>
+                }
+                @if (txn.operationAmount !== undefined) {
+                  <span>
+                    Operation Amount:
+                    {{ txn.operationAmount | number: '1.2-2' : 'de-DE' }}
+                  </span>
+                }
+              </div>
+
+              @if (txn.transferBreakdown?.length) {
+                <table class="transfer-breakdown-table">
+                  <thead>
+                    <tr>
+                      <th>Source Lot</th>
+                      <th>Source Date</th>
+                      <th>Qty Consumed</th>
+                      <th>Fiscal Cost</th>
+                      <th>Target Qty</th>
+                      <th>Target Fiscal Price</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (
+                      tranche of txn.transferBreakdown;
+                      track tranche.sourceLotId + tranche.sourceCreatedDate
+                    ) {
+                      <tr>
+                        <td>{{ tranche.sourceLotId }}</td>
+                        <td>{{ tranche.sourceCreatedDate | date: 'yyyy-MM-dd' }}</td>
+                        <td>{{ tranche.consumedQty | number: '1.2-8' : 'de-DE' }}</td>
+                        <td>
+                          {{ tranche.consumedFiscalCost | number: '1.2-2' : 'de-DE' }}
+                        </td>
+                        <td>{{ tranche.targetQty | number: '1.2-8' : 'de-DE' }}</td>
+                        <td>
+                          {{ tranche.targetCostPerUnit | number: '1.2-8' : 'de-DE' }}
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              }
+            </td>
+          </tr>
+        }
       }
     </tbody>
   </table>

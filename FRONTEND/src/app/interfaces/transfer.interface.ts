@@ -1,10 +1,12 @@
 export interface ITransferData {
   date: string;
   sourceQtySold: number;
-  sourcePricePerUnit: number;
-  sourceAmountSold: number;
+  sourcePPU: number;
+  sourceOpAmount: number;
+  sourceAmountSold?: number;
   targetIsin: string;
   targetQtyReceived: number;
-  targetPricePerUnit: number;
-  targetAmountReceived: number;
+  targetPPU: number;
+  targetOpAmount: number;
+  targetAmountReceived?: number;
 }

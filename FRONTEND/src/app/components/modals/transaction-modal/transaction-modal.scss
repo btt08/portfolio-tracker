@@ -62,3 +62,37 @@
   opacity: 0.5;
   padding: 1rem 0;
 }
+
+.transfer-details-row td {
+  text-align: left;
+  padding: 0.6rem;
+  background: rgba($white, 0.02);
+}
+
+.transfer-meta {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.75rem;
+  opacity: 0.85;
+  margin-bottom: 0.5rem;
+}
+
+.transfer-breakdown-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    font-size: 0.72rem;
+    padding: 0.25rem 0.4rem;
+    text-align: right;
+    border-top: 1px solid rgba($border-color, 0.35);
+  }
+
+  th:first-child,
+  td:first-child,
+  th:nth-child(2),
+  td:nth-child(2) {
+    text-align: left;
+  }
+}

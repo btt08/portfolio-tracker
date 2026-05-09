@@ -1,9 +1,14 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { environment } from '@environments/environment';
-import { ILot, IResponse } from '@interfaces/portfolio.interface';
+import {
+  ILot,
+  IPortfolio,
+  IPortfolioItem,
+  IResponse,
+} from '@interfaces/portfolio.interface';
 import { ITransferData } from 'app/interfaces/transfer.interface';
 
 @Injectable({
@@ -13,14 +18,22 @@ export class PortfolioRestService {
   private http = inject(HttpClient);
   private baseUrl = `${environment.apiUrl}/api/portfolio`;
 
-  getportfolio(): Observable<IResponse> {
-    return this.http.get<IResponse>(this.baseUrl).pipe(catchError(this.handleError));
+  getPortfolio(): Observable<IPortfolio> {
+    return this.http.get<IResponse>(this.baseUrl).pipe(
+      map(response => {
+        return this.filterEmptyItems(response.data);
+      }),
+      catchError(this.handleError)
+    );
   }
 
-  refreshPortfolio(): Observable<IResponse> {
-    return this.http
-      .get<IResponse>(`${this.baseUrl}/refresh`)
-      .pipe(catchError(this.handleError));
+  refreshPortfolio(): Observable<IPortfolio> {
+    return this.http.get<IResponse>(`${this.baseUrl}/refresh`).pipe(
+      map(response => {
+        return this.filterEmptyItems(response.data);
+      }),
+      catchError(this.handleError)
+    );
   }
 
   addPortfolioItem(item: {
@@ -78,6 +91,11 @@ export class PortfolioRestService {
     return this.http
       .post<IResponse>(`${this.baseUrl}/import`, data)
       .pipe(catchError(this.handleError));
+  }
+
+  private filterEmptyItems(portfolio: IPortfolio): IPortfolio {
+    const filteredItems = portfolio.items.filter(item => item.numShares > 0);
+    return { ...portfolio, items: filteredItems };
   }
 
   private handleError(error: HttpErrorResponse) {
