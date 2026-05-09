@@ -74,20 +74,18 @@ export class PortfolioMapperService {
       if (lot.qtyRemaining <= 0) continue;
       const costPerUnit = lot.costPerUnit || 0;
       const currExchRate = currencyService.getExchangeRateForCurrency(lot.currency);
+      const lotFiscalCost = lot.totalCost ?? SafeMath.multiply(lot.qtyRemaining, costPerUnit);
+      const lotFiscalCostInEur = SafeMath.multiply(lotFiscalCost, lot.exchangeRate || 1);
+      const lotMarketValue = SafeMath.valuate(
+        lot.qtyRemaining,
+        normalizedCurrPrice,
+        currExchRate || 1
+      );
 
       numShares = SafeMath.add(numShares, lot.qtyRemaining);
-      totalInvested = SafeMath.add(
-        totalInvested,
-        SafeMath.valuate(lot.qtyRemaining, costPerUnit, lot.exchangeRate || 1, lot.commission)
-      );
-      totalWithoutExchRate = SafeMath.add(
-        totalWithoutExchRate,
-        SafeMath.valuate(lot.qtyRemaining, costPerUnit, 1, lot.commission)
-      );
-      marketValue = SafeMath.add(
-        marketValue,
-        SafeMath.valuate(lot.qtyRemaining, normalizedCurrPrice, currExchRate || 1)
-      );
+      totalInvested = SafeMath.add(totalInvested, lotFiscalCostInEur);
+      totalWithoutExchRate = SafeMath.add(totalWithoutExchRate, lotFiscalCost);
+      marketValue = SafeMath.add(marketValue, lotMarketValue);
       prevMarketValue = SafeMath.add(
         prevMarketValue,
         SafeMath.valuate(lot.qtyRemaining, normalizedPrevPrice, currExchRate || 1)
@@ -95,7 +93,7 @@ export class PortfolioMapperService {
 
       unrealizedPnl = SafeMath.add(
         unrealizedPnl,
-        SafeMath.unrealizedPnl(lot, costPerUnit, normalizedCurrPrice, currExchRate)
+        SafeMath.subtract(lotMarketValue, lotFiscalCostInEur)
       );
     }
     const avgPrice = numShares === 0 ? 0 : SafeMath.divide(totalWithoutExchRate, numShares);

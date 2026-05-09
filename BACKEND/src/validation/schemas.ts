@@ -1,4 +1,6 @@
-import { date, z } from 'zod';
+import { z } from 'zod';
+
+const OPERATION_AMOUNT_TOLERANCE = 0.01;
 
 export const LotSchema = z.object({
   id: z.string(),
@@ -9,6 +11,12 @@ export const LotSchema = z.object({
   totalCost: z.number().min(0),
   currency: z.string().default('EUR'),
   exchangeRate: z.number().positive().default(1),
+  transferDate: z.string().optional(),
+  sourceIsin: z.string().optional(),
+  sourceLotId: z.string().optional(),
+  operationPPU: z.number().positive().optional(),
+  operationAmount: z.number().positive().optional(),
+  isTransfer: z.boolean().optional(),
 });
 
 export const StoredPortfolioItemSchema = z.object({
@@ -37,16 +45,50 @@ export const SellSchema = z.object({
   commission: z.number().min(0).default(0),
 });
 
-export const TransferSchema = z.object({
-  date: z.string(),
-  sourceQtySold: z.number().positive(),
-  sourcePricePerUnit: z.number().positive(),
-  sourceAmountSold: z.number().positive(),
-  targetIsin: z.string(),
-  targetQtyReceived: z.number().positive(),
-  targetPricePerUnit: z.number().positive(),
-  targetAmountReceived: z.number().positive(),
-});
+export const TransferSchema = z
+  .object({
+    date: z.string(),
+    sourceQtySold: z.number().positive(),
+    sourcePPU: z.number().positive(),
+    sourceOperationAmount: z.number().positive().optional(),
+    sourceAmountSold: z.number().positive().optional(),
+    targetIsin: z.string(),
+    targetQtyReceived: z.number().positive(),
+    targetPPU: z.number().positive(),
+    targetOperationAmount: z.number().positive().optional(),
+    targetAmountReceived: z.number().positive().optional(),
+  })
+  .superRefine((data, ctx) => {
+    const sourceOperationAmount = data.sourceOperationAmount ?? data.sourceAmountSold;
+    const targetOperationAmount = data.targetOperationAmount ?? data.targetAmountReceived;
+
+    if (sourceOperationAmount === undefined) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['sourceOperationAmount'],
+        message: 'sourceOperationAmount (or sourceAmountSold) is required',
+      });
+    }
+
+    if (targetOperationAmount === undefined) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['targetOperationAmount'],
+        message: 'targetOperationAmount (or targetAmountReceived) is required',
+      });
+    }
+
+    if (sourceOperationAmount !== undefined && targetOperationAmount !== undefined) {
+      const diff = Math.abs(sourceOperationAmount - targetOperationAmount);
+      if (diff > OPERATION_AMOUNT_TOLERANCE) {
+        ctx.addIssue({
+          code: 'custom',
+          path: ['targetOperationAmount'],
+          message: `Operation amounts differ by ${diff.toFixed(4)}, max tolerance is ${OPERATION_AMOUNT_TOLERANCE}`,
+        });
+      }
+    }
+  });
 
 const LotConsumedSchema = z.object({
   lotId: z.string(),
@@ -66,6 +108,22 @@ const TransactionSchema = z.object({
   realizedPnl: z.number(),
   counterpartyIsin: z.string().optional(),
   lotsConsumed: z.array(LotConsumedSchema),
+  operationAmount: z.number().optional(),
+  operationPPU: z.number().optional(),
+  transferBreakdown: z
+    .array(
+      z.object({
+        sourceLotId: z.string(),
+        sourceCreatedDate: z.string(),
+        sourceCostPerUnit: z.number(),
+        consumedQty: z.number(),
+        consumedFiscalCost: z.number(),
+        targetQty: z.number(),
+        targetCostPerUnit: z.number(),
+        operationAmount: z.number().optional(),
+      })
+    )
+    .optional(),
 });
 
 export const ImportPortfolioSchema = z.array(

@@ -1,31 +1,45 @@
+import configService from '../config.service';
+import loggerService from '../logger.service';
+import { LotService } from '../lot/lot.service';
+import priceScrapingService from '../price-scraping.service';
+import { PortfolioMapperService } from './portfolio-mapper.service';
+import { PortfolioRepository } from './portfolio-repository.service';
+import { SafeMath } from '../safe-math/safe-math.service';
 import {
   IAvailableQty,
   ILot,
   ILotConsumed,
   IPortfolio,
+  ISourceTranche,
   IStoredPortfolioItem,
   ITransaction,
+  ITransferBreakdown,
   ITransferData,
 } from '../../interfaces/portfolio.interface';
-import { PortfolioMapperService } from './portfolio-mapper.service';
-import { PortfolioRepository } from './portfolio-repository.service';
-import { LotService } from '../lot/lot.service';
-import { SafeMath } from '../safe-math/safe-math.service';
-import priceScrapingService from '../price-scraping.service';
-import configService from '../config.service';
-import loggerService from '../logger.service';
 
-class PortfolioService {
+export class PortfolioService {
+  private static readonly TRANSFER_QTY_PRECISION = 8;
   private rawPortfolio: IStoredPortfolioItem[] = [];
   private mappedPortfolio: IPortfolio | null = null;
-  private repo = new PortfolioRepository();
-  private mapper = new PortfolioMapperService();
-  private lotService = new LotService();
+  private repo: PortfolioRepository;
+  private mapper: PortfolioMapperService;
+  private lotService: LotService;
 
-  constructor() {
+  constructor(
+    repo: PortfolioRepository = new PortfolioRepository(),
+    mapper?: PortfolioMapperService,
+    lotService?: LotService,
+    options: { autoPersist?: boolean } = {}
+  ) {
+    this.repo = repo;
+    this.mapper = mapper ?? new PortfolioMapperService();
+    this.lotService = lotService ?? new LotService();
+
     this.reload();
-    setInterval(() => this.repo.save(this.rawPortfolio), configService.saveInterval);
-    this.repo.watch(() => this.reload());
+    if (options.autoPersist !== false) {
+      setInterval(() => this.repo.save(this.rawPortfolio), configService.saveInterval);
+      this.repo.watch(() => this.reload());
+    }
   }
 
   private reload(): void {
@@ -118,6 +132,27 @@ class PortfolioService {
     return { activeLots, totalAvailable };
   }
 
+  private ensureUniqueTxnId(item: IStoredPortfolioItem, baseId: string): string {
+    const transactions = item.transactions || [];
+    if (!transactions.some(txn => txn.id === baseId)) return baseId;
+
+    let suffix = 1;
+    while (transactions.some(txn => txn.id === `${baseId}-${suffix}`)) {
+      suffix += 1;
+    }
+    return `${baseId}-${suffix}`;
+  }
+
+  private ensureUniqueLotId(item: IStoredPortfolioItem, baseId: string): string {
+    if (!item.lots.some(lot => lot.id === baseId)) return baseId;
+
+    let suffix = 1;
+    while (item.lots.some(lot => lot.id === `${baseId}-${suffix}`)) {
+      suffix += 1;
+    }
+    return `${baseId}-${suffix}`;
+  }
+
   public sellFromItem(
     isin: string,
     date: string,
@@ -185,13 +220,25 @@ class PortfolioService {
     const {
       date,
       sourceQtySold,
-      sourcePricePerUnit,
+      sourcePPU,
+      sourceOpAmount,
       sourceAmountSold,
       targetIsin,
       targetQtyReceived,
-      targetPricePerUnit,
+      targetPPU,
+      targetOpAmount,
       targetAmountReceived,
     } = transferData;
+
+    if (sourceIsin === targetIsin) {
+      return { success: false, message: 'sourceIsin and targetIsin must be different' };
+    }
+
+    const resolvedSourceOpAmount =
+      sourceOpAmount ?? sourceAmountSold ?? SafeMath.multiply(sourceQtySold, sourcePPU);
+    const resolvedTargetOpAmount =
+      targetOpAmount ?? targetAmountReceived ?? SafeMath.multiply(targetQtyReceived, targetPPU);
+
     const sourceLookup = this.findItemOrFail(sourceIsin);
     if ('error' in sourceLookup) return { success: false, message: 'Source item not found' };
     const sourceItem = sourceLookup.item;
@@ -208,27 +255,94 @@ class PortfolioService {
       };
     }
 
-    let totalCostBasis = 0;
+    let totalFiscalCost = 0;
     const lotsConsumed: ILotConsumed[] = [];
+    const transferBreakdown: ITransferBreakdown[] = [];
+    const sourceTranches: ISourceTranche[] = [];
 
     this.lotService.matchLots(activeLots, sourceQtySold, (deducted, lot) => {
+      const consumedFiscalCost = SafeMath.multiply(deducted, lot.costPerUnit);
+
       lotsConsumed.push({ lotId: lot.id, qty: deducted, costPerUnit: lot.costPerUnit });
+      sourceTranches.push({
+        sourceLotId: lot.id,
+        sourceCreatedDate: lot.createdDate,
+        sourceCostPerUnit: lot.costPerUnit,
+        consumedQty: deducted,
+        consumedFiscalCost,
+        sourceCurrency: lot.currency,
+        sourceExchangeRate: lot.exchangeRate,
+      });
+      totalFiscalCost = SafeMath.add(totalFiscalCost, consumedFiscalCost);
 
       lot.qtyRemaining = SafeMath.subtract(lot.qtyRemaining, deducted);
       lot.totalCost = SafeMath.multiply(lot.qtyRemaining, lot.costPerUnit);
     });
 
-    const newLot: ILot = {
-      id: `${targetIsin}-transfer-${date}-${targetItem.lots.length + 1}`,
-      createdDate: date,
-      qtyRemaining: targetQtyReceived,
-      costPerUnit: targetPricePerUnit,
-      commission: 0,
-      totalCost: targetAmountReceived,
-      currency: 'EUR',
-      exchangeRate: 1,
-    };
-    targetItem.lots.push(newLot);
+    let accTargetQty = 0;
+    let accTargetOpAmount = 0;
+
+    sourceTranches.forEach((tranche, index) => {
+      const isLast = index === sourceTranches.length - 1;
+      const ratio = SafeMath.divide(
+        tranche.consumedQty,
+        sourceQtySold,
+        PortfolioService.TRANSFER_QTY_PRECISION
+      );
+
+      const trancheTargetQty = isLast
+        ? SafeMath.subtract(targetQtyReceived, accTargetQty)
+        : SafeMath.multiply(targetQtyReceived, ratio);
+
+      const safeTargetQty = trancheTargetQty < 0 ? 0 : trancheTargetQty;
+      const targetCostPerUnit =
+        safeTargetQty === 0
+          ? 0
+          : SafeMath.divide(
+              tranche.consumedFiscalCost,
+              safeTargetQty,
+              PortfolioService.TRANSFER_QTY_PRECISION
+            );
+
+      const trancheOpAmount = isLast
+        ? SafeMath.subtract(resolvedTargetOpAmount, accTargetOpAmount)
+        : SafeMath.multiply(resolvedTargetOpAmount, ratio);
+
+      const newTransferLot: ILot = {
+        id: this.ensureUniqueLotId(
+          targetItem,
+          `${targetIsin}-transfer-${date}-${tranche.sourceLotId}-${index + 1}`
+        ),
+        createdDate: tranche.sourceCreatedDate,
+        qtyRemaining: safeTargetQty,
+        costPerUnit: targetCostPerUnit,
+        commission: 0,
+        totalCost: tranche.consumedFiscalCost,
+        currency: tranche.sourceCurrency,
+        exchangeRate: tranche.sourceExchangeRate,
+        transferDate: date,
+        sourceIsin,
+        sourceLotId: tranche.sourceLotId,
+        operationPPU: targetPPU,
+        operationAmount: trancheOpAmount,
+        isTransfer: true,
+      };
+
+      targetItem.lots.push(newTransferLot);
+      transferBreakdown.push({
+        sourceLotId: tranche.sourceLotId,
+        sourceCreatedDate: tranche.sourceCreatedDate,
+        sourceCostPerUnit: tranche.sourceCostPerUnit,
+        consumedQty: tranche.consumedQty,
+        consumedFiscalCost: tranche.consumedFiscalCost,
+        targetQty: safeTargetQty,
+        targetCostPerUnit,
+        operationAmount: trancheOpAmount,
+      });
+
+      accTargetQty = SafeMath.add(accTargetQty, safeTargetQty);
+      accTargetOpAmount = SafeMath.add(accTargetOpAmount, trancheOpAmount);
+    });
 
     if (!sourceItem.transactions) sourceItem.transactions = [];
     if (!sourceItem.realizedPnl) sourceItem.realizedPnl = 0;
@@ -236,31 +350,37 @@ class PortfolioService {
     if (!targetItem.realizedPnl) targetItem.realizedPnl = 0;
 
     sourceItem.transactions.push({
-      id: `${sourceIsin}-transfer_out-${date}`,
+      id: this.ensureUniqueTxnId(sourceItem, `${sourceIsin}-transfer_out-${date}`),
       date,
       type: 'transfer_out',
       qty: sourceQtySold,
-      pricePerUnit: sourcePricePerUnit,
-      costBasis: sourceAmountSold,
+      pricePerUnit: sourcePPU,
+      costBasis: totalFiscalCost,
       proceeds: 0,
       commission: 0,
       realizedPnl: 0,
       counterpartyIsin: targetIsin,
       lotsConsumed,
+      operationAmount: resolvedSourceOpAmount,
+      operationPPU: sourcePPU,
+      transferBreakdown,
     });
 
     targetItem.transactions.push({
-      id: `${targetIsin}-transfer_in-${date}`,
+      id: this.ensureUniqueTxnId(targetItem, `${targetIsin}-transfer_in-${date}`),
       date,
       type: 'transfer_in',
       qty: targetQtyReceived,
-      pricePerUnit: targetPricePerUnit,
-      costBasis: targetAmountReceived,
+      pricePerUnit: targetPPU,
+      costBasis: totalFiscalCost,
       proceeds: 0,
       commission: 0,
       realizedPnl: 0,
       counterpartyIsin: sourceIsin,
       lotsConsumed: [],
+      operationAmount: resolvedTargetOpAmount,
+      operationPPU: targetPPU,
+      transferBreakdown,
     });
 
     this.remapAndSave();
