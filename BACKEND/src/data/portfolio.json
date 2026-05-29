@@ -76,8 +76,8 @@
         "exchangeRate": 1
       }
     ],
-    "prevPrice": 26.882,
-    "currPrice": 26.766,
+    "prevPrice": 27.096,
+    "currPrice": 27.076,
     "priceUnit": 1,
     "realizedPnl": 0,
     "transactions": [
@@ -304,7 +304,7 @@
   },
   {
     "isin": "IE00BYWYCC39",
-    "name": " iShares Emerging D EUR",
+    "name": "iShares Emerging D EUR",
     "type": "Fund",
     "link": "https://investing.com/funds/ie00bywycc39",
     "lots": [
@@ -399,8 +399,8 @@
         "exchangeRate": 1
       }
     ],
-    "prevPrice": 19.284,
-    "currPrice": 19.527,
+    "prevPrice": 19.777,
+    "currPrice": 19.992,
     "priceUnit": 1,
     "realizedPnl": 0,
     "transactions": [
@@ -516,7 +516,7 @@
   },
   {
     "isin": "ES0128520006",
-    "name": " R4 Fija 6 Meses",
+    "name": "R4 Fija 6 Meses",
     "type": "Fund",
     "link": "https://investing.com/funds/renta-4-monetario-fi",
     "lots": [
@@ -571,8 +571,8 @@
         "exchangeRate": 1
       }
     ],
-    "prevPrice": 12.662,
-    "currPrice": 12.663,
+    "prevPrice": 12.668,
+    "currPrice": 12.671,
     "priceUnit": 1,
     "realizedPnl": 19.99318311,
     "transactions": [
@@ -950,8 +950,8 @@
         "isTransfer": true
       }
     ],
-    "prevPrice": 11.465,
-    "currPrice": 11.416,
+    "prevPrice": 11.802,
+    "currPrice": 11.793,
     "priceUnit": 1,
     "realizedPnl": 0,
     "transactions": [
@@ -1112,7 +1112,7 @@
       }
     ],
     "prevPrice": 1.264,
-    "currPrice": 1.258,
+    "currPrice": 1.273,
     "priceUnit": 1,
     "realizedPnl": 0,
     "transactions": [
@@ -1218,8 +1218,8 @@
         "isTransfer": true
       }
     ],
-    "prevPrice": 155.05,
-    "currPrice": 155.73,
+    "prevPrice": 159.32,
+    "currPrice": 159.28,
     "priceUnit": 1,
     "realizedPnl": 0,
     "transactions": [
@@ -1334,8 +1334,8 @@
         "isTransfer": true
       }
     ],
-    "prevPrice": 106.21,
-    "currPrice": 103.3,
+    "prevPrice": 114.05,
+    "currPrice": 111.77,
     "priceUnit": 1,
     "realizedPnl": 0,
     "transactions": [
@@ -1419,8 +1419,8 @@
         "exchangeRate": 1
       }
     ],
-    "prevPrice": 62.01,
-    "currPrice": 61.58,
+    "prevPrice": 59.17,
+    "currPrice": 59.65,
     "priceUnit": 1,
     "realizedPnl": 0,
     "transactions": [
@@ -1455,8 +1455,8 @@
     "name": "AMPER SA",
     "type": "equities",
     "link": "https://investing.com/equities/amper-sa",
-    "prevPrice": 0.197,
-    "currPrice": 0.1938,
+    "prevPrice": 0.201,
+    "currPrice": 0.2015,
     "lots": [
       {
         "id": "ES0109260531-2025-08-01T00:00:00.000Z-0",
@@ -1511,8 +1511,8 @@
     "name": "NEXTIL",
     "type": "equities",
     "link": "https://investing.com/equities/dogi-international-fabrics-sa",
-    "prevPrice": 0.881,
-    "currPrice": 0.892,
+    "prevPrice": 0.936,
+    "currPrice": 0.947,
     "lots": [
       {
         "id": "ES0126962069-2025-08-01T00:00:00.000Z-0",
@@ -1543,6 +1543,16 @@
         "totalCost": 523.71,
         "currency": "EUR",
         "exchangeRate": 1
+      },
+      {
+        "id": "ES0126962069-2026-05-29T00:00:00.000Z-3",
+        "createdDate": "2026-05-29T00:00:00.000Z",
+        "qtyRemaining": 400,
+        "costPerUnit": 0.945,
+        "commission": 4.11,
+        "totalCost": 382.11,
+        "currency": "EUR",
+        "exchangeRate": 1
       }
     ],
     "priceUnit": 1,
@@ -1559,6 +1569,18 @@
         "commission": 4.11,
         "realizedPnl": 0,
         "lotsConsumed": []
+      },
+      {
+        "id": "ES0126962069-buy-1780041108934",
+        "date": "2026-05-29T00:00:00.000Z",
+        "type": "buy",
+        "qty": 400,
+        "pricePerUnit": 0.945,
+        "costBasis": 382.11,
+        "proceeds": 0,
+        "commission": 4.11,
+        "realizedPnl": 0,
+        "lotsConsumed": []
       }
     ]
   },
@@ -1567,8 +1589,8 @@
     "name": "OHL",
     "type": "equities",
     "link": "https://investing.com/equities/ohl",
-    "prevPrice": 0.471,
-    "currPrice": 0.463,
+    "prevPrice": 0.485,
+    "currPrice": 0.484,
     "lots": [
       {
         "id": "ES0142090317-2025-08-01T00:00:00.000Z-0",
@@ -1589,19 +1611,42 @@
         "totalCost": 390.61,
         "currency": "EUR",
         "exchangeRate": 1
+      },
+      {
+        "id": "ES0142090317-2026-05-29T00:00:00.000Z-2",
+        "createdDate": "2026-05-29T00:00:00.000Z",
+        "qtyRemaining": 1250,
+        "costPerUnit": 0.4842,
+        "commission": 4.11,
+        "totalCost": 609.36,
+        "currency": "EUR",
+        "exchangeRate": 1
       }
     ],
     "priceUnit": 1,
     "realizedPnl": 0,
-    "transactions": []
+    "transactions": [
+      {
+        "id": "ES0142090317-buy-1780041029531",
+        "date": "2026-05-29T00:00:00.000Z",
+        "type": "buy",
+        "qty": 1250,
+        "pricePerUnit": 0.4842,
+        "costBasis": 609.36,
+        "proceeds": 0,
+        "commission": 4.11,
+        "realizedPnl": 0,
+        "lotsConsumed": []
+      }
+    ]
   },
   {
     "isin": "DE000UNSE026",
     "name": "Uniper SE",
     "type": "equities",
     "link": "https://investing.com/equities/uniper-se",
-    "prevPrice": 42.2,
-    "currPrice": 41.55,
+    "prevPrice": 46.85,
+    "currPrice": 47.475,
     "lots": [
       {
         "id": "DE000UNSE026-2026-03-18T12:37:50.000Z-0",
@@ -1623,8 +1668,8 @@
     "name": "Wizz Air",
     "type": "equities",
     "link": "https://investing.com/equities/wizz-air-holdings-plc",
-    "prevPrice": 988,
-    "currPrice": 1014,
+    "prevPrice": 1042,
+    "currPrice": 1053,
     "lots": [
       {
         "id": "JE00BN574F90-2026-03-18T12:47:53.000Z-1",

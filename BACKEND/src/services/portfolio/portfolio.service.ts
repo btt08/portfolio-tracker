@@ -386,10 +386,18 @@ export class PortfolioService {
 
   public async refreshPrices(): Promise<void> {
     try {
-      const concurrency = this.rawPortfolio.length;
+      const notEmptyItems = this.rawPortfolio.filter(item =>
+        item.lots.every(lot => lot.qtyRemaining > 0)
+      );
+      if (notEmptyItems.length === 0) {
+        loggerService.info('No assets with lots found, skipping price refresh.');
+        return;
+      }
 
-      for (let i = 0; i < this.rawPortfolio.length; i += concurrency) {
-        const batch = this.rawPortfolio.slice(i, i + concurrency);
+      const concurrency = notEmptyItems.length;
+
+      for (let i = 0; i < notEmptyItems.length; i += concurrency) {
+        const batch = notEmptyItems.slice(i, i + concurrency);
         const promises = batch.map(async asset => {
           const page = await priceScrapingService.createPage();
           try {

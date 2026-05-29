@@ -1,4 +1,4 @@
-<td>{{ lot().createdDate | date: 'yyyy-MM-dd' }}</td>
+<td>{{ lot().transferDate ?? lot().createdDate | date: 'yyyy-MM-dd' }}</td>
 <td>{{ lot().qtyRemaining | number: '1.2-4' : 'de-DE' }}</td>
 <td>{{ lot().currency }}</td>
 <td>{{ lot().costPerUnit | number: '1.2-4' : 'de-DE' }}</td>

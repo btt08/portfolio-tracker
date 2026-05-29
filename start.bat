@@ -1,6 +1,4 @@
 @echo off
-cd backend
-start npm run dev
+cd frontend && start npm start
 cd ..
-cd frontend
-start npm start
+cd backend && start npm run dev
