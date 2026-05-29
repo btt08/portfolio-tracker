@@ -1,24 +1,25 @@
 import {
   Component,
+  computed,
+  effect,
   inject,
   input,
-  output,
   signal,
-  computed,
+  output,
   viewChildren,
 } from '@angular/core';
 import { PortfolioRestService } from '@services/portfolio-rest';
 import { PortfolioUtilsService } from 'app/utils/portfolio.utils';
+import { ICurrency } from 'app/interfaces/currency.interface';
 import {
+  IGroupedPortfolioItem,
+  ILot,
   IPortfolioItem,
   IPortfolio,
-  ILot,
-  IGroupedPortfolioItem,
 } from '@interfaces/portfolio.interface';
 import { ISellData } from '@interfaces/sell-form.interface';
 import { ITransferData } from '@interfaces/transfer.interface';
 import type { TSortKey, TSortDir } from '@appTypes/shares-table.types';
-import { ICurrency } from 'app/interfaces/currency.interface';
 import { Button } from '../buttons/button/button';
 import { GroupHeader } from './components/group-header/group-header';
 import { ItemRow } from './components/item-row-data/item-row';
@@ -48,6 +49,19 @@ import { TransferForm } from '@forms/transfer/transfer-form';
 export class SharesTable {
   private portfolioService = inject(PortfolioRestService);
   private portfolioUtils = inject(PortfolioUtilsService);
+  private groupCollapseInitialized = signal<boolean>(false);
+
+  constructor() {
+    effect(() => {
+      const groups = this.groupedData();
+      if (this.groupCollapseInitialized() || groups.length === 0) {
+        return;
+      }
+
+      this.collapsedGroups.set(new Set(groups.map(group => group.type)));
+      this.groupCollapseInitialized.set(true);
+    });
+  }
 
   sellFormComponents = viewChildren(SellForm);
 
@@ -57,12 +71,13 @@ export class SharesTable {
   onAddItem = output<void>();
   portfolioUpdated = output<IPortfolio>();
 
-  expandedItems = signal<Set<string>>(new Set());
   addModalItem = signal<IPortfolioItem | null>(null);
+  collapsedGroups = signal<Set<string>>(new Set());
+  expandedItems = signal<Set<string>>(new Set());
+  sortDir = signal<TSortDir>('asc');
+  sortKey = signal<TSortKey | null>(null);
   transferModalItem = signal<IPortfolioItem | null>(null);
   txnModalItem = signal<IPortfolioItem | null>(null);
-  sortKey = signal<TSortKey | null>(null);
-  sortDir = signal<TSortDir>('asc');
 
   sortedData = computed(() => {
     const items = [...this.data()];
@@ -90,7 +105,10 @@ export class SharesTable {
 
   displayGroups = computed<IGroupedPortfolioItem[]>(() => {
     if (this.groupByType()) {
-      return this.groupedData();
+      return this.groupedData().map(group => ({
+        ...group,
+        hide: this.collapsedGroups().has(group.type),
+      }));
     }
     return [this.portfolioUtils.getDefaultGroupedPortfolioItem('', this.sortedData())];
   });
@@ -127,6 +145,16 @@ export class SharesTable {
 
   isExpanded(isin: string): boolean {
     return this.expandedItems().has(isin);
+  }
+
+  toggleGroupVisibility(type: string): void {
+    const collapsedGroups = new Set(this.collapsedGroups());
+    collapsedGroups.has(type) ? collapsedGroups.delete(type) : collapsedGroups.add(type);
+    this.collapsedGroups.set(collapsedGroups);
+  }
+
+  isGroupCollapsed(type: string): boolean {
+    return this.collapsedGroups().has(type);
   }
 
   addLot(item: IPortfolioItem, lot: ILot): void {

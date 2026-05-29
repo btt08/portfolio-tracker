@@ -1,9 +1,12 @@
 @for (group of displayGroups(); track group.type) {
   <div class="shares-table" [class.group-table]="groupByType()">
     @if (groupByType()) {
-      <app-group-header [group]="group" />
+      <app-group-header
+        [group]="group"
+        [isCollapsed]="isGroupCollapsed(group.type)"
+        (onToggleVisibility)="toggleGroupVisibility(group.type)" />
     }
-    @if (!group.hide) {
+    @if (!isGroupCollapsed(group.type)) {
       <table>
         <thead>
           <tr>

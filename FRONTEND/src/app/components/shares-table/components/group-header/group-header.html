@@ -1,6 +1,6 @@
-<div class="group-header" (dblclick)="group().hide = !group().hide">
+<div class="group-header" (dblclick)="toggleVisibility()">
   <div class="group-header__toggle">
-    <app-toggle [hiddenStatus]="group().hide" (onToggle)="group().hide = !group().hide" />
+    <app-toggle [hiddenStatus]="isCollapsed()" (onToggle)="toggleVisibility()" />
     <span class="group-label">{{ group().type }}</span>
   </div>
   <div class="group-summary">

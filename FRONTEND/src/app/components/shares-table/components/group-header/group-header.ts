@@ -13,6 +13,8 @@ import { Toggle } from '@components/buttons/toggle/toggle';
 export class GroupHeader {
   private utils = inject(UtilsService);
   group = input.required<IGroupedPortfolioItem>();
+  isCollapsed = input<boolean>(false);
+  onToggleVisibility = output<void>();
 
   isPositive(value: number): boolean {
     return value > 0;
@@ -20,5 +22,9 @@ export class GroupHeader {
 
   formatNumber(value: number): string {
     return this.utils.formatNumber(value);
+  }
+
+  toggleVisibility(): void {
+    this.onToggleVisibility.emit();
   }
 }
