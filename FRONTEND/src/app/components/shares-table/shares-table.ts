@@ -8,6 +8,7 @@ import {
   viewChildren,
 } from '@angular/core';
 import { PortfolioRestService } from '@services/portfolio-rest';
+import { PortfolioUtilsService } from 'app/utils/portfolio.utils';
 import {
   IPortfolioItem,
   IPortfolio,
@@ -46,6 +47,7 @@ import { TransferForm } from '@forms/transfer/transfer-form';
 })
 export class SharesTable {
   private portfolioService = inject(PortfolioRestService);
+  private portfolioUtils = inject(PortfolioUtilsService);
 
   sellFormComponents = viewChildren(SellForm);
 
@@ -83,48 +85,14 @@ export class SharesTable {
     const items = this.data();
     const key = this.sortKey();
     const dir = this.sortDir();
-    const groups = new Map<string, IGroupedPortfolioItem>();
-    for (const item of items) {
-      const type = item.type || 'Other';
-      if (!groups.has(type)) {
-        groups.set(type, this.getDefaultGroupedPortfolioItem(type));
-      }
-      const g = groups.get(type)!;
-      g.items.push(item);
-      g.weight += item.portfolioPerc;
-      g.marketValue += item.marketValue;
-      g.invested += item.totalInvested;
-      g.dailyChangeEUR += item.dailyChangeEUR;
-    }
-    if (key) {
-      for (const g of groups.values()) {
-        g.items.sort((a, b) => {
-          const aVal = a[key];
-          const bVal = b[key];
-          if (typeof aVal === 'number' && typeof bVal === 'number') {
-            return dir === 'asc' ? aVal - bVal : bVal - aVal;
-          }
-          const aStr = String(aVal ?? '');
-          const bStr = String(bVal ?? '');
-          return dir === 'asc' ? aStr.localeCompare(bStr) : bStr.localeCompare(aStr);
-        });
-      }
-    }
-
-    return [...groups.values()].map(g => {
-      g.dailyChangeEUR = g.items.reduce((sum, i) => sum + i.dailyChangeEUR, 0);
-      g.dailyChangePerc = g.invested ? (g.dailyChangeEUR / g.invested) * 100 : 0;
-      g.totalChangeEUR = g.marketValue - g.invested;
-      g.totalChangePerc = g.invested ? (g.totalChangeEUR / g.invested) * 100 : 0;
-      return g;
-    });
+    return this.portfolioUtils.mapItemsToGroups(items, key, dir);
   });
 
   displayGroups = computed<IGroupedPortfolioItem[]>(() => {
     if (this.groupByType()) {
       return this.groupedData();
     }
-    return [this.getDefaultGroupedPortfolioItem('', this.sortedData())];
+    return [this.portfolioUtils.getDefaultGroupedPortfolioItem('', this.sortedData())];
   });
 
   submitting: Record<string, boolean> = {};
@@ -234,23 +202,5 @@ export class SharesTable {
         console.error('Error deleting lot:', error);
       },
     });
-  }
-
-  getDefaultGroupedPortfolioItem(
-    type: string = '',
-    items: IPortfolioItem[] = []
-  ): IGroupedPortfolioItem {
-    return {
-      type: type,
-      items: items,
-      hide: false,
-      weight: 0,
-      marketValue: 0,
-      invested: 0,
-      dailyChangeEUR: 0,
-      dailyChangePerc: 0,
-      totalChangeEUR: 0,
-      totalChangePerc: 0,
-    };
   }
 }

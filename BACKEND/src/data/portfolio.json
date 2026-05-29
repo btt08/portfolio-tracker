@@ -1420,7 +1420,7 @@
       }
     ],
     "prevPrice": 59.17,
-    "currPrice": 59.65,
+    "currPrice": 59.68,
     "priceUnit": 1,
     "realizedPnl": 0,
     "transactions": [
@@ -1512,7 +1512,7 @@
     "type": "equities",
     "link": "https://investing.com/equities/dogi-international-fabrics-sa",
     "prevPrice": 0.936,
-    "currPrice": 0.947,
+    "currPrice": 0.942,
     "lots": [
       {
         "id": "ES0126962069-2025-08-01T00:00:00.000Z-0",
@@ -1646,7 +1646,7 @@
     "type": "equities",
     "link": "https://investing.com/equities/uniper-se",
     "prevPrice": 46.85,
-    "currPrice": 47.475,
+    "currPrice": 48.65,
     "lots": [
       {
         "id": "DE000UNSE026-2026-03-18T12:37:50.000Z-0",
@@ -1669,7 +1669,7 @@
     "type": "equities",
     "link": "https://investing.com/equities/wizz-air-holdings-plc",
     "prevPrice": 1042,
-    "currPrice": 1053,
+    "currPrice": 1063.2,
     "lots": [
       {
         "id": "JE00BN574F90-2026-03-18T12:47:53.000Z-1",

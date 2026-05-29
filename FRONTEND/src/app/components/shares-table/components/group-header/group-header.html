@@ -1,33 +1,57 @@
 <div class="group-header" (dblclick)="group().hide = !group().hide">
-  <app-toggle [hiddenStatus]="group().hide" (onToggle)="group().hide = !group().hide" />
-  <span class="group-label">{{ group().type }}</span>
+  <div class="group-header__toggle">
+    <app-toggle [hiddenStatus]="group().hide" (onToggle)="group().hide = !group().hide" />
+    <span class="group-label">{{ group().type }}</span>
+  </div>
   <div class="group-summary">
-    <span>Weight: {{ group().weight | number: '1.2-2' : 'de-DE' }}%</span> ·
-    <span>Invested: {{ group().invested | number: '1.2-2' : 'de-DE' }}</span> ·
-    <span>Market: {{ group().marketValue | number: '1.2-2' : 'de-DE' }}</span> ·
-    <span>Daily: </span>
-    <span
-      [class.positive]="isPositive(group().dailyChangeEUR)"
-      [class.negative]="!isPositive(group().dailyChangeEUR)">
-      {{ formatNumber(group().dailyChangeEUR) }}
+    <span class="group-summary__item">
+      <span class="group-summary__item--label">Weight:</span>
+      <span class="group-summary__item--value">
+        {{ group().weight | number: '1.2-2' : 'de-DE' }}%
+      </span>
     </span>
-    ·
-    <span
-      [class.positive]="isPositive(group().dailyChangePerc)"
-      [class.negative]="!isPositive(group().dailyChangePerc)">
-      {{ formatNumber(group().dailyChangePerc) }}%
+    <span class="group-summary__item">
+      <span class="group-summary__item--label">Invested:</span>
+      <span class="group-summary__item--value">
+        {{ group().invested | number: '1.2-2' : 'de-DE' }}€
+      </span>
     </span>
-    <span>Total: </span>
-    <span
-      [class.positive]="isPositive(group().totalChangeEUR)"
-      [class.negative]="!isPositive(group().totalChangeEUR)">
-      {{ formatNumber(group().totalChangeEUR) }}
+    <span class="group-summary__item">
+      <span class="group-summary__item--label">Market:</span>
+      <span class="group-summary__item--value">
+        {{ group().marketValue | number: '1.2-2' : 'de-DE' }}€
+      </span>
     </span>
-    ·
-    <span
-      [class.positive]="isPositive(group().totalChangePerc)"
-      [class.negative]="!isPositive(group().totalChangePerc)">
-      {{ formatNumber(group().totalChangePerc) }}%
+    <span class="group-summary__item">
+      <span class="group-summary__item--label">Daily:</span>
+      <span class="group-summary__item--value">
+        <span
+          [class.positive]="isPositive(group().dailyChangeEUR)"
+          [class.negative]="!isPositive(group().dailyChangeEUR)">
+          {{ formatNumber(group().dailyChangeEUR) }}€
+        </span>
+        <span
+          [class.positive]="isPositive(group().dailyChangePerc)"
+          [class.negative]="!isPositive(group().dailyChangePerc)">
+          {{ formatNumber(group().dailyChangePerc) }}%
+        </span>
+      </span>
+    </span>
+
+    <span class="group-summary__item">
+      <span class="group-summary__item--label">Total:</span>
+      <span class="group-summary__item--value">
+        <span
+          [class.positive]="isPositive(group().totalChangeEUR)"
+          [class.negative]="!isPositive(group().totalChangeEUR)">
+          {{ formatNumber(group().totalChangeEUR) }}€
+        </span>
+        <span
+          [class.positive]="isPositive(group().totalChangePerc)"
+          [class.negative]="!isPositive(group().totalChangePerc)">
+          {{ formatNumber(group().totalChangePerc) }}%
+        </span>
+      </span>
     </span>
   </div>
 </div>
