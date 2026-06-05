@@ -65,6 +65,16 @@
       border-color: $accent;
       color: $accent;
     }
+
+    &--positive {
+      border-color: $positive;
+      color: $positive;
+    }
+
+    &--negative {
+      border-color: $negative;
+      color: $negative;
+    }
   }
 }
 

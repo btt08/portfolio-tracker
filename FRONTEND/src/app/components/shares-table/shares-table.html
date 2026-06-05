@@ -11,78 +11,89 @@
         <thead>
           <tr>
             <th class="toggle-col"></th>
-            <th class="sortable" (click)="toggleSort('isin')">
+            <th [class.sortable]="!isReorderMode()" (click)="toggleSort('isin')">
               ISIN{{ sortIndicator('isin') }}
             </th>
-            <th class="sortable" (click)="toggleSort('name')">
+            <th [class.sortable]="!isReorderMode()" (click)="toggleSort('name')">
               Name{{ sortIndicator('name') }}
             </th>
             <th
-              class="sortable"
+              [class.sortable]="!isReorderMode()"
               (click)="toggleSort('portfolioPerc')"
               title="Percentage of total portfolio value">
               Weight (%){{ sortIndicator('portfolioPerc') }}
             </th>
-            <th class="sortable" (click)="toggleSort('numShares')">
+            <th [class.sortable]="!isReorderMode()" (click)="toggleSort('numShares')">
               Shares{{ sortIndicator('numShares') }}
             </th>
             <th
-              class="sortable"
+              [class.sortable]="!isReorderMode()"
               (click)="toggleSort('totalInvested')"
               title="Total cost basis including commissions">
               Invested{{ sortIndicator('totalInvested') }}
             </th>
             <th
-              class="sortable"
+              [class.sortable]="!isReorderMode()"
               (click)="toggleSort('marketValue')"
               title="Current value of shares held">
               Market Value{{ sortIndicator('marketValue') }}
             </th>
-            <th class="sortable" (click)="toggleSort('avgPrice')" title="Avg cost/Share">
+            <th
+              [class.sortable]="!isReorderMode()"
+              (click)="toggleSort('avgPrice')"
+              title="Avg cost/Share">
               AC/Share{{ sortIndicator('avgPrice') }}
             </th>
-            <th class="sortable" (click)="toggleSort('prevPrice')">
+            <th [class.sortable]="!isReorderMode()" (click)="toggleSort('prevPrice')">
               Prev price{{ sortIndicator('prevPrice') }}
             </th>
-            <th class="sortable" (click)="toggleSort('currPrice')">
+            <th [class.sortable]="!isReorderMode()" (click)="toggleSort('currPrice')">
               Last price{{ sortIndicator('currPrice') }}
             </th>
             <th
-              class="sortable"
+              [class.sortable]="!isReorderMode()"
               (click)="toggleSort('dailyChangeEUR')"
               title="Daily change in EUR">
               Daily (€) {{ sortIndicator('dailyChangeEUR') }}
             </th>
             <th
-              class="sortable"
+              [class.sortable]="!isReorderMode()"
               (click)="toggleSort('dailyChangePerc')"
               title="Daily change in percent">
               Daily (%){{ sortIndicator('dailyChangePerc') }}
             </th>
             <th
-              class="sortable"
+              [class.sortable]="!isReorderMode()"
               (click)="toggleSort('totalChangeEUR')"
               title="Total unrealized gain/loss in EUR">
               Total (€) {{ sortIndicator('totalChangeEUR') }}
             </th>
             <th
-              class="sortable"
+              [class.sortable]="!isReorderMode()"
               (click)="toggleSort('totalChangePerc')"
               title="Total unrealized gain/loss in percent">
               Total (%){{ sortIndicator('totalChangePerc') }}
             </th>
           </tr>
         </thead>
-        <tbody>
+        <tbody
+          cdkDropList
+          [cdkDropListData]="group.items"
+          [cdkDropListDisabled]="!isReorderMode() || groupByType()"
+          (cdkDropListDropped)="onDrop($event)">
           @for (item of group.items; track item.isin) {
             <tr
               class="item-row"
+              cdkDrag
+              [cdkDragDisabled]="!isReorderMode() || groupByType()"
               [class.expanded]="isExpanded(item.isin)"
-              (dblclick)="toggleExpand(item.isin)"
+              [class.item-row--reorder]="isReorderMode()"
+              (dblclick)="!isReorderMode() && toggleExpand(item.isin)"
               app-item-row
               [item]="item"
+              [reorderMode]="isReorderMode()"
               [(expandedItems)]="expandedItems"></tr>
-            @if (isExpanded(item.isin)) {
+            @if (!isReorderMode() && isExpanded(item.isin)) {
               <tr class="lots">
                 <td colspan="14">
                   <div class="lot-container">

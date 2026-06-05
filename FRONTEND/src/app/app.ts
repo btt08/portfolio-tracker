@@ -37,7 +37,9 @@ export class App implements OnInit, OnDestroy {
   groupByType = signal<boolean>(false);
   isLoading = signal<boolean>(true);
   isRefreshing = signal<boolean>(false);
+  isReorderMode = signal<boolean>(false);
   loadError = signal<string>('');
+  pendingOrder = signal<string[]>([]);
   portfolioData = signal<IPortfolio>({
     items: [],
     summary: {
@@ -107,6 +109,50 @@ export class App implements OnInit, OnDestroy {
 
   onPortfolioUpdated(portfolio: IPortfolio): void {
     this.portfolioData.set(portfolio);
+    this.isReorderMode.set(false);
+    this.pendingOrder.set([]);
+  }
+
+  toggleGroupByType(): void {
+    const nextValue = !this.groupByType();
+    this.groupByType.set(nextValue);
+
+    if (nextValue) {
+      this.isReorderMode.set(false);
+      this.pendingOrder.set([]);
+    }
+  }
+
+  startReorderMode(): void {
+    if (this.groupByType()) return;
+    this.isReorderMode.set(true);
+    this.pendingOrder.set(this.portfolioData().items.map(item => item.isin));
+  }
+
+  cancelReorderMode(): void {
+    this.isReorderMode.set(false);
+    this.pendingOrder.set([]);
+  }
+
+  onReorderDraftChanged(isins: string[]): void {
+    this.pendingOrder.set(isins);
+  }
+
+  saveOrder(): void {
+    const draftOrder = this.pendingOrder();
+    const fallbackOrder = this.portfolioData().items.map(item => item.isin);
+    const isins = draftOrder.length ? draftOrder : fallbackOrder;
+
+    this.portfolioService.reorderPortfolio(isins).subscribe({
+      next: response => {
+        this.portfolioData.set(response.data);
+        this.isReorderMode.set(false);
+        this.pendingOrder.set([]);
+      },
+      error: error => {
+        console.error('Error saving portfolio order:', error);
+      },
+    });
   }
 
   addItem(data: IAddItemData): void {

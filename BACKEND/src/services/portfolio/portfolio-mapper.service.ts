@@ -100,6 +100,7 @@ export class PortfolioMapperService {
     const realizedPnl = stored.realizedPnl || 0;
 
     return {
+      order: stored.order ?? 0,
       isin: stored.isin,
       name: stored.name,
       type: stored.type,

@@ -50,6 +50,7 @@ export interface ITransferBreakdown {
 }
 
 export interface IPortfolioItem {
+  order?: number;
   isin: string;
   name: string;
   type: string;

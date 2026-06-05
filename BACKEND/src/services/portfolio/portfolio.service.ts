@@ -44,9 +44,16 @@ export class PortfolioService {
 
   private reload(): void {
     this.rawPortfolio = this.repo.loadPortfolio();
+    this.normalizeOrder();
     this.mappedPortfolio = this.rawPortfolio.length
       ? this.mapper.mapStoredToPortfolio(this.rawPortfolio)
       : null;
+  }
+
+  private normalizeOrder(): void {
+    this.rawPortfolio = [...this.rawPortfolio]
+      .sort((a, b) => (a.order ?? Number.MAX_SAFE_INTEGER) - (b.order ?? Number.MAX_SAFE_INTEGER))
+      .map((item, index) => ({ ...item, order: index }));
   }
 
   private remap(): void {
@@ -68,12 +75,14 @@ export class PortfolioService {
 
   public importPortfolio(items: IStoredPortfolioItem[]): void {
     this.rawPortfolio = items;
+    this.normalizeOrder();
     this.remapAndSave();
   }
 
   public addPortfolioItem(item: IStoredPortfolioItem): void {
     if (!item.realizedPnl) item.realizedPnl = 0;
     if (!item.transactions) item.transactions = [];
+    item.order = this.rawPortfolio.length;
     this.rawPortfolio.push(item);
     this.remapAndSave();
   }
@@ -106,8 +115,51 @@ export class PortfolioService {
     const index = this.rawPortfolio.findIndex(i => i.isin === isin);
     if (index === -1) return false;
     this.rawPortfolio.splice(index, 1);
+    this.normalizeOrder();
     this.remapAndSave();
     return true;
+  }
+
+  public reorderPortfolio(isins: string[]): { success: boolean; message?: string } {
+    const positionByIsin = new Map<string, number>();
+    for (let i = 0; i < isins.length; i += 1) {
+      const isin = isins[i];
+      if (positionByIsin.has(isin)) {
+        return { success: false, message: `Duplicate ISIN in reorder payload: ${isin}` };
+      }
+      positionByIsin.set(isin, i);
+    }
+
+    const allRequestedAreKnown = isins.every(isin =>
+      this.rawPortfolio.some(item => item.isin === isin)
+    );
+    if (!allRequestedAreKnown) {
+      return { success: false, message: 'Reorder payload contains unknown ISINs' };
+    }
+
+    this.rawPortfolio = [...this.rawPortfolio]
+      .sort((a, b) => {
+        const aPosition = positionByIsin.get(a.isin);
+        const bPosition = positionByIsin.get(b.isin);
+
+        if (aPosition !== undefined && bPosition !== undefined) {
+          return aPosition - bPosition;
+        }
+
+        if (aPosition !== undefined) {
+          return -1;
+        }
+
+        if (bPosition !== undefined) {
+          return 1;
+        }
+
+        return (a.order ?? 0) - (b.order ?? 0);
+      })
+      .map((item, index) => ({ ...item, order: index }));
+
+    this.remapAndSave();
+    return { success: true };
   }
 
   public deleteLot(isin: string, lotId: string): boolean {

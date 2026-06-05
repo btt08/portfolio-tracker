@@ -8,6 +8,12 @@ import {
   output,
   viewChildren,
 } from '@angular/core';
+import {
+  CdkDrag,
+  CdkDragDrop,
+  CdkDropList,
+  moveItemInArray,
+} from '@angular/cdk/drag-drop';
 import { PortfolioRestService } from '@services/portfolio-rest';
 import { PortfolioUtilsService } from 'app/utils/portfolio.utils';
 import { ICurrency } from 'app/interfaces/currency.interface';
@@ -34,6 +40,8 @@ import { TransferForm } from '@forms/transfer/transfer-form';
   selector: 'app-shares-table',
   imports: [
     Button,
+    CdkDrag,
+    CdkDropList,
     GroupHeader,
     ItemRow,
     LotForm,
@@ -51,29 +59,20 @@ export class SharesTable {
   private portfolioUtils = inject(PortfolioUtilsService);
   private groupCollapseInitialized = signal<boolean>(false);
 
-  constructor() {
-    effect(() => {
-      const groups = this.groupedData();
-      if (this.groupCollapseInitialized() || groups.length === 0) {
-        return;
-      }
-
-      this.collapsedGroups.set(new Set(groups.map(group => group.type)));
-      this.groupCollapseInitialized.set(true);
-    });
-  }
-
   sellFormComponents = viewChildren(SellForm);
 
   currencyData = input.required<ICurrency[]>();
   data = input.required<IPortfolioItem[]>();
   groupByType = input<boolean>(false);
+  isReorderMode = input<boolean>(false);
   onAddItem = output<void>();
   portfolioUpdated = output<IPortfolio>();
+  reorderDraftChanged = output<string[]>();
 
   addModalItem = signal<IPortfolioItem | null>(null);
   collapsedGroups = signal<Set<string>>(new Set());
   expandedItems = signal<Set<string>>(new Set());
+  reorderDraft = signal<IPortfolioItem[]>([]);
   sortDir = signal<TSortDir>('asc');
   sortKey = signal<TSortKey | null>(null);
   transferModalItem = signal<IPortfolioItem | null>(null);
@@ -110,6 +109,13 @@ export class SharesTable {
         hide: this.collapsedGroups().has(group.type),
       }));
     }
+
+    if (this.isReorderMode()) {
+      return [
+        this.portfolioUtils.getDefaultGroupedPortfolioItem('', this.reorderDraft()),
+      ];
+    }
+
     return [this.portfolioUtils.getDefaultGroupedPortfolioItem('', this.sortedData())];
   });
 
@@ -119,7 +125,36 @@ export class SharesTable {
   transferSubmitting: Record<string, boolean> = {};
   transferError: Record<string, string> = {};
 
+  constructor() {
+    effect(() => {
+      const groups = this.groupedData();
+      if (this.groupCollapseInitialized() || groups.length === 0) {
+        return;
+      }
+
+      this.collapsedGroups.set(new Set(groups.map(group => group.type)));
+      this.groupCollapseInitialized.set(true);
+    });
+
+    effect(() => {
+      const items = this.data();
+
+      if (!this.isReorderMode()) {
+        this.reorderDraft.set([]);
+        return;
+      }
+
+      this.sortKey.set(null);
+      this.reorderDraft.set([...items]);
+      this.reorderDraftChanged.emit(items.map(item => item.isin));
+    });
+  }
+
   toggleSort(key: TSortKey): void {
+    if (this.isReorderMode()) {
+      return;
+    }
+
     if (this.sortKey() === key) {
       this.sortDir.set(this.sortDir() === 'asc' ? 'desc' : 'asc');
     } else {
@@ -230,5 +265,16 @@ export class SharesTable {
         console.error('Error deleting lot:', error);
       },
     });
+  }
+
+  onDrop(event: CdkDragDrop<IPortfolioItem[]>): void {
+    if (!this.isReorderMode() || this.groupByType()) {
+      return;
+    }
+
+    const nextOrder = [...this.reorderDraft()];
+    moveItemInArray(nextOrder, event.previousIndex, event.currentIndex);
+    this.reorderDraft.set(nextOrder);
+    this.reorderDraftChanged.emit(nextOrder.map(item => item.isin));
   }
 }

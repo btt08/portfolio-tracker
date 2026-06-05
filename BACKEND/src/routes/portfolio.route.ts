@@ -2,19 +2,21 @@ import { Router } from 'express';
 import {
   addLotToItem,
   addPortfolioItem,
-  deletePortfolioItem,
   deleteLot,
+  deletePortfolioItem,
   exportPortfolio,
   getPortfolio,
   importPortfolio,
   refreshPortfolioPrices,
+  reorderPortfolio,
   sellFromItem,
   transferBetweenFunds,
 } from '../controllers/portfolioController';
 import { validate } from '../middlewares/validate';
 import {
-  PortfolioItemInputSchema,
   LotSchema,
+  PortfolioItemInputSchema,
+  ReorderPortfolioSchema,
   SellSchema,
   TransferSchema,
 } from '../validation/schemas';
@@ -27,6 +29,7 @@ router.get('/export', exportPortfolio);
 
 router.post('/add', validate(PortfolioItemInputSchema), addPortfolioItem);
 router.post('/import', importPortfolio);
+router.post('/reorder', validate(ReorderPortfolioSchema), reorderPortfolio);
 router.post('/:isin/add', validate(LotSchema), addLotToItem);
 router.post('/:isin/sell', validate(SellSchema), sellFromItem);
 router.post('/:isin/transfer', validate(TransferSchema), transferBetweenFunds);

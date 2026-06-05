@@ -59,6 +59,26 @@
   gap: 0.5rem;
 }
 
+.item-row--reorder {
+  cursor: grab;
+}
+
+.cdk-drag-preview {
+  box-sizing: border-box;
+  border-radius: 0.25rem;
+  border: 1px solid $border-color;
+  background-color: $black;
+  box-shadow: 0 8px 16px rgba($black, 0.35);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.2;
+}
+
+.cdk-drop-list-dragging .item-row {
+  transition: transform 180ms ease;
+}
+
 // Responsive: horizontal scroll for the table
 @media (max-width: 1200px) {
   .shares-table {

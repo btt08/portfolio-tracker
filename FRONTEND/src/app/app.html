@@ -18,9 +18,25 @@
       (onRefreshData)="refreshData()" />
     <div class="content">
       <div class="content__toolbar">
-        <button class="view-toggle" (click)="groupByType.set(!groupByType())">
+        <button class="view-toggle" (click)="toggleGroupByType()">
           {{ groupByType() ? 'Simple View' : 'Group View' }}
         </button>
+        @if (!groupByType()) {
+          @if (!isReorderMode()) {
+            <button class="view-toggle" (click)="startReorderMode()">
+              Rearrange Items
+            </button>
+          } @else {
+            <button class="view-toggle view-toggle--positive" (click)="saveOrder()">
+              Save Order
+            </button>
+            <button
+              class="view-toggle view-toggle--negative"
+              (click)="cancelReorderMode()">
+              Cancel
+            </button>
+          }
+        }
         <button class="view-toggle" (click)="exportCsv()">Export CSV</button>
         <button class="view-toggle" (click)="exportJson()">Export JSON</button>
         <button class="view-toggle" (click)="importJson()">Import JSON</button>
@@ -30,7 +46,9 @@
           [currencyData]="currencyData()"
           [data]="portfolioData().items"
           [groupByType]="groupByType()"
+          [isReorderMode]="isReorderMode()"
           (onAddItem)="showAddModal.set(true)"
+          (reorderDraftChanged)="onReorderDraftChanged($event)"
           (portfolioUpdated)="onPortfolioUpdated($event)" />
       </div>
     </div>

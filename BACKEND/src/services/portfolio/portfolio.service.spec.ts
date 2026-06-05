@@ -273,3 +273,19 @@ describe('PortfolioService transferBetweenFunds', () => {
     expect(sourceTxns[1].id).toBe('SRC-transfer_out-2025-08-01-1');
   });
 });
+
+describe('PortfolioService reorderPortfolio', () => {
+  it('reorders visible items and preserves hidden zero-share items', () => {
+    const first = makeItem('AAA', [makeLot('lot-a', '2025-01-01', 1, 10)]);
+    const hidden = makeItem('HIDDEN', [makeLot('lot-hidden', '2025-01-02', 0, 10)]);
+    const third = makeItem('CCC', [makeLot('lot-c', '2025-01-03', 1, 10)]);
+
+    const service = createService([first, hidden, third]);
+
+    const result = service.reorderPortfolio(['CCC', 'AAA']);
+
+    expect(result.success).toBe(true);
+    expect(service.getRawPortfolio().map(item => item.isin)).toEqual(['CCC', 'AAA', 'HIDDEN']);
+    expect(service.getRawPortfolio().map(item => item.order)).toEqual([0, 1, 2]);
+  });
+});

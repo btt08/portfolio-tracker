@@ -12,6 +12,7 @@ import { Toggle } from 'app/components/buttons/toggle/toggle';
 export class ItemRow {
   item = input.required<IPortfolioItem>();
   expandedItems = model.required<Set<string>>();
+  reorderMode = input<boolean>(false);
 
   toggleExpand(isin: string): void {
     const current = new Set(this.expandedItems());

@@ -46,6 +46,7 @@ export interface ILot {
 }
 
 export interface IPortfolioItem {
+  order?: number;
   isin: string;
   name: string;
   type: string;
@@ -125,6 +126,7 @@ export interface ITransferBreakdown {
 }
 
 export interface IStoredPortfolioItem {
+  order?: number;
   isin: string;
   name: string;
   type: string;

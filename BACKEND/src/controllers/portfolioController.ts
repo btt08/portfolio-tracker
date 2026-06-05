@@ -22,6 +22,7 @@ export const addPortfolioItem = asyncHandler((req: Request, res: Response) => {
   }));
 
   const newItem: IStoredPortfolioItem = {
+    order: 0,
     ...itemFields,
     lots,
     prevPrice: 0,
@@ -137,6 +138,19 @@ export const importPortfolio = asyncHandler((req: Request, res: Response) => {
     return;
   }
   portfolioService.importPortfolio(result.data as IStoredPortfolioItem[]);
+  const portfolio = portfolioService.getPortfolio();
+  res.status(200).json({ success: true, data: portfolio });
+});
+
+export const reorderPortfolio = asyncHandler((req: Request, res: Response) => {
+  const { isins } = req.validated;
+  const result = portfolioService.reorderPortfolio(isins as string[]);
+
+  if (!result.success) {
+    res.status(400).json({ success: false, message: result.message });
+    return;
+  }
+
   const portfolio = portfolioService.getPortfolio();
   res.status(200).json({ success: true, data: portfolio });
 });

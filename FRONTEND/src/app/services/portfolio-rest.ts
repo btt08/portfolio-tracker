@@ -93,6 +93,12 @@ export class PortfolioRestService {
       .pipe(catchError(this.handleError));
   }
 
+  reorderPortfolio(isins: string[]): Observable<IResponse> {
+    return this.http
+      .post<IResponse>(`${this.baseUrl}/reorder`, { isins })
+      .pipe(catchError(this.handleError));
+  }
+
   private filterEmptyItems(portfolio: IPortfolio): IPortfolio {
     const filteredItems = portfolio.items.filter(item => item.numShares > 0);
     return { ...portfolio, items: filteredItems };

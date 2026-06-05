@@ -20,6 +20,7 @@ export const LotSchema = z.object({
 });
 
 export const StoredPortfolioItemSchema = z.object({
+  order: z.number().int().nonnegative().optional(),
   isin: z.string(),
   name: z.string(),
   type: z.string(),
@@ -67,6 +68,10 @@ export const TransferSchema = z
     }
   });
 
+export const ReorderPortfolioSchema = z.object({
+  isins: z.array(z.string()).min(1),
+});
+
 const LotConsumedSchema = z.object({
   lotId: z.string(),
   qty: z.number(),
@@ -105,6 +110,7 @@ const TransactionSchema = z.object({
 
 export const ImportPortfolioSchema = z.array(
   z.object({
+    order: z.number().int().nonnegative().optional(),
     isin: z.string(),
     name: z.string(),
     type: z.string(),

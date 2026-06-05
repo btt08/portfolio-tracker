@@ -27,3 +27,13 @@ td {
   cursor: pointer;
   user-select: none;
 }
+
+.drag-handle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1rem;
+  color: $light-dark;
+  cursor: grab;
+  letter-spacing: 1px;
+}
