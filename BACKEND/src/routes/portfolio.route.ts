@@ -6,6 +6,7 @@ import {
   deletePortfolioItem,
   exportPortfolio,
   getPortfolio,
+  getPortfolioIds,
   importPortfolio,
   refreshPortfolioPrices,
   reorderPortfolio,
@@ -26,6 +27,7 @@ const router = Router();
 router.get('/', getPortfolio);
 router.get('/refresh', refreshPortfolioPrices);
 router.get('/export', exportPortfolio);
+router.get('/ids', getPortfolioIds);
 
 router.post('/add', validate(PortfolioItemInputSchema), addPortfolioItem);
 router.post('/import', importPortfolio);

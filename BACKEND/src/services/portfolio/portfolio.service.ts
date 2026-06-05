@@ -10,6 +10,7 @@ import {
   ILot,
   ILotConsumed,
   IPortfolio,
+  IPortfolioId,
   ISourceTranche,
   IStoredPortfolioItem,
   ITransaction,
@@ -67,6 +68,10 @@ export class PortfolioService {
 
   public getPortfolio(): IPortfolio | null {
     return this.mappedPortfolio;
+  }
+
+  public getPortfolioIds(): IPortfolioId[] {
+    return this.rawPortfolio.map(item => ({ isin: item.isin, name: item.name }));
   }
 
   public getRawPortfolio(): IStoredPortfolioItem[] {

@@ -35,6 +35,8 @@
   border-radius: 0.2rem;
   font-size: 0.7rem;
   font-weight: 600;
+  user-select: none;
+  cursor: default;
 
   &[data-type='buy'] {
     background: rgba($positive, 0.15);
@@ -72,9 +74,12 @@
 .transfer-meta {
   display: flex;
   gap: 1rem;
-  font-size: 0.75rem;
   opacity: 0.85;
   margin-bottom: 0.5rem;
+
+  span {
+    font-size: 0.75rem;
+  }
 }
 
 .transfer-breakdown-table {

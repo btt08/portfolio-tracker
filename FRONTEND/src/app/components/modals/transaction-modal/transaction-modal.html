@@ -16,9 +16,9 @@
     </thead>
     <tbody>
       @for (txn of transactions(); track txn.id) {
-        <tr>
+        <tr (dblclick)="expandTxn(txn)">
           <td>{{ txn.date | date: 'yyyy-MM-dd' }}</td>
-          <td class="type-cell">
+          <td class="type-cell" [title]="getTooltipByType(txn)">
             <span class="type-badge" [attr.data-type]="txn.type">{{
               formatType(txn.type)
             }}</span>
@@ -34,19 +34,19 @@
             {{ txn.realizedPnl | number: '1.2-2' : 'de-DE' }}
           </td>
         </tr>
-        @if (hasTransferDetails(txn)) {
+        @if (hasTransferDetails(txn) && expandedTxn() === txn.id) {
           <tr class="transfer-details-row">
             <td colspan="8">
               <div class="transfer-meta">
-                @if (txn.operationPPU !== undefined) {
-                  <span>
-                    Operation Price: {{ txn.operationPPU | number: '1.2-6' : 'de-DE' }}
-                  </span>
-                }
                 @if (txn.operationAmount !== undefined) {
                   <span>
-                    Operation Amount:
+                    Operation Value:
                     {{ txn.operationAmount | number: '1.2-2' : 'de-DE' }}
+                  </span>
+                }
+                @if (txn.operationPPU !== undefined) {
+                  <span>
+                    Operation PPU: {{ txn.operationPPU | number: '1.2-6' : 'de-DE' }}
                   </span>
                 }
               </div>
@@ -57,10 +57,10 @@
                     <tr>
                       <th>Source Lot</th>
                       <th>Source Date</th>
-                      <th>Qty Consumed</th>
+                      <th title="Quantity Consumed">Qty Consumed</th>
                       <th>Fiscal Cost</th>
-                      <th>Target Qty</th>
-                      <th>Target Fiscal Price</th>
+                      <th title="Target Quantity">T. Qty</th>
+                      <th title="Target Fiscal Price per unit">T. Fiscal PPU</th>
                     </tr>
                   </thead>
                   <tbody>

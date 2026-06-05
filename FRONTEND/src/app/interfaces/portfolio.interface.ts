@@ -108,3 +108,14 @@ export interface IResponse {
   data: IPortfolio;
   message?: string;
 }
+
+export interface IPortfolioIds {
+  success: boolean;
+  data: IPortfolioId[];
+  message?: string;
+}
+
+export interface IPortfolioId {
+  isin: string;
+  name: string;
+}

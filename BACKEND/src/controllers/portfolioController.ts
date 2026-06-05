@@ -42,6 +42,11 @@ export const getPortfolio = asyncHandler((req: Request, res: Response) => {
   res.status(200).json({ success: true, data: portfolio });
 });
 
+export const getPortfolioIds = asyncHandler((req: Request, res: Response) => {
+  const ids = portfolioService.getPortfolioIds();
+  res.status(200).json({ success: true, data: ids });
+});
+
 export const addLotToItem = asyncHandler((req: Request, res: Response) => {
   const { isin } = req.params;
   const newLot: ILot = req.validated;

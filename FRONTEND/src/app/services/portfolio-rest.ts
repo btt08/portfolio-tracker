@@ -6,7 +6,8 @@ import { environment } from '@environments/environment';
 import {
   ILot,
   IPortfolio,
-  IPortfolioItem,
+  IPortfolioId,
+  IPortfolioIds,
   IResponse,
 } from '@interfaces/portfolio.interface';
 import { ITransferData } from 'app/interfaces/transfer.interface';
@@ -20,18 +21,21 @@ export class PortfolioRestService {
 
   getPortfolio(): Observable<IPortfolio> {
     return this.http.get<IResponse>(this.baseUrl).pipe(
-      map(response => {
-        return this.filterEmptyItems(response.data);
-      }),
+      map(response => this.filterEmptyItems(response.data)),
+      catchError(this.handleError)
+    );
+  }
+
+  getPortfolioIds(): Observable<IPortfolioId[]> {
+    return this.http.get<IPortfolioIds>(`${this.baseUrl}/ids`).pipe(
+      map(response => response.data),
       catchError(this.handleError)
     );
   }
 
   refreshPortfolio(): Observable<IPortfolio> {
     return this.http.get<IResponse>(`${this.baseUrl}/refresh`).pipe(
-      map(response => {
-        return this.filterEmptyItems(response.data);
-      }),
+      map(response => this.filterEmptyItems(response.data)),
       catchError(this.handleError)
     );
   }

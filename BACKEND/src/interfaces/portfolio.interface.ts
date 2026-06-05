@@ -159,3 +159,8 @@ export interface ISourceTranche {
   sourceCurrency: string;
   sourceExchangeRate: number;
 }
+
+export interface IPortfolioId {
+  isin: string;
+  name: string;
+}
