@@ -43,6 +43,7 @@ export class PortfolioMapperService {
     let unrealizedPnl = 0;
 
     for (const item of items) {
+      realizedPnl = SafeMath.add(realizedPnl, item.realizedPnl);
       if (this.excludedIsins.includes(item.isin)) continue;
       totalInvested = SafeMath.add(totalInvested, item.totalInvested);
       marketValue = SafeMath.add(marketValue, item.marketValue);
@@ -50,7 +51,6 @@ export class PortfolioMapperService {
         prevMarketValue,
         SafeMath.subtract(item.marketValue, item.dailyChangeEUR)
       );
-      realizedPnl = SafeMath.add(realizedPnl, item.realizedPnl);
       unrealizedPnl = SafeMath.add(unrealizedPnl, item.unrealizedPnl);
     }
 
