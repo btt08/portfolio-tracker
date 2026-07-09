@@ -9,6 +9,9 @@ export class PortfolioRepository {
   loadPortfolio(): IStoredPortfolioItem[] {
     try {
       const portfolio = fs.readFileSync(this.portfolioPath, 'utf-8');
+      if (!portfolio) {
+        fs.writeFileSync(this.portfolioPath, JSON.stringify([], null, 2));
+      }
       const parsed = JSON.parse(portfolio) as IStoredPortfolioItem[];
       return parsed.map(item => ({
         ...item,
@@ -19,6 +22,10 @@ export class PortfolioRepository {
       loggerService.error('Error loading portfolio from file:', error as Error);
       return [];
     }
+  }
+
+  portfolioExists(): boolean {
+    return fs.existsSync(this.portfolioPath);
   }
 
   save(portfolio: IStoredPortfolioItem[]): void {

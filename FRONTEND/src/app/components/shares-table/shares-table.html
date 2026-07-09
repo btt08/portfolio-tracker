@@ -91,6 +91,7 @@
               (dblclick)="!isReorderMode() && toggleExpand(item.isin)"
               app-item-row
               [item]="item"
+              [fxRateToEur]="getItemExchangeRateToEur(item)"
               [reorderMode]="isReorderMode()"
               [(expandedItems)]="expandedItems"></tr>
             @if (!isReorderMode() && isExpanded(item.isin)) {

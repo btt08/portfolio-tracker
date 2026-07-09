@@ -133,6 +133,7 @@ export interface IStoredPortfolioItem {
   link: string;
   prevPrice: number;
   currPrice: number;
+  priceUpdateDate?: string;
   lots: ILot[];
   priceUnit: number;
   realizedPnl: number;

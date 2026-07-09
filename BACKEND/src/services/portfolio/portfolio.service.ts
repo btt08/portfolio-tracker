@@ -36,6 +36,11 @@ export class PortfolioService {
     this.mapper = mapper ?? new PortfolioMapperService();
     this.lotService = lotService ?? new LotService();
 
+    if (!this.repo.portfolioExists()) {
+      console.log('Portfolio file does not exist, initializing with empty portfolio.');
+      this.repo.save([]);
+    }
+
     this.reload();
     if (options.autoPersist !== false) {
       setInterval(() => this.repo.save(this.rawPortfolio), configService.saveInterval);
@@ -46,9 +51,7 @@ export class PortfolioService {
   private reload(): void {
     this.rawPortfolio = this.repo.loadPortfolio();
     this.normalizeOrder();
-    this.mappedPortfolio = this.rawPortfolio.length
-      ? this.mapper.mapStoredToPortfolio(this.rawPortfolio)
-      : null;
+    this.mappedPortfolio = this.mapper.mapStoredToPortfolio(this.rawPortfolio);
   }
 
   private normalizeOrder(): void {
@@ -444,7 +447,7 @@ export class PortfolioService {
   public async refreshPrices(): Promise<void> {
     try {
       const notEmptyItems = this.rawPortfolio.filter(item =>
-        item.lots.every(lot => lot.qtyRemaining > 0)
+        item.lots.some(lot => lot.qtyRemaining > 0)
       );
       if (notEmptyItems.length === 0) {
         loggerService.info('No assets with lots found, skipping price refresh.');
@@ -461,7 +464,10 @@ export class PortfolioService {
             const priceData = await priceScrapingService.getInvestingPrice(page, asset);
             if (priceData) {
               asset.prevPrice = priceData.prevClose || priceData.currPrice;
-              asset.currPrice = priceData.currPrice;
+              if (priceData.currPrice !== asset.currPrice) {
+                asset.priceUpdateDate = new Date().toISOString();
+                asset.currPrice = priceData.currPrice;
+              }
               loggerService.info(`${asset.name}: ${asset.prevPrice} -> ${priceData.currPrice}`);
             } else {
               loggerService.warn(`Price not found for ${asset.name}, skipping.`);

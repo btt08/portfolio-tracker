@@ -1,9 +1,9 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { environment } from '@environments/environment';
-import { ICurrency } from 'app/interfaces/currency.interface';
+import { ICurrency, ICurrencyResponse } from 'app/interfaces/currency.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -14,7 +14,8 @@ export class CurrencyRestService {
 
   getCurrencies(): Observable<ICurrency[]> {
     return this.http
-      .get<ICurrency[]>(`${this.baseUrl}/all`)
+      .get<ICurrencyResponse>(`${this.baseUrl}/all`)
+      .pipe(map(response => response.data ?? []))
       .pipe(catchError(this.handleError));
   }
 

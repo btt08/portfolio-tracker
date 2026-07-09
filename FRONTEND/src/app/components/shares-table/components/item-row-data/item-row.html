@@ -23,9 +23,9 @@
 <td>{{ item().numShares | number: '1.2-2' : 'de-DE' }}</td>
 <td>{{ item().totalInvested | number: '1.2-2' : 'de-DE' }}</td>
 <td>{{ item().marketValue | number: '1.2-2' : 'de-DE' }}</td>
-<td>{{ item().avgPrice | number: '1.2-2' : 'de-DE' }}</td>
-<td>{{ item().prevPrice | number: '1.2-3' : 'de-DE' }}</td>
-<td>{{ item().currPrice | number: '1.2-3' : 'de-DE' }}</td>
+<td>{{ avgPriceEur() | number: '1.2-2' : 'de-DE' }}</td>
+<td>{{ toEur(item().prevPrice) | number: '1.2-3' : 'de-DE' }}</td>
+<td>{{ toEur(item().currPrice) | number: '1.2-3' : 'de-DE' }}</td>
 <td
   [class.positive]="item().dailyChangeEUR >= 0"
   [class.negative]="item().dailyChangeEUR < 0">

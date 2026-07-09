@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
   IPortfolioItem,
   IGroupedPortfolioItem,
@@ -46,7 +46,10 @@ export class PortfolioUtilsService {
 
     return [...groups.values()].map(g => {
       g.dailyChangeEUR = g.items.reduce((sum, i) => sum + i.dailyChangeEUR, 0);
-      g.dailyChangePerc = g.invested ? (g.dailyChangeEUR / g.invested) * 100 : 0;
+      const prevMarketValue = g.marketValue - g.dailyChangeEUR;
+      g.dailyChangePerc = prevMarketValue
+        ? (g.dailyChangeEUR / prevMarketValue) * 100
+        : 0;
       g.totalChangeEUR = g.marketValue - g.invested;
       g.totalChangePerc = g.invested ? (g.totalChangeEUR / g.invested) * 100 : 0;
       return g;

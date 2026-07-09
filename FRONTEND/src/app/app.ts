@@ -56,24 +56,14 @@ export class App implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.portfolioService.getPortfolio().subscribe({
-      next: rawData => {
-        this.portfolioData.set(rawData || this.portfolioData());
-        this.isLoading.set(false);
-      },
-      error: error => {
-        console.error('Error loading portfolio:', error);
-        this.loadError.set('Failed to load portfolio. Is the backend running?');
-        this.isLoading.set(false);
-      },
+      next: rawData => this.portfolioData.set(rawData || this.portfolioData()),
+      error: error => this.loadError.set('Failed to load portfolio: ' + error.message),
+      complete: () => this.isLoading.set(false),
     });
 
     this.currencyService.getCurrencies().subscribe({
-      next: data => {
-        this.currencyData.set(data);
-      },
-      error: error => {
-        console.error('Error loading currencies:', error);
-      },
+      next: data => this.currencyData.set(data),
+      error: error => this.loadError.set('Failed to load currencies: ' + error.message),
     });
 
     this.autoRefreshSub = interval(AUTO_REFRESH_INTERVAL_MS).subscribe(() => {
@@ -95,15 +85,9 @@ export class App implements OnInit, OnDestroy {
     this.isRefreshing.set(true);
     this.loadError.set('');
     this.portfolioService.refreshPortfolio().subscribe({
-      next: rawData => {
-        this.portfolioData.set(rawData || this.portfolioData());
-      },
-      error: error => {
-        console.error('Error refreshing data:', error);
-      },
-      complete: () => {
-        this.isRefreshing.set(false);
-      },
+      next: rawData => this.portfolioData.set(rawData || this.portfolioData()),
+      error: error => this.loadError.set('Failed to refresh data: ' + error.message),
+      complete: () => this.isRefreshing.set(false),
     });
   }
 

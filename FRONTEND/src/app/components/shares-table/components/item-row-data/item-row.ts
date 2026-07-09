@@ -11,8 +11,18 @@ import { Toggle } from 'app/components/buttons/toggle/toggle';
 })
 export class ItemRow {
   item = input.required<IPortfolioItem>();
+  fxRateToEur = input<number>(1);
   expandedItems = model.required<Set<string>>();
   reorderMode = input<boolean>(false);
+
+  toEur(value: number): number {
+    return value * this.fxRateToEur();
+  }
+
+  avgPriceEur(): number {
+    const { numShares, totalInvested } = this.item();
+    return numShares > 0 ? totalInvested / numShares : 0;
+  }
 
   toggleExpand(isin: string): void {
     const current = new Set(this.expandedItems());

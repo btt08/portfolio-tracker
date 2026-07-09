@@ -192,6 +192,21 @@ export class SharesTable {
     return this.collapsedGroups().has(type);
   }
 
+  getItemExchangeRateToEur(item: IPortfolioItem): number {
+    const activeLot = item.lots.find(lot => lot.qtyRemaining > 0) ?? item.lots[0];
+    if (!activeLot || activeLot.currency === 'EUR') {
+      return 1;
+    }
+
+    const currencies = this.currencyData();
+    if (!Array.isArray(currencies)) {
+      return 1;
+    }
+
+    const currency = currencies.find(c => c.code === activeLot.currency);
+    return currency?.exchangeRateToEur ?? 1;
+  }
+
   addLot(item: IPortfolioItem, lot: ILot): void {
     this.submitting[item.isin] = true;
     this.portfolioService.addLot(item.isin, lot).subscribe({

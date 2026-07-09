@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { LotUtilsService } from './lot-utils.service';
-import { ILot } from '../../interfaces/portfolio.interface';
+import { ILot } from '../interfaces/portfolio.interface';
 
 function makeLot(overrides: Partial<ILot> = {}): ILot {
   return {
@@ -25,49 +25,15 @@ describe('LotUtilsService', () => {
     service = TestBed.inject(LotUtilsService);
   });
 
-  describe('lotExchangeRate', () => {
-    it('returns 1 for EUR lots', () => {
-      expect(service.lotExchangeRate(makeLot())).toBe(1);
-    });
-
-    it('returns the exchange rate for non-EUR lots', () => {
-      expect(service.lotExchangeRate(makeLot({ exchangeRate: 1.1 }))).toBe(1.1);
-    });
-  });
-
-  describe('lotCostPerUnit', () => {
-    it('returns costPerUnit for EUR lots', () => {
-      expect(service.lotCostPerUnit(makeLot({ costPerUnit: 50 }))).toBe(50);
-    });
-
-    it('multiplies by exchange rate for non-EUR', () => {
-      expect(
-        service.lotCostPerUnit(makeLot({ costPerUnit: 50, exchangeRate: 1.1 }))
-      ).toBeCloseTo(55);
-    });
-  });
-
-  describe('lotTotalCost', () => {
-    it('returns totalCost for EUR lots', () => {
-      expect(service.lotTotalCost(makeLot({ totalCost: 505 }))).toBe(505);
-    });
-
-    it('multiplies by exchange rate for non-EUR', () => {
-      expect(service.lotTotalCost(makeLot({ totalCost: 505, exchangeRate: 2 }))).toBe(
-        1010
-      );
-    });
-  });
-
   describe('lotCurrentValue', () => {
     it('calculates current value', () => {
       expect(service.lotCurrentValue(makeLot({ qtyRemaining: 10 }), 60)).toBe(600);
     });
 
-    it('applies exchange rate', () => {
+    it('keeps value in lot currency for non-EUR lots', () => {
       expect(
         service.lotCurrentValue(makeLot({ qtyRemaining: 10, exchangeRate: 1.5 }), 60)
-      ).toBe(900);
+      ).toBe(600);
     });
   });
 
