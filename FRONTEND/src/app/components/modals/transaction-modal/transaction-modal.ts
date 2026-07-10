@@ -15,6 +15,8 @@ import { PortfolioRestService } from 'app/services/portfolio-rest';
 })
 export class TransactionModal {
   private portfolioService = inject(PortfolioRestService);
+
+  showName = input<boolean>(false);
   transactions = input.required<ITransaction[]>();
 
   expandedTxn = signal<string | null>(null);
@@ -32,29 +34,48 @@ export class TransactionModal {
   }
 
   formatType(type: string): string {
+    if (this.showName()) {
+      return type.split('_')[0];
+    }
     return type.replaceAll('_', ' ').replace(/\b\w/g, char => char.toUpperCase());
   }
 
   getTooltipByType(txn: ITransaction): string {
+    if (this.showName()) {
+      return '';
+    }
+
     switch (txn.type) {
       case 'transfer_in':
-        const breakdown = txn.transferBreakdown?.[0] as ITransferBreakdown;
-        return 'From ' + this.getSourceName(breakdown);
+        return `From ${this.getSourceName(txn)}`;
       case 'transfer_out':
-        return 'To ' + this.getDestinationName(txn.counterpartyIsin);
+        return `To ${this.getDestinationName(txn)}`;
       default:
         return '';
     }
   }
 
-  getDestinationName(counterPartyIsin: string | undefined): string {
-    const destinationIsin = counterPartyIsin || '';
-    const destination = this.portfolioIds().find(item => item.isin === destinationIsin);
-    return destination ? destination.name : destinationIsin;
+  getType(type: string): string {
+    if (this.showName()) {
+      return type.split('_')[0];
+    }
+    return type;
   }
 
-  getSourceName(txn: ITransferBreakdown): string {
-    const originIsin = txn.sourceLotId.split('-')[0];
+  getDestinationName(txn: ITransaction): string {
+    const isTransferOut = txn.type === 'transfer_out';
+    const isin = isTransferOut ? txn.counterpartyIsin : txn.id.split('-')[0];
+
+    const destination = this.portfolioIds().find(item => item.isin === isin);
+    return destination ? destination.name : (isin ?? '');
+  }
+
+  getSourceName(txn: ITransaction): string {
+    const breakdown = txn.transferBreakdown?.[0] as ITransferBreakdown;
+    if (!breakdown) {
+      return '';
+    }
+    const originIsin = breakdown.sourceLotId.split('-')[0];
     const origin = this.portfolioIds().find(item => item.isin === originIsin);
     return origin ? origin.name : originIsin;
   }

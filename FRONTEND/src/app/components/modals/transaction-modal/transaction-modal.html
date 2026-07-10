@@ -6,12 +6,16 @@
       <tr>
         <th>Date</th>
         <th>Type</th>
+        @if (showName()) {
+          <th>Name</th>
+          <th>From</th>
+        }
         <th>Qty</th>
         <th>Price</th>
         <th>Cost Basis</th>
         <th>Proceeds</th>
         <th>Comm</th>
-        <th>Realized P&L</th>
+        <th>P&L</th>
       </tr>
     </thead>
     <tbody>
@@ -19,10 +23,14 @@
         <tr (dblclick)="expandTxn(txn)">
           <td>{{ txn.date | date: 'yyyy-MM-dd' }}</td>
           <td class="type-cell" [title]="getTooltipByType(txn)">
-            <span class="type-badge" [attr.data-type]="txn.type">{{
+            <span class="type-badge" [attr.data-type]="getType(txn.type)">{{
               formatType(txn.type)
             }}</span>
           </td>
+          @if (showName()) {
+            <td [style.text-align]="'left'">{{ getDestinationName(txn) }}</td>
+            <td [style.text-align]="'left'">{{ getSourceName(txn) }}</td>
+          }
           <td>{{ txn.qty | number: '1.2-4' : 'de-DE' }}</td>
           <td>{{ txn.pricePerUnit | number: '1.2-4' : 'de-DE' }}</td>
           <td>{{ txn.costBasis | number: '1.2-2' : 'de-DE' }}</td>

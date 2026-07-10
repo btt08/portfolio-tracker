@@ -4,24 +4,33 @@ import { Subscription, interval } from 'rxjs';
 import { CurrencyRestService } from '@services/currency-rest';
 import { FileUtilsService } from '@utils/file-utils.service';
 import { PortfolioRestService } from '@services/portfolio-rest';
+import { UtilsService } from './utils/utils.service';
 import { IAddItemData } from '@interfaces/add-item.interface';
 import { ICurrency } from './interfaces/currency.interface';
 import {
   IPortfolio,
   IPortfolioItem,
   IPortfolioSummary,
+  ITransaction,
 } from '@interfaces/portfolio.interface';
 import { AddItemModal } from '@components/modals/add-item-modal/add-item-modal';
 import { Modal } from './components/modals/modal/modal';
 import { PortfolioSummary } from '@components/portfolio-summary/portfolio-summary';
 import { SharesTable } from '@components/shares-table/shares-table';
-import { UtilsService } from './utils/utils.service';
+import { TransactionModal } from './components/modals/transaction-modal/transaction-modal';
 
 const AUTO_REFRESH_INTERVAL_MS = 5 * 60 * 1000;
 
 @Component({
   selector: 'app-root',
-  imports: [AddItemModal, Modal, PortfolioSummary, SharesTable, RouterOutlet],
+  imports: [
+    AddItemModal,
+    Modal,
+    PortfolioSummary,
+    RouterOutlet,
+    SharesTable,
+    TransactionModal,
+  ],
   templateUrl: './app.html',
   styleUrls: ['./app.scss'],
 })
@@ -48,15 +57,26 @@ export class App implements OnInit, OnDestroy {
       portfolioChangePerc: 0,
       portfolioDailyChangeEUR: 0,
       portfolioDailyChangePerc: 0,
+      portfolioRealizedPnl: 0,
+      portfolioTotalPnl: 0,
     } as IPortfolioSummary,
   });
   showAddModal = signal<boolean>(false);
+  showTransactionsModal = signal<boolean>(false);
   summaryExpanded = signal<boolean>(false);
   title = signal<string>('My Portfolio');
+  transactions = signal<ITransaction[]>([]);
 
   ngOnInit() {
     this.portfolioService.getPortfolio().subscribe({
-      next: rawData => this.portfolioData.set(rawData || this.portfolioData()),
+      next: rawData => {
+        const transactions = rawData.items
+          .flatMap(item => item.transactions)
+          .sort(this.sortByDate());
+        this.transactions.set(transactions);
+        const filteredEmpty = this.portfolioService.filterEmptyItems(rawData);
+        this.portfolioData.set(filteredEmpty || this.portfolioData());
+      },
       error: error => this.loadError.set('Failed to load portfolio: ' + error.message),
       complete: () => this.isLoading.set(false),
     });
@@ -85,7 +105,14 @@ export class App implements OnInit, OnDestroy {
     this.isRefreshing.set(true);
     this.loadError.set('');
     this.portfolioService.refreshPortfolio().subscribe({
-      next: rawData => this.portfolioData.set(rawData || this.portfolioData()),
+      next: rawData => {
+        const transactions = rawData.items
+          .flatMap(item => item.transactions)
+          .sort(this.sortByDate());
+        this.transactions.set(transactions);
+        const filteredEmpty = this.portfolioService.filterEmptyItems(rawData);
+        this.portfolioData.set(filteredEmpty || this.portfolioData());
+      },
       error: error => this.loadError.set('Failed to refresh data: ' + error.message),
       complete: () => this.isRefreshing.set(false),
     });
@@ -105,6 +132,10 @@ export class App implements OnInit, OnDestroy {
       this.isReorderMode.set(false);
       this.pendingOrder.set([]);
     }
+  }
+
+  toggleShowTransactionsModal(): void {
+    this.showTransactionsModal.set(!this.showTransactionsModal());
   }
 
   startReorderMode(): void {
@@ -162,7 +193,12 @@ export class App implements OnInit, OnDestroy {
   importJson(): void {
     this.fileUtils.importJson().subscribe({
       next: response => {
-        this.portfolioData.set(response.data);
+        const transactions = response.items
+          .flatMap((item: any) => item.transactions)
+          .sort(this.sortByDate());
+        this.transactions.set(transactions);
+        const filteredEmpty = this.portfolioService.filterEmptyItems(response.data);
+        this.portfolioData.set(filteredEmpty || this.portfolioData());
       },
       error: error => {
         console.error('Error importing portfolio:', error);
@@ -173,5 +209,9 @@ export class App implements OnInit, OnDestroy {
 
   private filterExcludedItems(): IPortfolioItem[] {
     return this.portfolioData().items.filter(item => item.isExcluded);
+  }
+
+  private sortByDate(): (a: ITransaction, b: ITransaction) => number {
+    return (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime();
   }
 }

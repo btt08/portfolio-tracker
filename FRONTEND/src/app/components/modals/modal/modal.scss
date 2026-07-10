@@ -14,7 +14,8 @@
   background: $dark-light;
   border: 1px solid $border-color;
   border-radius: 0.5rem;
-  width: min(52rem, 95vw);
+  width: fit-content;
+  max-width: 95vw;
   max-height: 80vh;
   display: flex;
   flex-direction: column;

@@ -21,6 +21,9 @@
         <button class="view-toggle" (click)="toggleGroupByType()">
           {{ groupByType() ? 'Simple View' : 'Group View' }}
         </button>
+        <button class="view-toggle" (click)="toggleShowTransactionsModal()">
+          Transactions ({{ transactions().length }})
+        </button>
         @if (!groupByType()) {
           @if (!isReorderMode()) {
             <button class="view-toggle" (click)="startReorderMode()">
@@ -60,6 +63,12 @@
     <app-add-item-modal
       (close)="showAddModal.set(false)"
       (itemSubmit)="addItem($event)" />
+  </app-modal>
+}
+
+@if (showTransactionsModal()) {
+  <app-modal [title]="'All Transactions'" (close)="toggleShowTransactionsModal()">
+    <app-transaction-modal [transactions]="transactions()" [showName]="true" />
   </app-modal>
 }
 

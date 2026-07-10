@@ -21,7 +21,7 @@ export class PortfolioRestService {
 
   getPortfolio(): Observable<IPortfolio> {
     return this.http.get<IResponse>(this.baseUrl).pipe(
-      map(response => this.filterEmptyItems(response.data)),
+      map(response => response.data),
       catchError(this.handleError)
     );
   }
@@ -35,7 +35,7 @@ export class PortfolioRestService {
 
   refreshPortfolio(): Observable<IPortfolio> {
     return this.http.get<IResponse>(`${this.baseUrl}/refresh`).pipe(
-      map(response => this.filterEmptyItems(response.data)),
+      map(response => response.data),
       catchError(this.handleError)
     );
   }
@@ -103,7 +103,7 @@ export class PortfolioRestService {
       .pipe(catchError(this.handleError));
   }
 
-  private filterEmptyItems(portfolio: IPortfolio): IPortfolio {
+  filterEmptyItems(portfolio: IPortfolio): IPortfolio {
     const filteredItems = portfolio.items.filter(item => item.numShares > 0);
     return { ...portfolio, items: filteredItems };
   }
