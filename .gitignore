@@ -1,3 +1,5 @@
+FRONTEND.code-workspace
+
 # Dependencies
 node_modules/
 npm-debug.log*
@@ -124,5 +126,4 @@ firestore-debug.log
 .yarnrc
 
 # Backend specific (for BACKEND folder)
-# (Already covered by general entries above, but ensuring dist/ and node_modules/ apply to subfolders)
 BACKEND/src/data/
