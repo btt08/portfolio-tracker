@@ -61,6 +61,7 @@ export class SharesTable {
 
   sellFormComponents = viewChildren(SellForm);
 
+  allPortfolioItems = input.required<IPortfolioItem[]>();
   currencyData = input.required<ICurrency[]>();
   data = input.required<IPortfolioItem[]>();
   groupByType = input<boolean>(false);

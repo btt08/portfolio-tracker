@@ -41,6 +41,7 @@ export class App implements OnInit, OnDestroy {
   private utils = inject(UtilsService);
   private autoRefreshSub?: Subscription;
 
+  allPortfolioItems = signal<IPortfolioItem[]>([]);
   currencyData = signal<ICurrency[]>([]);
   excludedItems = computed<IPortfolioItem[]>(() => this.filterExcludedItems());
   groupByType = signal<boolean>(false);
@@ -75,6 +76,7 @@ export class App implements OnInit, OnDestroy {
           .sort(this.sortByDate());
         this.transactions.set(transactions);
         const filteredEmpty = this.portfolioService.filterEmptyItems(rawData);
+        this.allPortfolioItems.set(rawData?.items || []);
         this.portfolioData.set(filteredEmpty || this.portfolioData());
       },
       error: error => this.loadError.set('Failed to load portfolio: ' + error.message),
@@ -111,6 +113,7 @@ export class App implements OnInit, OnDestroy {
           .sort(this.sortByDate());
         this.transactions.set(transactions);
         const filteredEmpty = this.portfolioService.filterEmptyItems(rawData);
+        this.allPortfolioItems.set(rawData?.items || []);
         this.portfolioData.set(filteredEmpty || this.portfolioData());
       },
       error: error => this.loadError.set('Failed to refresh data: ' + error.message),

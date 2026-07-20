@@ -105,9 +105,10 @@
                         [submitting]="!!submitting[item.isin]"
                         (lotSubmit)="addLot(item, $event)" />
                       <app-transfer-form
+                        [allPortfolioItems]="allPortfolioItems()"
                         [sourceIsin]="item.isin"
                         [maxShares]="item.numShares"
-                        [allItems]="data()"
+                        [portfolioItems]="data()"
                         [submitting]="!!transferSubmitting[item.isin]"
                         [error]="transferError[item.isin] || ''"
                         (onAddItem)="onAddItem.emit()"

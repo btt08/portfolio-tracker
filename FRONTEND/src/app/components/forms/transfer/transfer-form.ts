@@ -12,11 +12,13 @@ import { Button } from 'app/components/buttons/button/button';
   styleUrls: ['./transfer-form.scss'],
 })
 export class TransferForm {
-  sourceIsin = input.required<string>();
-  maxShares = input.required<number>();
-  allItems = input.required<IPortfolioItem[]>();
-  submitting = input<boolean>(false);
+  allPortfolioItems = input.required<IPortfolioItem[]>();
   error = input<string>('');
+  maxShares = input.required<number>();
+  portfolioItems = input.required<IPortfolioItem[]>();
+  sourceIsin = input.required<string>();
+  submitting = input<boolean>(false);
+
   onAddItem = output<void>();
   transferSubmit = output<ITransferData>();
 
@@ -35,7 +37,7 @@ export class TransferForm {
   });
 
   targetOptions = computed(() =>
-    this.allItems().filter(
+    this.allPortfolioItems().filter(
       i => i.isin !== this.sourceIsin() && i.type.toLowerCase() === 'fund'
     )
   );
